@@ -407,7 +407,7 @@ const Results: React.FC = () => {
                     value={[valorization]}
                     onValueChange={(val) => setValorization(val[0])}
                     min={0}
-                    max={10}
+                    max={20}
                     step={1}
                     className="w-full"
                   />
@@ -422,8 +422,8 @@ const Results: React.FC = () => {
                   <Slider
                     value={[inflation]}
                     onValueChange={(val) => setInflation(val[0])}
-                    min={0}
-                    max={10}
+                    min={-300}
+                    max={300}
                     step={1}
                     className="w-full"
                   />
@@ -462,7 +462,7 @@ const Results: React.FC = () => {
                   <div className="text-center">
                     <div className="relative h-64 flex flex-col justify-end">
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
-                        <div className="bg-[hsl(var(--success))] rounded-t-lg" style={{ height: '120px' }}>
+                        <div className="bg-[#00993F] rounded-t-lg" style={{ height: '120px' }}>
                           <div className="text-white font-bold text-sm pt-2">{Math.round(futurePensionReal).toLocaleString()} PLN</div>
                         </div>
                         <div className="bg-red-400 rounded-b-lg" style={{ height: '80px' }}>
@@ -477,7 +477,7 @@ const Results: React.FC = () => {
                   <div className="text-center">
                     <div className="relative h-64 flex flex-col justify-end">
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
-                        <div className="bg-[hsl(var(--success))] rounded-t-lg" style={{ height: `${(simulatedPension / futurePensionReal) * 120}px` }}>
+                        <div className="bg-[#00993F] rounded-t-lg" style={{ height: `${(simulatedPension / futurePensionReal) * 120}px` }}>
                           <div className="text-white font-bold text-sm pt-2">{simulatedPension.toLocaleString()} PLN</div>
                         </div>
                         <div className="bg-red-400 rounded-b-lg" style={{ height: `${(simulatedPension / futurePensionReal) * 80}px` }}>
