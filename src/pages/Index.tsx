@@ -49,8 +49,8 @@ const Index: React.FC = () => {
   useEffect(() => {
     if (watchedIncome) {
       const income = parseFloat(watchedIncome);
-      const averageSalary = 6800; // Average Polish salary
-      const difference = ((income - averageSalary) / averageSalary) * 100;
+      const minimumWage = 4242; // Polish minimum wage
+      const difference = ((income - minimumWage) / minimumWage) * 100;
       setSalaryComparison(Math.round(difference));
     }
   }, [watchedIncome]);
@@ -101,8 +101,8 @@ const Index: React.FC = () => {
               <div className="w-full max-md:w-full max-md:ml-0">
                   <div className="bg-[rgba(0,0,0,0)] grow w-full mt-8 pb-[25px] px-[15px] max-md:max-w-full max-md:mt-10">
                     <div className="bg-[rgba(0,0,0,0)] flex flex-col items-center text-center pb-[7px] px-20 max-md:max-w-full max-md:px-5">
-                      <div className="bg-blue-100 p-5 rounded-full">
-                        <Rocket className="w-10 h-10 text-blue-600" />
+                      <div className="bg-green-100 p-5 rounded-full">
+                        <Rocket className="w-10 h-10 text-green-600" />
                       </div>
                       <h1 className="text-[rgba(0,65,110,1)] text-3xl font-bold leading-[1.2] mt-4">
                         Zbudujmy twoją przyszłość
@@ -123,17 +123,33 @@ const Index: React.FC = () => {
                           description="Ile masz teraz lat?"
                           iconAlt="Age icon"
                         >
-                          <div className="bg-[rgba(0,0,0,0)] w-[340px] max-w-full pb-1.5">
-                            <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-700 font-medium justify-center py-1 max-md:pr-5">
-                              <div>Aktualny wiek</div>
-                            </label>
-                            <input
-                              {...register('age', { required: 'Wiek jest wymagany' })}
-                              type="number"
-                              className="bg-white border-gray-400 border flex flex-col text-base text-gray-600 font-normal whitespace-nowrap justify-center mt-2 px-4 py-[19px] rounded-lg border-solid max-md:pr-5 w-full"
-                              placeholder="25"
-                            />
-                            {errors.age && <span className="text-red-500 text-sm">{errors.age.message}</span>}
+                          <div className="bg-[rgba(0,0,0,0)] flex items-stretch gap-6 flex-wrap max-md:max-w-full">
+                            <div className="bg-[rgba(0,0,0,0)] w-[340px] max-w-full pb-1.5">
+                              <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-700 font-medium justify-center py-1 max-md:pr-5">
+                                <div>Aktualny wiek</div>
+                              </label>
+                              <input
+                                {...register('age', { 
+                                  required: 'Wiek jest wymagany',
+                                  min: { value: 0, message: 'Wiek nie może być ujemny' }
+                                })}
+                                type="number"
+                                min="0"
+                                className="bg-white border-gray-400 border flex flex-col text-base text-gray-600 font-normal whitespace-nowrap justify-center mt-2 px-4 py-[19px] rounded-lg border-solid max-md:pr-5 w-full"
+                                placeholder="25"
+                              />
+                              {errors.age && <span className="text-red-500 text-sm">{errors.age.message}</span>}
+                            </div>
+                            <div className="bg-[rgba(0,0,0,0)] flex flex-col items-center text-center flex-1 grow shrink-0 basis-0 w-fit px-[68px] max-md:px-5">
+                              <div className={`w-[180px] max-w-full p-4 rounded-lg ${yearsToRetirement === 0 ? 'bg-[rgba(22,163,74,0.05)]' : 'bg-[rgba(63,132,210,0.05)]'}`}>
+                                <div className="bg-[rgba(0,0,0,0)] flex flex-col text-2xl text-[rgba(0,65,110,1)] font-bold whitespace-nowrap pt-px pb-[13px] px-4 max-md:px-5">
+                                  <div>{yearsToRetirement > 0 ? yearsToRetirement : '✓'}</div>
+                                </div>
+                                <div className="bg-[rgba(0,0,0,0)] text-sm text-gray-600 font-normal pt-px pb-2 px-0.5">
+                                  <div>{yearsToRetirement > 0 ? 'Lat do emerytury' : 'Gotowy na emeryturę'}</div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </FormSection>
 
@@ -216,14 +232,18 @@ const Index: React.FC = () => {
                             <div className="gap-5 flex max-md:flex-col max-md:items-stretch">
                               <div className="w-[68%] max-md:w-full max-md:ml-0">
                                 <div className="bg-[rgba(0,0,0,0)] grow w-full pb-7 max-md:max-w-full max-md:mt-6">
-                                  <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-700 font-medium justify-center py-[3px] max-md:max-w-full max-md:pr-5">
+                                   <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-700 font-medium justify-center py-[3px] max-md:max-w-full max-md:pr-5">
                                     <div>Wynagrodzenie Brutto (PLN)</div>
                                   </label>
                                   <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
                                     <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
                                       <input
-                                        {...register('monthlyIncome', { required: 'Wynagrodzenie jest wymagane' })}
+                                        {...register('monthlyIncome', { 
+                                          required: 'Wynagrodzenie jest wymagane',
+                                          min: { value: 4242, message: 'Wynagrodzenie nie może być niższe niż minimalne' }
+                                        })}
                                         type="number"
+                                        min="4242"
                                         className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                         placeholder="8500"
                                       />
@@ -240,7 +260,7 @@ const Index: React.FC = () => {
                                       <div>{salaryComparison > 0 ? '+' : ''}{salaryComparison}%</div>
                                     </div>
                                     <div className="bg-[rgba(0,0,0,0)] flex flex-col items-stretch text-sm text-gray-600 font-normal justify-center px-1.5 py-[3px]">
-                                      <div>{salaryComparison >= 0 ? 'Więcej' : 'Mniej'} niż średnia krajowa</div>
+                                      <div>{salaryComparison >= 0 ? 'Powyżej' : 'Poniżej'} minimalnego</div>
                                     </div>
                                   </div>
                                 </div>
@@ -375,14 +395,18 @@ const Index: React.FC = () => {
                                 <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
                                   <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
                                     <input
-                                      {...register('zusBalance')}
+                                      {...register('zusBalance', {
+                                        min: { value: 0, message: 'Saldo nie może być ujemne' }
+                                      })}
                                       type="number"
+                                      min="0"
                                       className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                       placeholder="8500"
                                     />
                                     <div className="text-gray-500 font-medium">PLN</div>
                                   </div>
                                 </div>
+                                {errors.zusBalance && <span className="text-red-500 text-sm mt-1">{errors.zusBalance.message}</span>}
                               </div>
                             </FormSection>
 
@@ -395,19 +419,23 @@ const Index: React.FC = () => {
                             >
                               <div className="bg-[rgba(0,0,0,0)] w-[461px] max-w-full pb-7">
                                 <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-500 font-normal leading-none pt-px pb-2 max-md:max-w-full max-md:pr-5">
-                                  <div>Aktualne saldo ZUS</div>
+                                  <div>Aktualne saldo OFE</div>
                                 </label>
                                 <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
                                   <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
                                     <input
-                                      {...register('ofeBalance')}
+                                      {...register('ofeBalance', {
+                                        min: { value: 0, message: 'Saldo nie może być ujemne' }
+                                      })}
                                       type="number"
+                                      min="0"
                                       className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                       placeholder="8500"
                                     />
                                     <div className="text-gray-500 font-medium">PLN</div>
                                   </div>
                                 </div>
+                                {errors.ofeBalance && <span className="text-red-500 text-sm mt-1">{errors.ofeBalance.message}</span>}
                               </div>
                             </FormSection>
 
@@ -434,14 +462,18 @@ const Index: React.FC = () => {
                                   <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
                                     <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
                                       <input
-                                        {...register('sickLeaveDays')}
+                                        {...register('sickLeaveDays', {
+                                          min: { value: 0, message: 'Ilość dni nie może być ujemna' }
+                                        })}
                                         type="number"
+                                        min="0"
                                         className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                         placeholder="0"
                                       />
                                       <div className="text-gray-500 font-medium">DNI</div>
                                     </div>
                                   </div>
+                                  {errors.sickLeaveDays && <span className="text-red-500 text-sm mt-1">{errors.sickLeaveDays.message}</span>}
                                 </div>
                               </div>
                             </div>
