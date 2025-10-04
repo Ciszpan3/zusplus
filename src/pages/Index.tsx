@@ -21,7 +21,7 @@ interface FormData {
 
 const Index: React.FC = () => {
   const navigate = useNavigate();
-  const [optionalDataEnabled, setOptionalDataEnabled] = useState(true);
+  const [optionalDataEnabled, setOptionalDataEnabled] = useState(false);
   const [salaryComparison, setSalaryComparison] = useState(0);
   const [yearsOfExperience, setYearsOfExperience] = useState(0);
   const [yearsToRetirement, setYearsToRetirement] = useState(0);
