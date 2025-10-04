@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { User, Sun, CloudSun, Cloud, CloudRain, CloudLightning, TrendingUp, Plane, Briefcase, Umbrella, Info } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
@@ -19,6 +19,8 @@ const Results: React.FC = () => {
   const [sickLeaveDays, setSickLeaveDays] = useState(15);
   const [valorization, setValorization] = useState(0);
   const [inflation, setInflation] = useState(0);
+  const [apiPensionNominal, setApiPensionNominal] = useState<number | null>(null);
+  const [apiPensionReal, setApiPensionReal] = useState<number | null>(null);
 
   // Use real data if available, otherwise fallback to dummy data
   const actualSalary = prognosisData?.aktualna_wyplata || 8500;
@@ -85,6 +87,44 @@ const Results: React.FC = () => {
   };
 
   const simulatedPension = calculateSimulatedPension();
+
+  // Debounced API call for calculator
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const fetchCalculatedPension = async () => {
+        try {
+          const response = await fetch('https://xvv7kcpl-8000.euw.devtunnels.ms/prognoza-wykres', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              wiek: age,
+              plec: gender === 'female' ? 'kobieta' : 'mezczyzna',
+              wiek_przejscia_na_emeryture: retirementAge,
+              miesieczny_dochod: monthlyIncome,
+              przerwy_w_kariere: careerBreaks,
+              procent_skladek: sickLeaveDays,
+              wskaznik_waloryzacji: valorization / 100,
+              wskaznik_inflacji: inflation / 100,
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setApiPensionNominal(data.przyszla_emerytura_nominalna);
+            setApiPensionReal(data.przyszla_emerytura_realna);
+          }
+        } catch (error) {
+          console.error('Error fetching calculated pension:', error);
+        }
+      };
+
+      fetchCalculatedPension();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [age, gender, retirementAge, monthlyIncome, careerBreaks, sickLeaveDays, valorization, inflation]);
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -477,11 +517,15 @@ const Results: React.FC = () => {
                   <div className="text-center">
                     <div className="relative h-64 flex flex-col justify-end">
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
-                        <div className="bg-[#00993F] rounded-t-lg" style={{ height: `${(simulatedPension / futurePensionReal) * 120}px` }}>
-                          <div className="text-white font-bold text-sm pt-2">{simulatedPension.toLocaleString()} PLN</div>
+                        <div className="bg-[#00993F] rounded-t-lg" style={{ height: `${apiPensionNominal ? (apiPensionNominal / futurePensionReal) * 120 : (simulatedPension / futurePensionReal) * 120}px` }}>
+                          <div className="text-white font-bold text-sm pt-2">
+                            {apiPensionNominal ? Math.round(apiPensionNominal).toLocaleString() : simulatedPension.toLocaleString()} PLN
+                          </div>
                         </div>
-                        <div className="bg-red-400 rounded-b-lg" style={{ height: `${(simulatedPension / futurePensionReal) * 80}px` }}>
-                          <div className="text-white font-bold text-sm pt-2">{Math.round(simulatedPension * 0.6).toLocaleString()} PLN</div>
+                        <div className="bg-red-400 rounded-b-lg" style={{ height: `${apiPensionReal ? (apiPensionReal / futurePensionReal) * 120 : (simulatedPension / futurePensionReal) * 80}px` }}>
+                          <div className="text-white font-bold text-sm pt-2">
+                            {apiPensionReal ? Math.round(apiPensionReal).toLocaleString() : Math.round(simulatedPension * 0.6).toLocaleString()} PLN
+                          </div>
                         </div>
                       </div>
                     </div>
