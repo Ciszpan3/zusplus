@@ -21,29 +21,6 @@ const Header: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="bg-[rgba(0,0,0,0)] flex items-stretch gap-6 my-auto">
-          <div className="bg-[rgba(0,0,0,0)] flex items-stretch gap-2 grow shrink basis-auto my-auto">
-            <img
-              src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/c4a362b57cd64daa6d8eabf7e74ad664ef683d1d?placeholderIfAbsent=true"
-              className="aspect-[0.67] object-contain w-4 shrink-0"
-              alt="Progress indicator"
-            />
-            <div className="text-gray-700 text-sm font-medium leading-none">
-              Ready to Start
-            </div>
-            <div className="bg-gray-200 flex flex-col overflow-hidden my-auto rounded-full">
-              <div className="flex w-px shrink-0 h-2 rounded-full" />
-            </div>
-            <div className="text-gray-400 text-sm font-bold leading-none">
-              0%
-            </div>
-          </div>
-          <img
-            src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/533f4d59cf2e0bc4a229edfc41c7539756a91bc7?placeholderIfAbsent=true"
-            className="aspect-[0.64] object-contain w-[18px] shrink-0"
-            alt="User menu"
-          />
-        </div>
       </div>
     </header>
   );

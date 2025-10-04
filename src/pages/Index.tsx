@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Header from '@/components/Header';
 import FormSection from '@/components/FormSection';
 import Footer from '@/components/Footer';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Rocket } from 'lucide-react';
 
 interface FormData {
   age: string;
@@ -20,6 +20,9 @@ interface FormData {
 
 const Index: React.FC = () => {
   const [optionalDataEnabled, setOptionalDataEnabled] = useState(true);
+  const [salaryComparison, setSalaryComparison] = useState(0);
+  const [yearsOfExperience, setYearsOfExperience] = useState(0);
+  const [yearsToRetirement, setYearsToRetirement] = useState(0);
   
   const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: {
@@ -37,9 +40,54 @@ const Index: React.FC = () => {
   });
 
   const watchedGender = watch('gender');
+  const watchedIncome = watch('monthlyIncome');
+  const watchedAge = watch('age');
+  const watchedCareerStart = watch('careerStartYear');
+  const watchedRetirementYear = watch('retirementYear');
+
+  // Calculate dynamic values
+  useEffect(() => {
+    if (watchedIncome) {
+      const income = parseFloat(watchedIncome);
+      const averageSalary = 6800; // Average Polish salary
+      const difference = ((income - averageSalary) / averageSalary) * 100;
+      setSalaryComparison(Math.round(difference));
+    }
+  }, [watchedIncome]);
+
+  useEffect(() => {
+    if (watchedCareerStart) {
+      const currentYear = new Date().getFullYear();
+      const experience = currentYear - parseInt(watchedCareerStart);
+      setYearsOfExperience(experience > 0 ? experience : 0);
+    }
+  }, [watchedCareerStart]);
+
+  useEffect(() => {
+    if (watchedAge && watchedRetirementYear) {
+      const retirementYear = parseInt(watchedRetirementYear);
+      const currentYear = new Date().getFullYear();
+      const age = parseInt(watchedAge);
+      const yearsUntilRetirement = retirementYear - currentYear;
+      setYearsToRetirement(yearsUntilRetirement > 0 ? yearsUntilRetirement : 0);
+    } else if (watchedAge && watchedGender) {
+      const age = parseInt(watchedAge);
+      const retirementAge = watchedGender === 'female' ? 60 : 65;
+      const years = retirementAge - age;
+      setYearsToRetirement(years > 0 ? years : 0);
+    }
+  }, [watchedAge, watchedRetirementYear, watchedGender]);
 
   const onSubmit = (data: FormData) => {
     console.log('Form submitted:', data);
+  };
+
+  const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/[^\d]/g, '');
+    if (value.length > 2) {
+      value = value.slice(0, 2) + '-' + value.slice(2, 5);
+    }
+    e.target.value = value;
   };
 
   return (
@@ -53,11 +101,9 @@ const Index: React.FC = () => {
               <div className="w-full max-md:w-full max-md:ml-0">
                   <div className="bg-[rgba(0,0,0,0)] grow w-full mt-8 pb-[25px] px-[15px] max-md:max-w-full max-md:mt-10">
                     <div className="bg-[rgba(0,0,0,0)] flex flex-col items-center text-center pb-[7px] px-20 max-md:max-w-full max-md:px-5">
-                      <img
-                        src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/0085837bb9c07570a80a4b88781bfc343e579901?placeholderIfAbsent=true"
-                        className="aspect-[1] object-contain w-20"
-                        alt="Building future icon"
-                      />
+                      <div className="bg-blue-100 p-5 rounded-full">
+                        <Rocket className="w-10 h-10 text-blue-600" />
+                      </div>
                       <h1 className="text-[rgba(0,65,110,1)] text-3xl font-bold leading-[1.2] mt-4">
                         Zbudujmy twoją przyszłość
                       </h1>
@@ -189,12 +235,12 @@ const Index: React.FC = () => {
                               </div>
                               <div className="w-[32%] ml-5 max-md:w-full max-md:ml-0">
                                 <div className="bg-[rgba(0,0,0,0)] flex grow flex-col items-stretch text-center justify-center w-full py-[13px] max-md:mt-6">
-                                  <div className="bg-[rgba(0,153,63,0.05)] p-4 rounded-lg">
+                                  <div className={`p-4 rounded-lg ${salaryComparison >= 0 ? 'bg-[rgba(0,153,63,0.05)]' : 'bg-[rgba(196,48,48,0.05)]'}`}>
                                     <div className="bg-[rgba(0,0,0,0)] flex flex-col text-lg text-[rgba(0,65,110,1)] font-bold whitespace-nowrap pt-[3px] pb-[11px] px-[70px] max-md:px-5">
-                                      <div>+25%</div>
+                                      <div>{salaryComparison > 0 ? '+' : ''}{salaryComparison}%</div>
                                     </div>
                                     <div className="bg-[rgba(0,0,0,0)] flex flex-col items-stretch text-sm text-gray-600 font-normal justify-center px-1.5 py-[3px]">
-                                      <div>Więcej niż średnia krajowa</div>
+                                      <div>{salaryComparison >= 0 ? 'Więcej' : 'Mniej'} niż średnia krajowa</div>
                                     </div>
                                   </div>
                                 </div>
@@ -235,7 +281,7 @@ const Index: React.FC = () => {
                             <div className="bg-[rgba(0,0,0,0)] flex flex-col items-center text-center flex-1 grow shrink-0 basis-0 w-fit px-[68px] max-md:px-5">
                               <div className="bg-[rgba(63,132,210,0.05)] w-[164px] max-w-full p-4 rounded-lg">
                                 <div className="bg-[rgba(0,0,0,0)] flex flex-col text-2xl text-[rgba(0,65,110,1)] font-bold whitespace-nowrap pt-px pb-[13px] px-4 max-md:px-5">
-                                  <div>3</div>
+                                  <div>{yearsOfExperience}</div>
                                 </div>
                                 <div className="bg-[rgba(0,0,0,0)] text-sm text-gray-600 font-normal pt-px pb-2 px-0.5">
                                   <div>Lata doświadczenia</div>
@@ -277,7 +323,7 @@ const Index: React.FC = () => {
                             <div className="bg-[rgba(0,0,0,0)] flex flex-col items-center text-center flex-1 grow shrink-0 basis-0 w-fit px-[68px] max-md:px-5">
                               <div className="bg-[rgba(22,163,74,0.05)] w-[158px] max-w-full p-4 rounded-lg">
                                 <div className="bg-[rgba(0,0,0,0)] flex flex-col text-2xl text-[rgba(0,65,110,1)] font-bold whitespace-nowrap pt-px pb-[13px] px-4 max-md:px-5">
-                                  <div>42</div>
+                                  <div>{yearsToRetirement}</div>
                                 </div>
                                 <div className="bg-[rgba(0,0,0,0)] flex flex-col items-stretch text-sm text-gray-600 font-normal justify-center p-1">
                                   <div>Lata do emerytury</div>
@@ -420,11 +466,19 @@ const Index: React.FC = () => {
                             </label>
                             <div className="bg-[rgba(0,0,0,0)] text-base text-gray-600 whitespace-nowrap mt-2 max-md:max-w-full">
                               <input
-                                {...register('postalCode')}
+                                {...register('postalCode', {
+                                  pattern: {
+                                    value: /^\d{2}-\d{3}$/,
+                                    message: 'Kod pocztowy musi być w formacie XX-XXX'
+                                  }
+                                })}
                                 type="text"
+                                maxLength={6}
+                                onChange={handlePostalCodeChange}
                                 className="bg-white border-gray-400 border flex flex-col justify-center px-4 py-[19px] rounded-lg border-solid max-md:max-w-full max-md:pr-5 w-full"
-                                placeholder="XX-XXX"
+                                placeholder="00-000"
                               />
+                              {errors.postalCode && <span className="text-red-500 text-sm mt-1">{errors.postalCode.message}</span>}
                             </div>
                           </div>
                         </div>
@@ -434,13 +488,9 @@ const Index: React.FC = () => {
                           type="submit"
                           className="justify-center items-center border self-center z-10 flex w-[608px] max-w-full flex-col text-xl text-white font-bold text-center -mt-2 px-[70px] py-4 rounded-xl border-0 border-solid max-md:px-5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all"
                         >
-                          <div className="flex gap-3">
-                            <img
-                              src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/497359b50ebe2996bac82d6171fdd6f5a080edf2?placeholderIfAbsent=true"
-                              className="aspect-[0.63] object-contain w-[15px] shrink-0"
-                              alt="Submit icon"
-                            />
-                            <div className="w-[250px]">
+                          <div className="flex gap-3 items-center">
+                            <Rocket className="w-5 h-5" />
+                            <div>
                               Zbuduj swoją przyszłość
                             </div>
                           </div>
