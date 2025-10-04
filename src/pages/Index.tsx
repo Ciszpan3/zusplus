@@ -528,43 +528,43 @@ const Index: React.FC = () => {
                                 </div>
                               </div>
                             </div>
+
+                            {/* Postal Code Section */}
+                            <div className="bg-[rgba(0,0,0,0)] flex gap-[13px] text-lg text-[rgba(0,65,110,1)] font-semibold leading-loose flex-wrap mt-[15px] pr-20 py-0.5 max-md:max-w-full max-md:pr-5">
+                              <img
+                                src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/59edbd2ecba2ebbd7bf467378dd57accac1863e9?placeholderIfAbsent=true"
+                                className="aspect-[1] object-contain w-10 shrink-0 rounded-full"
+                                alt="Postal code icon"
+                              />
+                              <div className="bg-[rgba(0,0,0,0)] flex flex-col mt-1 pb-[31px]">
+                                <div>Kod pocztowy</div>
+                              </div>
+                            </div>
+                            <div className="bg-[rgba(0,0,0,0)] flex flex-col font-normal mt-2 pb-[39px] max-md:max-w-full max-md:pr-5">
+                              <div className="bg-[rgba(0,0,0,0)] w-[461px] max-w-full pb-7">
+                                <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-500 leading-none justify-center py-1 max-md:max-w-full max-md:pr-5">
+                                  <div>Kod pocztowy</div>
+                                </label>
+                                <div className="bg-[rgba(0,0,0,0)] text-base text-gray-600 whitespace-nowrap mt-2 max-md:max-w-full">
+                                  <input
+                                    {...register('postalCode', {
+                                      pattern: {
+                                        value: /^\d{2}-\d{3}$/,
+                                        message: 'Kod pocztowy musi być w formacie XX-XXX'
+                                      }
+                                    })}
+                                    type="text"
+                                    maxLength={6}
+                                    onChange={handlePostalCodeChange}
+                                    className="bg-white border-gray-400 border flex flex-col justify-center px-4 py-[19px] rounded-lg border-solid max-md:max-w-full max-md:pr-5 w-full"
+                                    placeholder="00-000"
+                                  />
+                                  {errors.postalCode && <span className="text-red-500 text-sm mt-1">{errors.postalCode.message}</span>}
+                                </div>
+                              </div>
+                            </div>
                             </div>
                           )}
-                        </div>
-
-                        {/* Postal Code Section */}
-                        <div className="bg-[rgba(0,0,0,0)] flex gap-[13px] text-lg text-[rgba(0,65,110,1)] font-semibold leading-loose flex-wrap mt-[15px] pr-20 py-0.5 max-md:max-w-full max-md:pr-5">
-                          <img
-                            src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/59edbd2ecba2ebbd7bf467378dd57accac1863e9?placeholderIfAbsent=true"
-                            className="aspect-[1] object-contain w-10 shrink-0 rounded-full"
-                            alt="Postal code icon"
-                          />
-                          <div className="bg-[rgba(0,0,0,0)] flex flex-col mt-1 pb-[31px]">
-                            <div>Kod pocztowy</div>
-                          </div>
-                        </div>
-                        <div className="bg-[rgba(0,0,0,0)] flex flex-col font-normal mt-2 pb-[39px] max-md:max-w-full max-md:pr-5">
-                          <div className="bg-[rgba(0,0,0,0)] w-[461px] max-w-full pb-7">
-                            <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-500 leading-none justify-center py-1 max-md:max-w-full max-md:pr-5">
-                              <div>Kod pocztowy</div>
-                            </label>
-                            <div className="bg-[rgba(0,0,0,0)] text-base text-gray-600 whitespace-nowrap mt-2 max-md:max-w-full">
-                              <input
-                                {...register('postalCode', {
-                                  pattern: {
-                                    value: /^\d{2}-\d{3}$/,
-                                    message: 'Kod pocztowy musi być w formacie XX-XXX'
-                                  }
-                                })}
-                                type="text"
-                                maxLength={6}
-                                onChange={handlePostalCodeChange}
-                                className="bg-white border-gray-400 border flex flex-col justify-center px-4 py-[19px] rounded-lg border-solid max-md:max-w-full max-md:pr-5 w-full"
-                                placeholder="00-000"
-                              />
-                              {errors.postalCode && <span className="text-red-500 text-sm mt-1">{errors.postalCode.message}</span>}
-                            </div>
-                          </div>
                         </div>
 
                         {/* Submit Button */}
