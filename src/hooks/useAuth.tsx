@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (error?.message?.includes('user_not_found')) {
               // Clear invalid session
               await supabase.auth.signOut();
+              localStorage.clear();
               toast.error('Session expired. Please sign in again.');
             }
           } catch (e) {
@@ -59,6 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (userError?.message?.includes('user_not_found')) {
         // Clear invalid session
         await supabase.auth.signOut();
+        localStorage.clear();
         setSession(null);
         setUser(null);
       } else {
