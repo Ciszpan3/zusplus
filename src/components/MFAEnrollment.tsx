@@ -45,9 +45,14 @@ export const MFAEnrollment = ({ onComplete }: MFAEnrollmentProps) => {
 
     setLoading(true);
     try {
+      // Create a challenge first to get the challengeId
+      const challenge = await supabase.auth.mfa.challenge({ factorId });
+      if (challenge.error) throw challenge.error;
+
+      // Verify using the challenge ID
       const { error } = await supabase.auth.mfa.verify({
         factorId,
-        challengeId: factorId,
+        challengeId: challenge.data.id,
         code: verifyCode
       });
 
