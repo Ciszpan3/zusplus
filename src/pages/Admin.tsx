@@ -1,26 +1,70 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { MFAEnrollment } from '@/components/MFAEnrollment';
+import { supabase } from '@/integrations/supabase/client';
 
 const Admin = () => {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
+  const [needsMFASetup, setNeedsMFASetup] = useState(false);
+  const [checkingMFA, setCheckingMFA] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
+      return;
+    }
+
+    if (user) {
+      checkMFAStatus();
     }
   }, [user, loading, navigate]);
 
-  if (loading) {
+  const checkMFAStatus = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const aal = (session as any)?.aal;
+
+      if (aal !== 'aal2') {
+        // Check if user has enrolled MFA
+        const { data: factors } = await supabase.auth.mfa.listFactors();
+        if (!factors?.totp || factors.totp.length === 0) {
+          setNeedsMFASetup(true);
+        } else {
+          // Has MFA but not verified - redirect to login
+          navigate('/auth');
+        }
+      }
+    } catch (error) {
+      console.error('Error checking MFA status:', error);
+    } finally {
+      setCheckingMFA(false);
+    }
+  };
+
+  const handleMFAComplete = () => {
+    setNeedsMFASetup(false);
+    window.location.reload();
+  };
+
+  if (loading || checkingMFA) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
           <p className="mt-4 text-muted-foreground">Loading...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (needsMFASetup) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
+        <MFAEnrollment onComplete={handleMFAComplete} />
       </div>
     );
   }

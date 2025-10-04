@@ -1,19 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Label } from '@/components/ui/label';
+import { MFAVerification } from '@/components/MFAVerification';
 
 const Auth = () => {
-  const { signIn, user } = useAuth();
+  const { user, signIn } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showMFA, setShowMFA] = useState(false);
 
-  // Redirect if already logged in
   useEffect(() => {
     if (user) {
       navigate('/admin');
@@ -23,9 +24,25 @@ const Auth = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await signIn(loginData.email, loginData.password);
+    const result = await signIn(email, password);
     setIsLoading(false);
+    
+    if (result.needsMFA) {
+      setShowMFA(true);
+    }
   };
+
+  const handleMFAVerified = () => {
+    navigate('/admin');
+  };
+
+  if (showMFA) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
+        <MFAVerification onVerified={handleMFAVerified} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
@@ -37,23 +54,23 @@ const Auth = () => {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="login-email">Email</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="login-email"
+                id="email"
                 type="email"
                 placeholder="admin@example.com"
-                value={loginData.email}
-                onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="login-password">Password</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
-                id="login-password"
+                id="password"
                 type="password"
-                value={loginData.password}
-                onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>

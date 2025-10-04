@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any; needsMFA?: boolean }>;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
@@ -42,19 +42,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     
     if (error) {
       toast.error(error.message);
-    } else {
-      toast.success('Successfully signed in!');
-      navigate('/admin');
+      return { error };
+    }
+
+    // Check if MFA is required
+    const { data: { session } } = await supabase.auth.getSession();
+    const currentAAL = (session as any)?.aal;
+    
+    if (currentAAL === 'aal1') {
+      // User needs MFA verification
+      return { error: null, needsMFA: true };
     }
     
-    return { error };
+    toast.success('Successfully signed in!');
+    navigate('/admin');
+    
+    return { error: null, needsMFA: false };
   };
 
   const signUp = async (email: string, password: string) => {
