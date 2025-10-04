@@ -303,31 +303,38 @@ const Index: React.FC = () => {
                         >
                           <div className="bg-[rgba(0,0,0,0)] flex items-stretch gap-6 flex-wrap max-md:max-w-full">
                             <div className="bg-[rgba(0,0,0,0)] flex-1 grow shrink-0 basis-0 w-fit pb-1.5">
-                              <label className="text-sm text-gray-700 font-medium block mb-2">
+                              <label className="text-sm text-gray-700 font-semibold block mb-2">
                                 Rok rozpoczęcia pracy
                               </label>
-                              <div className="relative">
+                              <div className="relative group">
                                 <select
                                   {...register('careerStartYear')}
-                                  className="w-full bg-white border border-gray-400 text-base text-gray-800 font-normal px-4 py-[19px] rounded-lg appearance-none cursor-pointer hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00993F] focus:border-transparent transition-all"
+                                  className="w-full bg-gradient-to-br from-white to-gray-50 border-2 border-gray-300 text-base text-gray-800 font-medium px-4 py-[19px] rounded-xl appearance-none cursor-pointer 
+                                  hover:border-[#00993F] hover:shadow-[0_0_0_3px_rgba(0,153,63,0.1)] 
+                                  focus:outline-none focus:border-[#00993F] focus:shadow-[0_0_0_4px_rgba(0,153,63,0.15)] focus:bg-white
+                                  transition-all duration-300 ease-out
+                                  peer"
                                   style={{ 
-                                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                                    backgroundPosition: 'right 0.5rem center',
+                                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2300993F' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                                    backgroundPosition: 'right 0.75rem center',
                                     backgroundRepeat: 'no-repeat',
                                     backgroundSize: '1.5em 1.5em',
-                                    paddingRight: '2.5rem'
+                                    paddingRight: '3rem'
                                   }}
                                 >
-                                  <option value="">Wybierz rok</option>
+                                  <option value="" className="text-gray-400">Wybierz rok</option>
                                   {Array.from({ length: 50 }, (_, i) => {
                                     const year = new Date().getFullYear() - i;
                                     return (
-                                      <option key={year} value={year}>
+                                      <option key={year} value={year} className="text-gray-800 bg-white hover:bg-[#00993F]/5">
                                         {year}
                                       </option>
                                     );
                                   })}
                                 </select>
+                                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none opacity-0 group-hover:opacity-100 peer-focus:opacity-100 transition-opacity duration-300">
+                                  <div className="w-1 h-1 bg-[#00993F] rounded-full animate-pulse"></div>
+                                </div>
                               </div>
                             </div>
                             <div className="bg-[rgba(0,0,0,0)] flex flex-col items-center text-center flex-1 grow shrink-0 basis-0 w-fit px-[68px] max-md:px-5">
@@ -352,31 +359,38 @@ const Index: React.FC = () => {
                         >
                           <div className="bg-[rgba(0,0,0,0)] flex items-stretch gap-6 flex-wrap max-md:max-w-full">
                             <div className="bg-[rgba(0,0,0,0)] flex-1 grow shrink-0 basis-0 w-fit pb-1.5">
-                              <label className="text-sm text-gray-700 font-medium block mb-2">
+                              <label className="text-sm text-gray-700 font-semibold block mb-2">
                                 Przewidywany rok przejścia na emeryture
                               </label>
-                              <div className="relative">
+                              <div className="relative group">
                                 <select
                                   {...register('retirementYear')}
-                                  className="w-full bg-white border border-gray-400 text-base text-gray-800 font-normal px-4 py-[19px] rounded-lg appearance-none cursor-pointer hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00993F] focus:border-transparent transition-all"
+                                  className="w-full bg-gradient-to-br from-white to-gray-50 border-2 border-gray-300 text-base text-gray-800 font-medium px-4 py-[19px] rounded-xl appearance-none cursor-pointer 
+                                  hover:border-[#00993F] hover:shadow-[0_0_0_3px_rgba(0,153,63,0.1)] 
+                                  focus:outline-none focus:border-[#00993F] focus:shadow-[0_0_0_4px_rgba(0,153,63,0.15)] focus:bg-white
+                                  transition-all duration-300 ease-out
+                                  peer"
                                   style={{ 
-                                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                                    backgroundPosition: 'right 0.5rem center',
+                                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2300993F' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                                    backgroundPosition: 'right 0.75rem center',
                                     backgroundRepeat: 'no-repeat',
                                     backgroundSize: '1.5em 1.5em',
-                                    paddingRight: '2.5rem'
+                                    paddingRight: '3rem'
                                   }}
                                 >
-                                  <option value="">Wybierz rok</option>
+                                  <option value="" className="text-gray-400">Wybierz rok</option>
                                   {Array.from({ length: 50 }, (_, i) => {
                                     const year = new Date().getFullYear() + i;
                                     return (
-                                      <option key={year} value={year}>
+                                      <option key={year} value={year} className="text-gray-800 bg-white hover:bg-[#00993F]/5">
                                         {year}
                                       </option>
                                     );
                                   })}
                                 </select>
+                                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none opacity-0 group-hover:opacity-100 peer-focus:opacity-100 transition-opacity duration-300">
+                                  <div className="w-1 h-1 bg-[#00993F] rounded-full animate-pulse"></div>
+                                </div>
                               </div>
                             </div>
                             <div className="bg-[rgba(0,0,0,0)] flex flex-col items-center text-center flex-1 grow shrink-0 basis-0 w-fit px-[68px] max-md:px-5">
