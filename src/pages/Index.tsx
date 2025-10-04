@@ -33,8 +33,8 @@ const Index: React.FC = () => {
       monthlyIncome: '8500',
       careerStartYear: '',
       retirementYear: '',
-      zusBalance: '8500',
-      ofeBalance: '8500',
+      zusBalance: '0',
+      ofeBalance: '0',
       sickLeaveDays: '0',
       postalCode: '',
       optionalDataEnabled: true
@@ -303,13 +303,20 @@ const Index: React.FC = () => {
                         >
                           <div className="bg-[rgba(0,0,0,0)] flex items-stretch gap-6 flex-wrap max-md:max-w-full">
                             <div className="bg-[rgba(0,0,0,0)] flex-1 grow shrink-0 basis-0 w-fit pb-1.5">
-                              <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-700 font-medium justify-center py-1 max-md:pr-5">
-                                <div>Rok rozpoczęcia pracy</div>
+                              <label className="text-sm text-gray-700 font-medium block mb-2">
+                                Rok rozpoczęcia pracy
                               </label>
-                              <div className="bg-white border-gray-400 border flex items-stretch gap-5 text-base text-black font-normal justify-between mt-2 px-4 py-3 rounded-lg border-solid">
+                              <div className="relative">
                                 <select
                                   {...register('careerStartYear')}
-                                  className="my-auto bg-transparent border-none outline-none flex-1"
+                                  className="w-full bg-white border border-gray-400 text-base text-gray-800 font-normal px-4 py-[19px] rounded-lg appearance-none cursor-pointer hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00993F] focus:border-transparent transition-all"
+                                  style={{ 
+                                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                                    backgroundPosition: 'right 0.5rem center',
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundSize: '1.5em 1.5em',
+                                    paddingRight: '2.5rem'
+                                  }}
                                 >
                                   <option value="">Wybierz rok</option>
                                   {Array.from({ length: 50 }, (_, i) => {
@@ -345,13 +352,20 @@ const Index: React.FC = () => {
                         >
                           <div className="bg-[rgba(0,0,0,0)] flex items-stretch gap-6 flex-wrap max-md:max-w-full">
                             <div className="bg-[rgba(0,0,0,0)] flex-1 grow shrink-0 basis-0 w-fit pb-1.5">
-                              <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-700 font-medium justify-center py-[3px] max-md:pr-5">
-                                <div>Przewidywany rok przejścia na emeryture</div>
+                              <label className="text-sm text-gray-700 font-medium block mb-2">
+                                Przewidywany rok przejścia na emeryture
                               </label>
-                              <div className="bg-white border-gray-400 border flex items-stretch gap-5 text-base text-black font-normal justify-between mt-2 px-4 py-3 rounded-lg border-solid">
+                              <div className="relative">
                                 <select
                                   {...register('retirementYear')}
-                                  className="my-auto bg-transparent border-none outline-none flex-1"
+                                  className="w-full bg-white border border-gray-400 text-base text-gray-800 font-normal px-4 py-[19px] rounded-lg appearance-none cursor-pointer hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00993F] focus:border-transparent transition-all"
+                                  style={{ 
+                                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                                    backgroundPosition: 'right 0.5rem center',
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundSize: '1.5em 1.5em',
+                                    paddingRight: '2.5rem'
+                                  }}
                                 >
                                   <option value="">Wybierz rok</option>
                                   {Array.from({ length: 50 }, (_, i) => {
@@ -439,7 +453,7 @@ const Index: React.FC = () => {
                                         setValue('zusBalance', String(clamped), { shouldValidate: true, shouldDirty: true });
                                       }}
                                       className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
-                                      placeholder="8500"
+                                      placeholder="0"
                                     />
                                     <div className="text-gray-500 font-medium">PLN</div>
                                   </div>
@@ -476,7 +490,7 @@ const Index: React.FC = () => {
                                         setValue('ofeBalance', String(clamped), { shouldValidate: true, shouldDirty: true });
                                       }}
                                       className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
-                                      placeholder="8500"
+                                      placeholder="0"
                                     />
                                     <div className="text-gray-500 font-medium">PLN</div>
                                   </div>
