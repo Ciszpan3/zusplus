@@ -92,31 +92,40 @@ const Results: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       const fetchCalculatedPension = async () => {
+        const requestBody = {
+          wiek: age,
+          plec: gender === 'female' ? 'kobieta' : 'mezczyzna',
+          wiek_przejscia_na_emeryture: retirementAge,
+          miesieczny_dochod: monthlyIncome,
+          przerwy_w_kariere: careerBreaks,
+          procent_skladek: sickLeaveDays,
+          wskaznik_waloryzacji: valorization / 100,
+          wskaznik_inflacji: inflation / 100,
+        };
+        
+        console.log('Wysyłam zapytanie do API:', requestBody);
+        
         try {
           const response = await fetch('https://xvv7kcpl-8000.euw.devtunnels.ms/prognoza-wykres', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              wiek: age,
-              plec: gender === 'female' ? 'kobieta' : 'mezczyzna',
-              wiek_przejscia_na_emeryture: retirementAge,
-              miesieczny_dochod: monthlyIncome,
-              przerwy_w_kariere: careerBreaks,
-              procent_skladek: sickLeaveDays,
-              wskaznik_waloryzacji: valorization / 100,
-              wskaznik_inflacji: inflation / 100,
-            }),
+            body: JSON.stringify(requestBody),
           });
 
+          console.log('Odpowiedź API status:', response.status);
+          
           if (response.ok) {
             const data = await response.json();
+            console.log('Dane z API:', data);
             setApiPensionNominal(data.przyszla_emerytura_nominalna);
             setApiPensionReal(data.przyszla_emerytura_realna);
+          } else {
+            console.error('API zwróciło błąd:', response.status);
           }
         } catch (error) {
-          console.error('Error fetching calculated pension:', error);
+          console.error('Błąd podczas wywoływania API:', error);
         }
       };
 
