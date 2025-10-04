@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import FormSection from '@/components/FormSection';
 import Footer from '@/components/Footer';
@@ -19,6 +20,7 @@ interface FormData {
 }
 
 const Index: React.FC = () => {
+  const navigate = useNavigate();
   const [optionalDataEnabled, setOptionalDataEnabled] = useState(true);
   const [salaryComparison, setSalaryComparison] = useState(0);
   const [yearsOfExperience, setYearsOfExperience] = useState(0);
@@ -84,6 +86,7 @@ const Index: React.FC = () => {
 
   const onSubmit = (data: FormData) => {
     console.log('Form submitted:', data);
+    navigate('/results');
   };
 
   const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
