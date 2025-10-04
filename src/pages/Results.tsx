@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { User, Sun, TrendingUp, Plane, Briefcase, Umbrella, Info, Calculator, MapPin, Shield } from 'lucide-react';
+import { User, Sun, CloudSun, Cloud, CloudRain, CloudLightning, TrendingUp, Plane, Briefcase, Umbrella, Info, Calculator, MapPin, Shield } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { PrognosiResponse } from '@/services/api';
@@ -25,6 +25,50 @@ const Results: React.FC = () => {
     "2. System emerytalny działa na zasadzie pokoleniowej solidarności.",
     "3. Warto rozważyć dodatkowe oszczędności w III filarze."
   ];
+
+  // Determine weather based on percentage difference
+  const getWeatherInfo = () => {
+    if (percentDifference > 30) {
+      return {
+        icon: Sun,
+        text: "Słonecznie",
+        description: "Twoja emerytura znacznie przewyższa średnią krajową!",
+        color: "text-yellow-400"
+      };
+    } else if (percentDifference > 0) {
+      return {
+        icon: CloudSun,
+        text: "Częściowo słonecznie",
+        description: "Twoja emerytura jest powyżej średniej krajowej",
+        color: "text-yellow-500"
+      };
+    } else if (percentDifference > -15) {
+      return {
+        icon: Cloud,
+        text: "Pochmurnie",
+        description: "Twoja emerytura jest zbliżona do średniej krajowej",
+        color: "text-gray-400"
+      };
+    } else if (percentDifference > -40) {
+      return {
+        icon: CloudRain,
+        text: "Deszczowo",
+        description: "Twoja emerytura jest poniżej średniej krajowej",
+        color: "text-blue-400"
+      };
+    } else {
+      return {
+        icon: CloudLightning,
+        text: "Burzowo",
+        description: "Twoja emerytura jest znacznie poniżej średniej",
+        color: "text-purple-400"
+      };
+    }
+  };
+
+  const weatherInfo = getWeatherInfo();
+  const WeatherIcon = weatherInfo.icon;
+
   return <div className="bg-gray-50 min-h-screen">
       <Header />
       
@@ -71,11 +115,10 @@ const Results: React.FC = () => {
                 </div>
                 <h3 className="text-gray-900 font-bold text-xl mb-3">Pogoda Emerytury</h3>
                 <div className="flex items-center justify-center gap-2 mb-3">
-                  <Sun className="w-8 h-8 text-yellow-400" />
-                  <span className="text-gray-900 font-semibold text-lg">Słonecznie</span>
+                  <WeatherIcon className={`w-8 h-8 ${weatherInfo.color}`} />
+                  <span className="text-gray-900 font-semibold text-lg">{weatherInfo.text}</span>
                 </div>
-                <p className="text-gray-600 text-sm mb-2">Prognozowane słońce</p>
-                <p className="text-gray-600 text-sm">bezpieczeństwo finansowe</p>
+                <p className="text-gray-600 text-sm">{weatherInfo.description}</p>
               </div>
             </div>
 
