@@ -84,9 +84,46 @@ const Index: React.FC = () => {
     if (["e", "E", "+", "-", "."].includes(e.key)) e.preventDefault();
   };
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     console.log('Form submitted:', data);
-    navigate('/results');
+    
+    try {
+      // Map form data to API format
+      const requestBody: any = {
+        plec: data.gender === 'female' ? 'kobieta' : 'mezczyzna',
+        wiek: parseInt(data.age),
+        miesieczny_przychod: parseFloat(data.monthlyIncome),
+        rok_rozpoczecia_kariery: parseInt(data.careerStartYear),
+        rok_przejscia_na_emeryture: parseInt(data.retirementYear),
+      };
+
+      // Add optional fields only if enabled
+      if (optionalDataEnabled) {
+        if (data.zusBalance && parseFloat(data.zusBalance) > 0) {
+          requestBody.saldo_zus = parseFloat(data.zusBalance);
+        }
+        if (data.ofeBalance && parseFloat(data.ofeBalance) > 0) {
+          requestBody.saldo_ofe = parseFloat(data.ofeBalance);
+        }
+        if (data.postalCode && data.postalCode.trim() !== '') {
+          requestBody.kod_pocztowy = data.postalCode;
+        }
+        if (data.sickLeaveDays && parseInt(data.sickLeaveDays) > 0) {
+          requestBody.ilosc_dni_zwolnien = parseInt(data.sickLeaveDays);
+        }
+      }
+
+      // Fetch prognosis from API
+      const { fetchPrognosis } = await import('@/services/api');
+      const prognosisData = await fetchPrognosis(requestBody);
+      
+      // Navigate to results with the API data
+      navigate('/results', { state: { prognosisData } });
+    } catch (error) {
+      console.error('Error fetching prognosis:', error);
+      // Still navigate but without data - Results page will handle missing data
+      navigate('/results');
+    }
   };
 
   const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {

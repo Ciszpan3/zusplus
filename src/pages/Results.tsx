@@ -1,11 +1,30 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { User, Sun, TrendingUp, Plane, Briefcase, Umbrella, Info, Calculator, MapPin, Shield } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { PrognosiResponse } from '@/services/api';
+
 const Results: React.FC = () => {
+  const location = useLocation();
+  const prognosisData = location.state?.prognosisData as PrognosiResponse | undefined;
+  
   const [retirementAge, setRetirementAge] = useState(67);
   const [monthlyIncome, setMonthlyIncome] = useState(8500);
   const [yearsInCareer, setYearsInCareer] = useState(0);
+
+  // Use real data if available, otherwise fallback to dummy data
+  const actualSalary = prognosisData?.aktualna_wyplata || 8500;
+  const yearsToRetirement = prognosisData?.lata_do_emerytury || 42;
+  const futurePensionReal = prognosisData?.przyszla_emerytura_realna || 4890;
+  const futurePensionNominal = prognosisData?.przyszla_emerytura_nominalna || 4890;
+  const avgNationalPension = prognosisData?.srednia_krajowa_emerytura || 3200;
+  const percentDifference = prognosisData?.roznica_procent || 53;
+  const funFacts = prognosisData?.ciekawostki || [
+    "1. Regularne oszczędzanie to klucz do komfortowej emerytury.",
+    "2. System emerytalny działa na zasadzie pokoleniowej solidarności.",
+    "3. Warto rozważyć dodatkowe oszczędności w III filarze."
+  ];
   return <div className="bg-gray-50 min-h-screen">
       <Header />
       
@@ -28,18 +47,18 @@ const Results: React.FC = () => {
                   <p className="text-gray-500 text-sm">25 Lat</p>
                 </div>
               </div>
-              <div className="space-y-3">
+                <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 text-sm">Aktualna wypłata</span>
-                  <span className="text-blue-600 font-bold">8,500 PLN</span>
+                  <span className="text-blue-600 font-bold">{actualSalary.toLocaleString('pl-PL')} PLN</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 text-sm">Lata do emerytury</span>
-                  <span className="text-blue-600 font-bold">42 lata</span>
+                  <span className="text-blue-600 font-bold">{yearsToRetirement} {yearsToRetirement === 1 ? 'rok' : yearsToRetirement < 5 ? 'lata' : 'lat'}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm">Przyszła emerytura</span>
-                  <span className="text-blue-600 font-bold">4,890 PLN/month</span>
+                  <span className="text-gray-600 text-sm">Przyszła emerytura (realna)</span>
+                  <span className="text-blue-600 font-bold">{Math.round(futurePensionReal).toLocaleString('pl-PL')} PLN/m-c</span>
                 </div>
               </div>
             </div>
@@ -67,18 +86,18 @@ const Results: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-600 text-sm">Twoja przyszła emerytura</span>
-                    <span className="text-blue-600 font-bold">4,890 PLN</span>
+                    <span className="text-blue-600 font-bold">{Math.round(futurePensionReal).toLocaleString('pl-PL')} PLN</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div className="bg-blue-600 h-2 rounded-full" style={{
-                    width: '60%'
+                    width: `${Math.min(100, (futurePensionReal / avgNationalPension) * 50)}%`
                   }}></div>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-600 text-sm">Średnia krajowa</span>
-                    <span className="text-gray-900 font-bold">3,200 PLN</span>
+                    <span className="text-gray-900 font-bold">{Math.round(avgNationalPension).toLocaleString('pl-PL')} PLN</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div className="bg-gray-400 h-2 rounded-full" style={{
@@ -86,9 +105,11 @@ const Results: React.FC = () => {
                   }}></div>
                   </div>
                 </div>
-                <div className="bg-green-50 p-3 rounded-lg mt-4">
+                <div className={`p-3 rounded-lg mt-4 ${percentDifference >= 0 ? 'bg-green-50' : 'bg-red-50'}`}>
                   <p className="text-gray-600 text-xs mb-1">Twoja emerytura byłaby</p>
-                  <p className="text-green-600 font-bold text-lg">+53% wyższa od średniej!</p>
+                  <p className={`font-bold text-lg ${percentDifference >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {percentDifference > 0 ? '+' : ''}{percentDifference.toFixed(1)}% {percentDifference >= 0 ? 'wyższa' : 'niższa'} od średniej!
+                  </p>
                 </div>
               </div>
             </div>
@@ -244,8 +265,8 @@ const Results: React.FC = () => {
 
                   {/* Result */}
                   <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6 mt-6">
-                    <p className="text-gray-600 text-sm text-center mb-2">Przewidywana emerytura</p>
-                    <p className="text-blue-900 text-4xl font-bold text-center">4,890 PLN</p>
+                    <p className="text-gray-600 text-sm text-center mb-2">Przewidywana emerytura (realna)</p>
+                    <p className="text-blue-900 text-4xl font-bold text-center">{Math.round(futurePensionReal).toLocaleString('pl-PL')} PLN</p>
                   </div>
 
                   {/* Action Buttons */}
@@ -322,84 +343,19 @@ const Results: React.FC = () => {
             <p className="text-gray-600">Dowiedz się czegoś nowego</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {/* FAQ Item 1 */}
-            <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-              <div className="flex items-start gap-4">
-                <div className="bg-blue-500 p-2 rounded-full">
-                  <Info className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-gray-900 font-semibold mb-2">Chcesz sobie zrobić dwa lata przerwy?</h4>
-                  <p className="text-gray-600 text-sm">W wieku 30 lat</p>
-                </div>
-              </div>
-            </div>
-
-            {/* FAQ Item 2 */}
-            <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-              <div className="flex items-start gap-4">
-                <div className="bg-blue-500 p-2 rounded-full">
-                  <Info className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-gray-900 font-semibold mb-2">Chcesz sobie zrobić dwa lata przerwy?</h4>
-                  <p className="text-gray-600 text-sm">W wieku 30 lat</p>
+          <div className="grid md:grid-cols-1 gap-6 max-w-5xl mx-auto">
+            {funFacts.map((fact, index) => (
+              <div key={index} className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <div className="flex items-start gap-4">
+                  <div className="bg-blue-500 p-2 rounded-full">
+                    <Info className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-gray-600 text-sm">{fact}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* FAQ Item 3 */}
-            <div className="bg-green-50 rounded-xl p-6 border border-green-200">
-              <div className="flex items-start gap-4">
-                <div className="bg-green-500 p-2 rounded-full">
-                  <Info className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-gray-900 font-semibold mb-2">Zmiana na lepiej płatną pracę?</h4>
-                  <p className="text-gray-600 text-sm">+15% wzrost wypłaty</p>
-                </div>
-              </div>
-            </div>
-
-            {/* FAQ Item 4 */}
-            <div className="bg-green-50 rounded-xl p-6 border border-green-200">
-              <div className="flex items-start gap-4">
-                <div className="bg-green-500 p-2 rounded-full">
-                  <Info className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-gray-900 font-semibold mb-2">Zmiana na lepiej płatną pracę?</h4>
-                  <p className="text-gray-600 text-sm">+15% wzrost wypłaty</p>
-                </div>
-              </div>
-            </div>
-
-            {/* FAQ Item 5 */}
-            <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
-              <div className="flex items-start gap-4">
-                <div className="bg-orange-500 p-2 rounded-full">
-                  <Info className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-gray-900 font-semibold mb-2">Pracuj dwa lata dłużej?</h4>
-                  <p className="text-gray-600 text-sm">Przejdź na emeryturę w wieku 69 lat, a nie 67</p>
-                </div>
-              </div>
-            </div>
-
-            {/* FAQ Item 6 */}
-            <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
-              <div className="flex items-start gap-4">
-                <div className="bg-orange-500 p-2 rounded-full">
-                  <Info className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-gray-900 font-semibold mb-2">Pracuj dwa lata dłużej?</h4>
-                  <p className="text-gray-600 text-sm">Przejdź na emeryturę w wieku 69 lat, a nie 67</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
