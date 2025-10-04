@@ -22,49 +22,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-
-        // Handle invalid session (user deleted)
-        if (event === 'SIGNED_IN' && session) {
-          try {
-            const { error } = await supabase.auth.getUser();
-            if (error?.message?.includes('user_not_found')) {
-              // Clear invalid session
-              await supabase.auth.signOut();
-              toast.error('Session expired. Please sign in again.');
-            }
-          } catch (e) {
-            console.error('Session validation error:', e);
-          }
-        }
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
-      if (error || !session) {
-        setSession(null);
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-
-      // Validate the session
-      const { error: userError } = await supabase.auth.getUser();
-      if (userError?.message?.includes('user_not_found')) {
-        // Clear invalid session
-        await supabase.auth.signOut();
-        setSession(null);
-        setUser(null);
-      } else {
-        setSession(session);
-        setUser(session?.user ?? null);
-      }
+    // Check for existing session once
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
       setLoading(false);
     });
 

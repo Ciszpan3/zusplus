@@ -7,10 +7,11 @@ import { MFAEnrollment } from '@/components/MFAEnrollment';
 import { supabase } from '@/integrations/supabase/client';
 
 const Admin = () => {
-  const { user, signOut, loading } = useAuth();
+  const { user, session, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const [needsMFASetup, setNeedsMFASetup] = useState(false);
   const [checkingMFA, setCheckingMFA] = useState(true);
+  const [mfaChecked, setMfaChecked] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -18,14 +19,15 @@ const Admin = () => {
       return;
     }
 
-    if (user && !needsMFASetup && checkingMFA) {
+    if (user && !mfaChecked) {
       checkMFAStatus();
     }
-  }, [user, loading]);
+  }, [user, loading, mfaChecked]);
 
   const checkMFAStatus = async () => {
+    if (mfaChecked) return;
+    
     try {
-      const { data: { session } } = await supabase.auth.getSession();
       const aal = (session as any)?.aal;
 
       if (aal !== 'aal2') {
@@ -42,6 +44,7 @@ const Admin = () => {
       console.error('Error checking MFA status:', error);
     } finally {
       setCheckingMFA(false);
+      setMfaChecked(true);
     }
   };
 
