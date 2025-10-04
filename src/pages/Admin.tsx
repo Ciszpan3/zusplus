@@ -18,10 +18,10 @@ const Admin = () => {
       return;
     }
 
-    if (user) {
+    if (user && !needsMFASetup && checkingMFA) {
       checkMFAStatus();
     }
-  }, [user, loading, navigate]);
+  }, [user, loading]);
 
   const checkMFAStatus = async () => {
     try {
