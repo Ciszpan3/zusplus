@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
 import FormSection from '@/components/FormSection';
 import Footer from '@/components/Footer';
+import { AlertCircle } from 'lucide-react';
 
 interface FormData {
   age: string;
@@ -49,13 +49,8 @@ const Index: React.FC = () => {
           <Header />
           
           <main className="bg-[rgba(0,0,0,0)] w-full max-md:max-w-full">
-            <div className="w-full max-w-[1273px] max-md:max-w-full">
-              <div className="gap-5 flex max-md:flex-col max-md:items-stretch">
-                <div className="w-[29%] max-md:w-full max-md:ml-0">
-                  <Sidebar />
-                </div>
-                
-                <div className="w-[71%] ml-5 max-md:w-full max-md:ml-0">
+            <div className="w-full max-w-[1000px] mx-auto max-md:max-w-full">
+              <div className="w-full max-md:w-full max-md:ml-0">
                   <div className="bg-[rgba(0,0,0,0)] grow w-full mt-8 pb-[25px] px-[15px] max-md:max-w-full max-md:mt-10">
                     <div className="bg-[rgba(0,0,0,0)] flex flex-col items-center text-center pb-[7px] px-20 max-md:max-w-full max-md:px-5">
                       <img
@@ -89,7 +84,7 @@ const Index: React.FC = () => {
                             <input
                               {...register('age', { required: 'Wiek jest wymagany' })}
                               type="number"
-                              className="bg-white border-gray-300 border flex flex-col text-base text-[rgba(173,174,188,1)] font-normal whitespace-nowrap justify-center mt-2 px-4 py-[19px] rounded-lg border-solid max-md:pr-5 w-full"
+                              className="bg-white border-gray-400 border flex flex-col text-base text-gray-600 font-normal whitespace-nowrap justify-center mt-2 px-4 py-[19px] rounded-lg border-solid max-md:pr-5 w-full"
                               placeholder="25"
                             />
                             {errors.age && <span className="text-red-500 text-sm">{errors.age.message}</span>}
@@ -179,11 +174,11 @@ const Index: React.FC = () => {
                                     <div>Wynagrodzenie Brutto (PLN)</div>
                                   </label>
                                   <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
-                                    <div className="bg-white border-gray-300 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
+                                    <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
                                       <input
                                         {...register('monthlyIncome', { required: 'Wynagrodzenie jest wymagane' })}
                                         type="number"
-                                        className="text-[rgba(173,174,188,1)] font-normal bg-transparent border-none outline-none flex-1"
+                                        className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                         placeholder="8500"
                                       />
                                       <div className="text-gray-500 font-medium">PLN</div>
@@ -220,7 +215,7 @@ const Index: React.FC = () => {
                               <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-700 font-medium justify-center py-1 max-md:pr-5">
                                 <div>Rok rozpoczęcia pracy</div>
                               </label>
-                              <div className="bg-white border-gray-300 border flex items-stretch gap-5 text-base text-black font-normal justify-between mt-2 px-2.5 py-2 rounded-lg border-solid">
+                              <div className="bg-white border-gray-400 border flex items-stretch gap-5 text-base text-black font-normal justify-between mt-2 px-4 py-3 rounded-lg border-solid">
                                 <select
                                   {...register('careerStartYear')}
                                   className="my-auto bg-transparent border-none outline-none flex-1"
@@ -235,11 +230,6 @@ const Index: React.FC = () => {
                                     );
                                   })}
                                 </select>
-                                <img
-                                  src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/3c44df2dd1517f8895e58423f8cc7276184dfa57?placeholderIfAbsent=true"
-                                  className="aspect-[1] object-contain w-[34px] shrink-0"
-                                  alt="Dropdown arrow"
-                                />
                               </div>
                             </div>
                             <div className="bg-[rgba(0,0,0,0)] flex flex-col items-center text-center flex-1 grow shrink-0 basis-0 w-fit px-[68px] max-md:px-5">
@@ -267,7 +257,7 @@ const Index: React.FC = () => {
                               <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-700 font-medium justify-center py-[3px] max-md:pr-5">
                                 <div>Przewidywany rok przejścia na emeryture</div>
                               </label>
-                              <div className="bg-white border-gray-300 border flex items-stretch gap-5 text-base text-black font-normal justify-between mt-2 px-2.5 py-2 rounded-lg border-solid">
+                              <div className="bg-white border-gray-400 border flex items-stretch gap-5 text-base text-black font-normal justify-between mt-2 px-4 py-3 rounded-lg border-solid">
                                 <select
                                   {...register('retirementYear')}
                                   className="my-auto bg-transparent border-none outline-none flex-1"
@@ -282,11 +272,6 @@ const Index: React.FC = () => {
                                     );
                                   })}
                                 </select>
-                                <img
-                                  src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/3c44df2dd1517f8895e58423f8cc7276184dfa57?placeholderIfAbsent=true"
-                                  className="aspect-[1] object-contain w-[34px] shrink-0"
-                                  alt="Dropdown arrow"
-                                />
                               </div>
                             </div>
                             <div className="bg-[rgba(0,0,0,0)] flex flex-col items-center text-center flex-1 grow shrink-0 basis-0 w-fit px-[68px] max-md:px-5">
@@ -342,11 +327,11 @@ const Index: React.FC = () => {
                                   <div>Aktualne saldo ZUS</div>
                                 </label>
                                 <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
-                                  <div className="bg-white border-gray-300 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
+                                  <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
                                     <input
                                       {...register('zusBalance')}
                                       type="number"
-                                      className="text-[rgba(173,174,188,1)] font-normal bg-transparent border-none outline-none flex-1"
+                                      className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                       placeholder="8500"
                                     />
                                     <div className="text-gray-500 font-medium">PLN</div>
@@ -367,11 +352,11 @@ const Index: React.FC = () => {
                                   <div>Aktualne saldo ZUS</div>
                                 </label>
                                 <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
-                                  <div className="bg-white border-gray-300 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
+                                  <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
                                     <input
                                       {...register('ofeBalance')}
                                       type="number"
-                                      className="text-[rgba(173,174,188,1)] font-normal bg-transparent border-none outline-none flex-1"
+                                      className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                       placeholder="8500"
                                     />
                                     <div className="text-gray-500 font-medium">PLN</div>
@@ -383,9 +368,8 @@ const Index: React.FC = () => {
                             {/* Sick Leave Days Section */}
                             <div className="bg-[rgba(0,0,0,0)] w-full mt-[25px] max-md:max-w-full">
                               <div className="bg-[rgba(0,0,0,0)] flex items-stretch gap-3 flex-wrap pr-20 max-md:pr-5">
-                                <div className="bg-[rgba(196,48,48,0.15)] flex flex-col items-stretch w-10 h-10 my-auto pt-2 pb-[18px] px-2 rounded-full">
-                                  <div className="bg-[rgba(196,48,48,1)] self-center z-10 flex w-1 shrink-0 h-6" />
-                                  <div className="bg-[rgba(196,48,48,1)] flex shrink-0 h-1" />
+                                <div className="bg-[rgba(196,48,48,0.15)] flex items-center justify-center w-10 h-10 my-auto rounded-full">
+                                  <AlertCircle className="w-5 h-5 text-[rgba(196,48,48,1)]" />
                                 </div>
                                 <div className="bg-[rgba(0,0,0,0)] flex flex-col items-stretch grow shrink-0 basis-0 w-fit pb-1.5">
                                   <div className="text-[rgba(0,65,110,1)] text-lg font-semibold leading-loose">
@@ -402,11 +386,11 @@ const Index: React.FC = () => {
                                     <div>Ilość dni poza pracą</div>
                                   </label>
                                   <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
-                                    <div className="bg-white border-gray-300 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
+                                    <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
                                       <input
                                         {...register('sickLeaveDays')}
                                         type="number"
-                                        className="text-[rgba(173,174,188,1)] font-normal bg-transparent border-none outline-none flex-1"
+                                        className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                         placeholder="0"
                                       />
                                       <div className="text-gray-500 font-medium">DNI</div>
@@ -434,11 +418,11 @@ const Index: React.FC = () => {
                             <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-500 leading-none justify-center py-1 max-md:max-w-full max-md:pr-5">
                               <div>Kod pocztowy</div>
                             </label>
-                            <div className="bg-[rgba(0,0,0,0)] text-base text-[rgba(173,174,188,1)] whitespace-nowrap mt-2 max-md:max-w-full">
+                            <div className="bg-[rgba(0,0,0,0)] text-base text-gray-600 whitespace-nowrap mt-2 max-md:max-w-full">
                               <input
                                 {...register('postalCode')}
                                 type="text"
-                                className="bg-white border-gray-300 border flex flex-col justify-center px-4 py-[19px] rounded-lg border-solid max-md:max-w-full max-md:pr-5 w-full"
+                                className="bg-white border-gray-400 border flex flex-col justify-center px-4 py-[19px] rounded-lg border-solid max-md:max-w-full max-md:pr-5 w-full"
                                 placeholder="XX-XXX"
                               />
                             </div>
@@ -465,7 +449,6 @@ const Index: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
             </div>
             
             <Footer />
