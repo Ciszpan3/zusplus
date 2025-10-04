@@ -78,15 +78,6 @@ const Results: React.FC = () => {
   const weatherInfo = getWeatherInfo();
   const WeatherIcon = weatherInfo.icon;
 
-  // Calculate simulated pension
-  const calculateSimulatedPension = () => {
-    const baseMultiplier = (retirementAge - 60) / 10;
-    const incomeMultiplier = monthlyIncome / 8500;
-    const breaksImpact = 1 - (careerBreaks * 0.03);
-    return Math.round(futurePensionReal * baseMultiplier * incomeMultiplier * breaksImpact);
-  };
-
-  const simulatedPension = calculateSimulatedPension();
 
   // Debounced API call for calculator
   useEffect(() => {
@@ -108,6 +99,7 @@ const Results: React.FC = () => {
         try {
           const response = await fetch('https://xvv7kcpl-8000.euw.devtunnels.ms/prognoza-wykres', {
             method: 'POST',
+            mode: 'cors',
             headers: {
               'Content-Type': 'application/json',
             },
@@ -498,10 +490,12 @@ const Results: React.FC = () => {
                 <p className="text-[hsl(var(--blue-primary))] text-4xl font-bold">{Math.round(futurePensionReal).toLocaleString('pl-PL')} PLN</p>
               </div>
 
-              {/* Simulated Pension */}
+              {/* Calculated Pension from API */}
               <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6">
-                <p className="text-gray-600 text-sm mb-2">Emerytura po zmianach</p>
-                <p className="text-[hsl(var(--blue-primary))] text-4xl font-bold">{simulatedPension.toLocaleString('pl-PL')} PLN</p>
+                <p className="text-gray-600 text-sm mb-2">Emerytura obliczona</p>
+                <p className="text-[hsl(var(--blue-primary))] text-4xl font-bold">
+                  {apiPensionNominal ? Math.round(apiPensionNominal).toLocaleString('pl-PL') : '---'} PLN
+                </p>
               </div>
 
               {/* Bar Charts Comparison */}
@@ -533,34 +527,40 @@ const Results: React.FC = () => {
                   <div className="text-center">
                     <div className="relative h-64 flex flex-col justify-end overflow-hidden">
                       {/* Bars */}
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
-                        <div 
-                          className="relative bg-[#00993F] rounded-t-lg" 
-                          style={{ 
-                            height: `${apiPensionNominal ? (apiPensionNominal / futurePensionReal) * 120 : (simulatedPension / futurePensionReal) * 120}px` 
-                          }}
-                        >
-                          <div className="absolute top-2 -right-24 flex items-center gap-2">
-                            <div className="w-8 h-0.5 bg-[#00993F]"></div>
-                            <span className="text-[#00993F] font-bold text-xs whitespace-nowrap">
-                              {apiPensionNominal ? Math.round(apiPensionNominal).toLocaleString() : simulatedPension.toLocaleString()} PLN
-                            </span>
+                      {apiPensionNominal && apiPensionReal ? (
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
+                          <div 
+                            className="relative bg-[#00993F] rounded-t-lg" 
+                            style={{ 
+                              height: `${(apiPensionNominal / futurePensionReal) * 120}px` 
+                            }}
+                          >
+                            <div className="absolute top-2 -right-24 flex items-center gap-2">
+                              <div className="w-8 h-0.5 bg-[#00993F]"></div>
+                              <span className="text-[#00993F] font-bold text-xs whitespace-nowrap">
+                                {Math.round(apiPensionNominal).toLocaleString()} PLN
+                              </span>
+                            </div>
+                          </div>
+                          <div 
+                            className="relative bg-red-400 rounded-b-lg" 
+                            style={{ 
+                              height: `${(apiPensionReal / futurePensionReal) * 120}px` 
+                            }}
+                          >
+                            <div className="absolute top-2 -right-24 flex items-center gap-2">
+                              <div className="w-8 h-0.5 bg-red-400"></div>
+                              <span className="text-red-400 font-bold text-xs whitespace-nowrap">
+                                {Math.round(apiPensionReal).toLocaleString()} PLN
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        <div 
-                          className="relative bg-red-400 rounded-b-lg" 
-                          style={{ 
-                            height: `${apiPensionReal ? (apiPensionReal / futurePensionReal) * 120 : (simulatedPension / futurePensionReal) * 80}px` 
-                          }}
-                        >
-                          <div className="absolute top-2 -right-24 flex items-center gap-2">
-                            <div className="w-8 h-0.5 bg-red-400"></div>
-                            <span className="text-red-400 font-bold text-xs whitespace-nowrap">
-                              {apiPensionReal ? Math.round(apiPensionReal).toLocaleString() : Math.round(simulatedPension * 0.6).toLocaleString()} PLN
-                            </span>
-                          </div>
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-gray-400">
+                          Ładowanie danych...
                         </div>
-                      </div>
+                      )}
                     </div>
                     <p className="text-gray-900 font-semibold mt-4">Wykres obliczany</p>
                   </div>
