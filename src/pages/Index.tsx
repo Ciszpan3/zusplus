@@ -33,7 +33,7 @@ const Index: React.FC = () => {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
       age: "25",
@@ -47,7 +47,7 @@ const Index: React.FC = () => {
       postalCode: "",
       optionalDataEnabled: true,
     },
-    mode: "onChange",
+    mode: "onSubmit",
   });
 
   const watchedGender = watch("gender");
@@ -902,9 +902,9 @@ const Index: React.FC = () => {
                         {/* Submit Button */}
                         <button
                           type="submit"
-                          disabled={!isValid || isLoading}
+                          disabled={isLoading}
                           className={`justify-center items-center border self-center z-10 flex w-[608px] max-w-full flex-col text-xl text-white font-bold text-center -mt-2 px-[70px] py-4 rounded-xl border-0 border-solid max-md:px-5 transition-all ${
-                            !isValid || isLoading
+                            isLoading
                               ? "bg-gray-400 cursor-not-allowed opacity-60"
                               : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 cursor-pointer"
                           }`}
