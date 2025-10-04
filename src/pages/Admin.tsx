@@ -19,15 +19,14 @@ const Admin = () => {
       return;
     }
 
-    if (user && !mfaChecked && !checkingMFA) {
+    if (user && !mfaChecked) {
       checkMFAStatus();
     }
-  }, [user, loading, mfaChecked, checkingMFA]);
+  }, [user, loading, mfaChecked]);
 
   const checkMFAStatus = async () => {
-    if (mfaChecked || checkingMFA) return; // Prevent multiple checks
+    if (mfaChecked) return; // Prevent multiple checks
     
-    setCheckingMFA(true);
     try {
       const aal = (session as any)?.aal;
 
