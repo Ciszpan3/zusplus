@@ -510,20 +510,26 @@ const Results: React.FC = () => {
                   {/* Projected Chart */}
                   <div className="text-center">
                     <div className="relative h-64 flex flex-col justify-end overflow-hidden">
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 flex flex-col">
-                        {/* Green bar with label */}
-                        <div className="flex items-center justify-end mb-1">
-                          <span className="text-[#00993F] font-bold text-xs mr-2 whitespace-nowrap">{Math.round(futurePensionReal).toLocaleString()} PLN</span>
-                          <div className="w-2 h-0.5 bg-[#00993F]"></div>
+                      {/* Labels on the side */}
+                      <div className="absolute top-8 right-0 flex flex-col gap-20">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-0.5 bg-[#00993F]"></div>
+                          <span className="text-[#00993F] font-bold text-xs whitespace-nowrap">{Math.round(futurePensionReal).toLocaleString()} PLN</span>
                         </div>
-                        <div className="bg-[#00993F] rounded-t-lg" style={{ height: 'min(120px, 40%)' }}></div>
-                        
-                        {/* Red bar with label */}
-                        <div className="flex items-center justify-end mb-1">
-                          <span className="text-red-400 font-bold text-xs mr-2 whitespace-nowrap">{Math.round(futurePensionReal * 0.6).toLocaleString()} PLN</span>
-                          <div className="w-2 h-0.5 bg-red-400"></div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-0.5 bg-red-400"></div>
+                          <span className="text-red-400 font-bold text-xs whitespace-nowrap">{Math.round(futurePensionReal * 0.6).toLocaleString()} PLN</span>
                         </div>
-                        <div className="bg-red-400 rounded-b-lg" style={{ height: 'min(80px, 30%)' }}></div>
+                      </div>
+                      
+                      {/* Bars */}
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
+                        <div className="bg-[#00993F] rounded-t-lg" style={{ height: '120px' }}>
+                          <div className="text-white font-bold text-sm pt-2">{Math.round(futurePensionReal).toLocaleString()} PLN</div>
+                        </div>
+                        <div className="bg-red-400 rounded-b-lg" style={{ height: '80px' }}>
+                          <div className="text-white font-bold text-sm pt-2">{Math.round(futurePensionReal * 0.6).toLocaleString()} PLN</div>
+                        </div>
                       </div>
                     </div>
                     <p className="text-gray-900 font-semibold mt-4">Wykres poglądowy</p>
@@ -532,34 +538,34 @@ const Results: React.FC = () => {
                   {/* Calculated Chart */}
                   <div className="text-center">
                     <div className="relative h-64 flex flex-col justify-end overflow-hidden">
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 flex flex-col">
-                        {/* Green bar with label */}
-                        <div className="flex items-center justify-end mb-1">
-                          <span className="text-[#00993F] font-bold text-xs mr-2 whitespace-nowrap">
+                      {/* Labels on the side */}
+                      <div className="absolute top-8 right-0 flex flex-col gap-20">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-0.5 bg-[#00993F]"></div>
+                          <span className="text-[#00993F] font-bold text-xs whitespace-nowrap">
                             {apiPensionNominal ? Math.round(apiPensionNominal).toLocaleString() : simulatedPension.toLocaleString()} PLN
                           </span>
-                          <div className="w-2 h-0.5 bg-[#00993F]"></div>
                         </div>
-                        <div 
-                          className="bg-[#00993F] rounded-t-lg" 
-                          style={{ 
-                            height: `min(${apiPensionNominal ? (apiPensionNominal / futurePensionReal) * 120 : (simulatedPension / futurePensionReal) * 120}px, 40%)` 
-                          }}
-                        ></div>
-                        
-                        {/* Red bar with label */}
-                        <div className="flex items-center justify-end mb-1">
-                          <span className="text-red-400 font-bold text-xs mr-2 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-0.5 bg-red-400"></div>
+                          <span className="text-red-400 font-bold text-xs whitespace-nowrap">
                             {apiPensionReal ? Math.round(apiPensionReal).toLocaleString() : Math.round(simulatedPension * 0.6).toLocaleString()} PLN
                           </span>
-                          <div className="w-2 h-0.5 bg-red-400"></div>
                         </div>
-                        <div 
-                          className="bg-red-400 rounded-b-lg" 
-                          style={{ 
-                            height: `min(${apiPensionReal ? (apiPensionReal / futurePensionReal) * 120 : (simulatedPension / futurePensionReal) * 80}px, 30%)` 
-                          }}
-                        ></div>
+                      </div>
+                      
+                      {/* Bars */}
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
+                        <div className="bg-[#00993F] rounded-t-lg" style={{ height: `${apiPensionNominal ? (apiPensionNominal / futurePensionReal) * 120 : (simulatedPension / futurePensionReal) * 120}px` }}>
+                          <div className="text-white font-bold text-sm pt-2">
+                            {apiPensionNominal ? Math.round(apiPensionNominal).toLocaleString() : simulatedPension.toLocaleString()} PLN
+                          </div>
+                        </div>
+                        <div className="bg-red-400 rounded-b-lg" style={{ height: `${apiPensionReal ? (apiPensionReal / futurePensionReal) * 120 : (simulatedPension / futurePensionReal) * 80}px` }}>
+                          <div className="text-white font-bold text-sm pt-2">
+                            {apiPensionReal ? Math.round(apiPensionReal).toLocaleString() : Math.round(simulatedPension * 0.6).toLocaleString()} PLN
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <p className="text-gray-900 font-semibold mt-4">Wykres obliczany</p>
