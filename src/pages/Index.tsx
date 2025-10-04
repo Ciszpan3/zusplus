@@ -117,7 +117,7 @@ const Index: React.FC = () => {
                       </p>
                     </div>
                     
-                    <div className="bg-white shadow-[0px_4px_6px_rgba(0,0,0,0.1)] flex w-full flex-col items-stretch mt-[7px] px-8 py-[41px] rounded-2xl max-md:max-w-full max-md:px-5">
+                    <div className="bg-white shadow-[0px_8px_24px_rgba(0,0,0,0.15)] flex w-full flex-col items-stretch mt-[7px] px-8 py-[41px] rounded-2xl max-md:max-w-full max-md:px-5">
                       <form onSubmit={handleSubmit(onSubmit)} className="bg-[rgba(0,0,0,0)] max-md:max-w-full">
                         
                         {/* Age Section */}
