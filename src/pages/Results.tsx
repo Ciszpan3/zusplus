@@ -2,30 +2,17 @@ import React, { useState } from 'react';
 import { User, Sun, TrendingUp, Plane, Briefcase, Umbrella, Info, Calculator, MapPin, Shield } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-
 const Results: React.FC = () => {
   const [retirementAge, setRetirementAge] = useState(67);
   const [monthlyIncome, setMonthlyIncome] = useState(8500);
   const [yearsInCareer, setYearsInCareer] = useState(0);
-
-  return (
-    <div className="bg-gray-50 min-h-screen">
+  return <div className="bg-gray-50 min-h-screen">
       <Header />
       
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-green-600 to-blue-600 py-12 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-8">
-            <img
-              src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/87d3a42ba1845afa2ddbc508f801908312c27032?placeholderIfAbsent=true"
-              className="w-12 h-auto"
-              alt="ZUS Logo"
-            />
-            <div>
-              <h2 className="text-white text-xl font-bold">ZUSplus</h2>
-              <p className="text-white/80 text-sm">Twoja przyszłość Twoje oszczędności</p>
-            </div>
-          </div>
+          
           
           <h1 className="text-white text-4xl font-bold mb-12">Twoja przyszłość prezentuje się tak...</h1>
           
@@ -83,7 +70,9 @@ const Results: React.FC = () => {
                     <span className="text-blue-600 font-bold">4,890 PLN</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '60%' }}></div>
+                    <div className="bg-blue-600 h-2 rounded-full" style={{
+                    width: '60%'
+                  }}></div>
                   </div>
                 </div>
                 <div>
@@ -92,7 +81,9 @@ const Results: React.FC = () => {
                     <span className="text-gray-900 font-bold">3,200 PLN</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gray-400 h-2 rounded-full" style={{ width: '40%' }}></div>
+                    <div className="bg-gray-400 h-2 rounded-full" style={{
+                    width: '40%'
+                  }}></div>
                   </div>
                 </div>
                 <div className="bg-green-50 p-3 rounded-lg mt-4">
@@ -218,14 +209,7 @@ const Results: React.FC = () => {
                       <label className="text-gray-700 text-sm font-medium">Wiek emerytalny</label>
                       <span className="text-blue-600 font-bold text-lg">{retirementAge} lat</span>
                     </div>
-                    <input
-                      type="range"
-                      min="60"
-                      max="70"
-                      value={retirementAge}
-                      onChange={(e) => setRetirementAge(parseInt(e.target.value))}
-                      className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500"
-                    />
+                    <input type="range" min="60" max="70" value={retirementAge} onChange={e => setRetirementAge(parseInt(e.target.value))} className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500" />
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
                       <span>60</span>
                       <span>70</span>
@@ -238,14 +222,7 @@ const Results: React.FC = () => {
                       <label className="text-gray-700 text-sm font-medium">Miesięczny dochód</label>
                       <span className="text-blue-600 font-bold text-lg">{monthlyIncome.toLocaleString()} PLN</span>
                     </div>
-                    <input
-                      type="range"
-                      min="4242"
-                      max="15000"
-                      value={monthlyIncome}
-                      onChange={(e) => setMonthlyIncome(parseInt(e.target.value))}
-                      className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500"
-                    />
+                    <input type="range" min="4242" max="15000" value={monthlyIncome} onChange={e => setMonthlyIncome(parseInt(e.target.value))} className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500" />
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
                       <span>4.2K</span>
                       <span>15K</span>
@@ -258,14 +235,7 @@ const Results: React.FC = () => {
                       <label className="text-gray-700 text-sm font-medium">Przerwy w karierze (lata)</label>
                       <span className="text-blue-600 font-bold text-lg">{yearsInCareer} lat</span>
                     </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="5"
-                      value={yearsInCareer}
-                      onChange={(e) => setYearsInCareer(parseInt(e.target.value))}
-                      className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500"
-                    />
+                    <input type="range" min="0" max="5" value={yearsInCareer} onChange={e => setYearsInCareer(parseInt(e.target.value))} className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500" />
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
                       <span>0</span>
                       <span>5</span>
@@ -435,8 +405,6 @@ const Results: React.FC = () => {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Results;
