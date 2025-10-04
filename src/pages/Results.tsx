@@ -99,7 +99,7 @@ const Results: React.FC = () => {
           miesieczny_dochod: monthlyIncome,
           przerwy_w_kariere: careerBreaks,
           procent_skladek: sickLeaveDays,
-          wskaznik_waloryzacji: valorization / 100,
+          wskaznik_waloryzacji: valorization,
           wskaznik_inflacji: inflation / 100,
         };
         
