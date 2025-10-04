@@ -401,8 +401,13 @@ const Index: React.FC = () => {
                         </div>
 
                         {/* Optional Data Sections */}
-                        {optionalDataEnabled && (
-                          <>
+                        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                          optionalDataEnabled 
+                            ? 'max-h-[2000px] opacity-100' 
+                            : 'max-h-0 opacity-0'
+                        }`}>
+                          {optionalDataEnabled && (
+                            <div className="animate-fade-in">
                             {/* ZUS Balance Section */}
                             <FormSection
                               icon="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/5f70b7e2df99e5163513911aa4307cd9ad5ecc66?placeholderIfAbsent=true"
@@ -523,8 +528,9 @@ const Index: React.FC = () => {
                                 </div>
                               </div>
                             </div>
-                          </>
-                        )}
+                            </div>
+                          )}
+                        </div>
 
                         {/* Postal Code Section */}
                         <div className="bg-[rgba(0,0,0,0)] flex gap-[13px] text-lg text-[rgba(0,65,110,1)] font-semibold leading-loose flex-wrap mt-[15px] pr-20 py-0.5 max-md:max-w-full max-md:pr-5">
