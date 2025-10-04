@@ -24,7 +24,7 @@ const Index: React.FC = () => {
   const [yearsOfExperience, setYearsOfExperience] = useState(0);
   const [yearsToRetirement, setYearsToRetirement] = useState(0);
   
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       age: '25',
       gender: 'male',
@@ -77,6 +77,10 @@ const Index: React.FC = () => {
       setYearsToRetirement(years > 0 ? years : 0);
     }
   }, [watchedAge, watchedRetirementYear, watchedGender]);
+
+  const blockInvalid = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (["e", "E", "+", "-", "."].includes(e.key)) e.preventDefault();
+  };
 
   const onSubmit = (data: FormData) => {
     console.log('Form submitted:', data);
@@ -131,10 +135,20 @@ const Index: React.FC = () => {
                               <input
                                 {...register('age', { 
                                   required: 'Wiek jest wymagany',
-                                  min: { value: 0, message: 'Wiek nie może być ujemny' }
+                                  min: { value: 18, message: 'Wiek nie może być mniejszy niż 18' },
+                                  max: { value: 100, message: 'Maksymalny wiek to 100' }
                                 })}
                                 type="number"
-                                min="0"
+                                min="18"
+                                max="100"
+                                inputMode="numeric"
+                                onKeyDown={blockInvalid}
+                                onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ''); }}
+                                onBlur={(e) => {
+                                  const n = parseInt(e.currentTarget.value || '0', 10);
+                                  const clamped = Math.max(18, Math.min(100, isNaN(n) ? 18 : n));
+                                  setValue('age', String(clamped), { shouldValidate: true, shouldDirty: true });
+                                }}
                                 className="bg-white border-gray-400 border flex flex-col text-base text-gray-600 font-normal whitespace-nowrap justify-center mt-2 px-4 py-[19px] rounded-lg border-solid max-md:pr-5 w-full"
                                 placeholder="25"
                               />
@@ -244,6 +258,14 @@ const Index: React.FC = () => {
                                         })}
                                         type="number"
                                         min="4242"
+                                        inputMode="numeric"
+                                        onKeyDown={blockInvalid}
+                                        onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ''); }}
+                                        onBlur={(e) => {
+                                          const n = parseInt(e.currentTarget.value || '0', 10);
+                                          const clamped = Math.max(4242, isNaN(n) ? 4242 : n);
+                                          setValue('monthlyIncome', String(clamped), { shouldValidate: true, shouldDirty: true });
+                                        }}
                                         className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                         placeholder="8500"
                                       />
@@ -400,6 +422,14 @@ const Index: React.FC = () => {
                                       })}
                                       type="number"
                                       min="0"
+                                      inputMode="numeric"
+                                      onKeyDown={blockInvalid}
+                                      onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ''); }}
+                                      onBlur={(e) => {
+                                        const n = parseInt(e.currentTarget.value || '0', 10);
+                                        const clamped = Math.max(0, isNaN(n) ? 0 : n);
+                                        setValue('zusBalance', String(clamped), { shouldValidate: true, shouldDirty: true });
+                                      }}
                                       className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                       placeholder="8500"
                                     />
@@ -429,6 +459,14 @@ const Index: React.FC = () => {
                                       })}
                                       type="number"
                                       min="0"
+                                      inputMode="numeric"
+                                      onKeyDown={blockInvalid}
+                                      onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ''); }}
+                                      onBlur={(e) => {
+                                        const n = parseInt(e.currentTarget.value || '0', 10);
+                                        const clamped = Math.max(0, isNaN(n) ? 0 : n);
+                                        setValue('ofeBalance', String(clamped), { shouldValidate: true, shouldDirty: true });
+                                      }}
                                       className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                       placeholder="8500"
                                     />
@@ -467,6 +505,14 @@ const Index: React.FC = () => {
                                         })}
                                         type="number"
                                         min="0"
+                                        inputMode="numeric"
+                                        onKeyDown={blockInvalid}
+                                        onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ''); }}
+                                        onBlur={(e) => {
+                                          const n = parseInt(e.currentTarget.value || '0', 10);
+                                          const clamped = Math.max(0, isNaN(n) ? 0 : n);
+                                          setValue('sickLeaveDays', String(clamped), { shouldValidate: true, shouldDirty: true });
+                                        }}
                                         className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
                                         placeholder="0"
                                       />
