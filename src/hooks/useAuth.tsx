@@ -19,9 +19,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (initialized) return; // Prevent multiple initializations
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -29,15 +32,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
 
-        // Handle invalid session (user deleted)
-        if (event === 'SIGNED_IN' && session) {
+        // Handle invalid session (user deleted) - only check once
+        if (event === 'SIGNED_IN' && session && !session.user) {
           try {
-            const { error } = await supabase.auth.getUser();
-            if (error?.message?.includes('user_not_found')) {
-              // Clear invalid session
-              await supabase.auth.signOut();
-              toast.error('Session expired. Please sign in again.');
-            }
+            await supabase.auth.signOut();
+            toast.error('Session expired. Please sign in again.');
           } catch (e) {
             console.error('Session validation error:', e);
           }
@@ -46,30 +45,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error || !session) {
         setSession(null);
         setUser(null);
         setLoading(false);
+        setInitialized(true);
         return;
       }
 
-      // Validate the session
-      const { error: userError } = await supabase.auth.getUser();
-      if (userError?.message?.includes('user_not_found')) {
-        // Clear invalid session
-        await supabase.auth.signOut();
-        setSession(null);
-        setUser(null);
-      } else {
-        setSession(session);
-        setUser(session?.user ?? null);
-      }
+      setSession(session);
+      setUser(session?.user ?? null);
       setLoading(false);
+      setInitialized(true);
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      subscription.unsubscribe();
+      setInitialized(false);
+    };
+  }, [initialized]);
 
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
