@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import FormSection from '@/components/FormSection';
 import Footer from '@/components/Footer';
+import LoadingScreen from '@/components/LoadingScreen';
 import { AlertCircle, Rocket } from 'lucide-react';
 
 interface FormData {
@@ -25,6 +26,7 @@ const Index: React.FC = () => {
   const [salaryComparison, setSalaryComparison] = useState(0);
   const [yearsOfExperience, setYearsOfExperience] = useState(0);
   const [yearsToRetirement, setYearsToRetirement] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
     defaultValues: {
@@ -86,6 +88,7 @@ const Index: React.FC = () => {
 
   const onSubmit = async (data: FormData) => {
     console.log('Form submitted:', data);
+    setIsLoading(true);
     
     try {
       // Map form data to API format
@@ -121,6 +124,7 @@ const Index: React.FC = () => {
       navigate('/results', { state: { prognosisData } });
     } catch (error) {
       console.error('Error fetching prognosis:', error);
+      setIsLoading(false);
       // Still navigate but without data - Results page will handle missing data
       navigate('/results');
     }
@@ -135,10 +139,12 @@ const Index: React.FC = () => {
   };
 
   return (
-    <div className="bg-white overflow-hidden rounded-lg border-[rgba(206,212,218,1)] border-solid border-2">
-      <div className="bg-gray-50 w-full max-md:max-w-full">
+    <>
+      {isLoading && <LoadingScreen />}
+      <div className="bg-white overflow-hidden rounded-lg border-[rgba(206,212,218,1)] border-solid border-2">
         <div className="bg-gray-50 w-full max-md:max-w-full">
-          <Header />
+          <div className="bg-gray-50 w-full max-md:max-w-full">
+            <Header />
           
           <main className="bg-[rgba(0,0,0,0)] w-full max-md:max-w-full">
             <div className="w-full max-w-[1000px] mx-auto max-md:max-w-full">
@@ -658,6 +664,7 @@ const Index: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
