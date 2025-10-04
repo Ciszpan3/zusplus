@@ -401,7 +401,7 @@ const Index: React.FC = () => {
                         </div>
 
                         {/* Optional Data Sections */}
-                        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                        <div className={`transition-all duration-500 ease-in-out overflow-hidden mt-6 ${
                           optionalDataEnabled 
                             ? 'max-h-[2000px] opacity-100' 
                             : 'max-h-0 opacity-0'
