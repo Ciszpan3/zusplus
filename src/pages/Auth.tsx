@@ -10,9 +10,9 @@ import { MFAVerification } from '@/components/MFAVerification';
 const Auth = () => {
   const { user, signIn } = useAuth();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [showMFA, setShowMFA] = useState(false);
 
   useEffect(() => {
