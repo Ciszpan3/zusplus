@@ -108,18 +108,16 @@ const Index: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Map form data to API format - only required fields
+      // Map form data to API format - all required fields
       const requestBody: any = {
         plec: data.gender === "female" ? "kobieta" : "mezczyzna",
         wiek: parseInt(data.age),
         miesieczny_przychod: parseFloat(data.monthlyIncome),
         rok_rozpoczecia_kariery: parseInt(data.careerStartYear),
+        rok_przejscia_na_emeryture: parseInt(data.retirementYear),
       };
 
       // Add optional fields only if they have values
-      if (data.retirementYear && parseInt(data.retirementYear) > 0) {
-        requestBody.rok_przejscia_na_emeryture = parseInt(data.retirementYear);
-      }
       if (data.zusBalance && parseFloat(data.zusBalance) > 0) {
         requestBody.saldo_zus = parseFloat(data.zusBalance);
       }
