@@ -32,6 +32,11 @@ const Results: React.FC = () => {
     | PrognosiResponse
     | undefined;
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   // Default values for reset
   const DEFAULT_AGE = 27;
   const DEFAULT_GENDER: "female" | "male" = "female";
