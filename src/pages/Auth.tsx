@@ -14,6 +14,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showMFA, setShowMFA] = useState(false);
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     if (user) {
@@ -24,17 +25,19 @@ const Auth = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     try {
       const result = await signIn(email, password);
       
-      if (result.needsMFA) {
+      if (result.error) {
+        setError(result.error.message || 'Failed to sign in');
+      } else if (result.needsMFA) {
         setShowMFA(true);
-      } else if (!result.error) {
-        // Success - user state change will trigger navigation
-        // via the useEffect above
       }
-    } catch (error) {
+      // If successful and no MFA needed, navigation happens via useEffect
+    } catch (error: any) {
       console.error('Login error:', error);
+      setError(error.message || 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -61,6 +64,11 @@ const Auth = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
+            {error && (
+              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+                {error}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input

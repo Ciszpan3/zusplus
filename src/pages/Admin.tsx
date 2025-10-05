@@ -32,6 +32,12 @@ const Admin = () => {
   const checkMFAStatus = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate('/auth');
+        return;
+      }
+      
       const aal = (session as any)?.aal;
 
       if (aal !== 'aal2') {
@@ -46,6 +52,7 @@ const Admin = () => {
       }
     } catch (error) {
       console.error('Error checking MFA status:', error);
+      navigate('/auth');
     } finally {
       setCheckingMFA(false);
     }
