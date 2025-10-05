@@ -69,3 +69,50 @@ export const downloadReport = async (): Promise<Blob> => {
 
   return response.blob();
 };
+
+export interface StatisticsResponse {
+  status: string;
+  liczba_zapytan?: number;
+  wiadomosc?: string;
+  statystyki?: {
+    sredni_wiek: number;
+    srednie_wynagrodzenie: number;
+    srednia_prognozowana_emerytura: number;
+    rozklad_plci: {
+      kobiety: number;
+      mezczyzni: number;
+    };
+  };
+}
+
+export const fetchStatistics = async (): Promise<StatisticsResponse> => {
+  const response = await fetch(`${API_BASE_URL}/statystyki`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "X-API-Key": "ZAQ!@WSXCDE$RFV!QAZ",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.json();
+};
+
+export const clearStatistics = async (): Promise<StatisticsResponse> => {
+  const response = await fetch(`${API_BASE_URL}/statystyki`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      "X-API-Key": "ZAQ!@WSXCDE$RFV!QAZ",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.json();
+};
