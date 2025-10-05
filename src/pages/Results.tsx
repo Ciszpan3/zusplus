@@ -162,7 +162,7 @@ const Results: React.FC = () => {
       const realHeight = calculateBarHeight(apiPensionReal, baseValue, 120);
 
       setProjectedBarHeightNominal(nominalHeight);
-      setProjectedBarHeightReal(nominalHeight);
+      setProjectedBarHeightReal(realHeight);
     }
   };
 
