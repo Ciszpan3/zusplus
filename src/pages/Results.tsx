@@ -1283,9 +1283,9 @@ const Results: React.FC = () => {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Card 1 - Podstawa obliczenia */}
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-[hsl(var(--blue-primary))]/10 to-[hsl(var(--blue-primary))]/5 rounded-xl p-6 border-2 border-[hsl(var(--blue-primary))]/30 shadow-sm hover:shadow-md transition-all hover:border-[hsl(var(--blue-primary))]">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-blue-500 p-3 rounded-lg">
+                      <div className="bg-[hsl(var(--blue-primary))] p-3 rounded-lg">
                         <svg
                           className="w-6 h-6 text-white"
                           fill="none"
@@ -1308,7 +1308,7 @@ const Results: React.FC = () => {
                       <p className="text-gray-600 text-sm">
                         Twoja podstawa emerytury
                       </p>
-                      <p className="text-blue-600 text-3xl font-bold">
+                      <p className="text-[hsl(var(--blue-primary))] text-3xl font-bold">
                         {prognosisData.szczegoly.podstawa_obliczenia_emerytury.toLocaleString(
                           "pl-PL",
                           {
@@ -1322,9 +1322,9 @@ const Results: React.FC = () => {
                   </div>
 
                   {/* Card 2 - Oczekiwana długość życia */}
-                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-[hsl(var(--green-primary))]/10 to-[hsl(var(--green-primary))]/5 rounded-xl p-6 border-2 border-[hsl(var(--green-primary))]/30 shadow-sm hover:shadow-md transition-all hover:border-[hsl(var(--green-primary))]">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-green-500 p-3 rounded-lg">
+                      <div className="bg-[hsl(var(--green-primary))] p-3 rounded-lg">
                         <svg
                           className="w-6 h-6 text-white"
                           fill="none"
@@ -1347,7 +1347,7 @@ const Results: React.FC = () => {
                       <p className="text-gray-600 text-sm">
                         Średnie dalsze trwanie życia
                       </p>
-                      <p className="text-green-600 text-3xl font-bold">
+                      <p className="text-[hsl(var(--green-primary))] text-3xl font-bold">
                         {Math.round(
                           prognosisData.szczegoly
                             .srednie_dalsze_trwanie_zycia_miesiace / 12
@@ -1366,9 +1366,9 @@ const Results: React.FC = () => {
                   </div>
 
                   {/* Card 3 - Suma składek */}
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-[hsl(var(--blue-primary))]/10 to-[hsl(var(--blue-primary))]/5 rounded-xl p-6 border-2 border-[hsl(var(--blue-primary))]/30 shadow-sm hover:shadow-md transition-all hover:border-[hsl(var(--blue-primary))]">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-purple-500 p-3 rounded-lg">
+                      <div className="bg-[hsl(var(--blue-primary))] p-3 rounded-lg">
                         <svg
                           className="w-6 h-6 text-white"
                           fill="none"
@@ -1391,7 +1391,7 @@ const Results: React.FC = () => {
                       <p className="text-gray-600 text-sm">
                         Twoje składki emerytalne
                       </p>
-                      <p className="text-purple-600 text-3xl font-bold">
+                      <p className="text-[hsl(var(--blue-primary))] text-3xl font-bold">
                         {prognosisData.szczegoly.szacowana_suma_skladek.toLocaleString(
                           "pl-PL",
                           {
@@ -1405,9 +1405,9 @@ const Results: React.FC = () => {
                   </div>
 
                   {/* Card 4 - Kapitał początkowy */}
-                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-[hsl(var(--green-primary))]/10 to-[hsl(var(--green-primary))]/5 rounded-xl p-6 border-2 border-[hsl(var(--green-primary))]/30 shadow-sm hover:shadow-md transition-all hover:border-[hsl(var(--green-primary))]">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-orange-500 p-3 rounded-lg">
+                      <div className="bg-[hsl(var(--green-primary))] p-3 rounded-lg">
                         <svg
                           className="w-6 h-6 text-white"
                           fill="none"
@@ -1430,7 +1430,7 @@ const Results: React.FC = () => {
                       <p className="text-gray-600 text-sm">
                         Twój kapitał startowy
                       </p>
-                      <p className="text-orange-600 text-3xl font-bold">
+                      <p className="text-[hsl(var(--green-primary))] text-3xl font-bold">
                         {prognosisData.szczegoly.kapital_poczatkowy.toLocaleString(
                           "pl-PL",
                           {
@@ -1444,9 +1444,9 @@ const Results: React.FC = () => {
                   </div>
 
                   {/* Card 5 - Wskaźniki */}
-                  <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border border-teal-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-[hsl(var(--blue-primary))]/10 to-[hsl(var(--blue-primary))]/5 rounded-xl p-6 border-2 border-[hsl(var(--blue-primary))]/30 shadow-sm hover:shadow-md transition-all hover:border-[hsl(var(--blue-primary))]">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-teal-500 p-3 rounded-lg">
+                      <div className="bg-[hsl(var(--blue-primary))] p-3 rounded-lg">
                         <svg
                           className="w-6 h-6 text-white"
                           fill="none"
@@ -1468,7 +1468,7 @@ const Results: React.FC = () => {
                     <div className="space-y-3">
                       <div>
                         <p className="text-gray-600 text-sm">Waloryzacja</p>
-                        <p className="text-teal-600 text-2xl font-bold">
+                        <p className="text-[hsl(var(--blue-primary))] text-2xl font-bold">
                           {(
                             (prognosisData.szczegoly.wspolczynnik_waloryzacji -
                               1) *
@@ -1477,9 +1477,9 @@ const Results: React.FC = () => {
                           %
                         </p>
                       </div>
-                      <div className="border-t border-teal-200 pt-2">
+                      <div className="border-t border-[hsl(var(--blue-primary))]/20 pt-2">
                         <p className="text-gray-600 text-sm">Inflacja</p>
-                        <p className="text-teal-600 text-2xl font-bold">
+                        <p className="text-[hsl(var(--blue-primary))] text-2xl font-bold">
                           {(
                             prognosisData.szczegoly.wspolczynnik_inflacji * 100
                           ).toFixed(2)}
@@ -1490,9 +1490,9 @@ const Results: React.FC = () => {
                   </div>
 
                   {/* Card 6 - Lata składkowe i średnia składka */}
-                  <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 border border-indigo-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-[hsl(var(--green-primary))]/10 to-[hsl(var(--green-primary))]/5 rounded-xl p-6 border-2 border-[hsl(var(--green-primary))]/30 shadow-sm hover:shadow-md transition-all hover:border-[hsl(var(--green-primary))]">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-indigo-500 p-3 rounded-lg">
+                      <div className="bg-[hsl(var(--green-primary))] p-3 rounded-lg">
                         <svg
                           className="w-6 h-6 text-white"
                           fill="none"
@@ -1514,15 +1514,15 @@ const Results: React.FC = () => {
                     <div className="space-y-3">
                       <div>
                         <p className="text-gray-600 text-sm">Lata składkowe</p>
-                        <p className="text-indigo-600 text-2xl font-bold">
+                        <p className="text-[hsl(var(--green-primary))] text-2xl font-bold">
                           {prognosisData.szczegoly.lata_skladkowe} lat
                         </p>
                       </div>
-                      <div className="border-t border-indigo-200 pt-2">
+                      <div className="border-t border-[hsl(var(--green-primary))]/20 pt-2">
                         <p className="text-gray-600 text-sm">
                           Średnia składka miesięczna
                         </p>
-                        <p className="text-indigo-600 text-2xl font-bold">
+                        <p className="text-[hsl(var(--green-primary))] text-2xl font-bold">
                           {prognosisData.szczegoly.srednia_skladka_miesieczna.toLocaleString(
                             "pl-PL",
                             {
