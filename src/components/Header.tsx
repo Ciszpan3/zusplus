@@ -1,11 +1,5 @@
 import React from 'react';
-import { Download } from 'lucide-react';
-
-interface HeaderProps {
-  onDownloadPDF?: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ onDownloadPDF }) => {
+const Header: React.FC = () => {
   return <header className="bg-[rgba(255,255,255,0.95)] border flex w-full flex-col items-stretch justify-center px-[70px] py-px border-b max-md:max-w-full max-md:px-5">
       <div className="bg-[rgba(0,0,0,0)] flex w-[1280px] max-w-full items-stretch gap-5 flex-wrap justify-between pl-px pr-6 py-2 max-md:pr-5">
         <div className="bg-[rgba(0,0,0,0)] flex flex-col">
@@ -19,15 +13,6 @@ const Header: React.FC<HeaderProps> = ({ onDownloadPDF }) => {
             </div>
           </div>
         </div>
-        {onDownloadPDF && (
-          <button
-            onClick={onDownloadPDF}
-            className="flex items-center gap-2 bg-[hsl(var(--blue-primary))] text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium text-sm whitespace-nowrap"
-          >
-            <Download className="w-4 h-4" />
-            Pobierz raport
-          </button>
-        )}
       </div>
     </header>;
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
   User,
@@ -13,8 +13,6 @@ import {
   Umbrella,
   Info,
 } from "lucide-react";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import { Slider } from "@/components/ui/slider";
 import {
   Accordion,
@@ -33,56 +31,11 @@ const Results: React.FC = () => {
   const prognosisData = location.state?.prognosisData as
     | PrognosiResponse
     | undefined;
-  
-  const contentRef = useRef<HTMLDivElement>(null);
 
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
-
-  // Function to download page as PDF using screenshots
-  const handleDownloadPDF = async () => {
-    if (!contentRef.current) return;
-
-    const element = contentRef.current;
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      windowHeight: element.scrollHeight,
-    });
-
-    const imgData = canvas.toDataURL('image/jpeg', 0.98);
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-    });
-
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
-    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-    const imgX = (pdfWidth - imgWidth * ratio) / 2;
-    const imgY = 0;
-
-    let heightLeft = imgHeight * ratio;
-    let position = 0;
-
-    pdf.addImage(imgData, 'JPEG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-    heightLeft -= pdfHeight;
-
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight * ratio;
-      pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', imgX, position, imgWidth * ratio, imgHeight * ratio);
-      heightLeft -= pdfHeight;
-    }
-
-    pdf.save('raport-emerytury.pdf');
-  };
 
   // Default values for reset
   const DEFAULT_AGE = 27;
@@ -387,9 +340,7 @@ const Results: React.FC = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <Header onDownloadPDF={handleDownloadPDF} />
-      
-      <div ref={contentRef}>
+      <Header />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-[hsl(var(--green-primary))] to-[hsl(var(--blue-primary))] py-12 px-6">
