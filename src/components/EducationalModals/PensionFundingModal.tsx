@@ -19,24 +19,24 @@ export const PensionFundingModal: React.FC<PensionFundingModalProps> = ({
 }) => {
   // Data showing breakdown of pension funding sources
   const fundingData = [
-    { name: "Składki pracowników", value: 40, color: "hsl(var(--primary))" },
-    { name: "Składki pracodawców", value: 40, color: "hsl(var(--secondary))" },
+    { name: "Składki pracowników", value: 40, color: "hsl(var(--blue-primary))" },
+    { name: "Składki pracodawców", value: 40, color: "hsl(var(--green-primary))" },
     { name: "Waloryzacja", value: 15, color: "hsl(var(--accent))" },
-    { name: "Dotacje budżetowe", value: 5, color: "hsl(var(--muted))" },
+    { name: "Dotacje budżetowe", value: 5, color: "hsl(var(--muted-foreground))" },
   ];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-primary flex items-center gap-2">
+          <DialogTitle className="text-2xl font-bold text-[hsl(var(--blue-primary))] flex items-center gap-2">
             <Wallet className="w-6 h-6" />
             Skąd brane są pieniądze na emeryturę?
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6 mt-4">
-          <div className="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-lg">
+          <div className="bg-gradient-to-br from-[hsl(var(--green-primary))]/10 to-[hsl(var(--blue-primary))]/10 p-6 rounded-lg border border-[hsl(var(--green-primary))]/20">
             <h3 className="text-lg font-semibold mb-3 text-gray-900">System składkowy</h3>
             <p className="text-gray-700 leading-relaxed">
               Twoja przyszła emerytura finansowana jest głównie ze składek, które odprowadzane są przez cały 
@@ -44,7 +44,7 @@ export const PensionFundingModal: React.FC<PensionFundingModalProps> = ({
             </p>
           </div>
 
-          <div className="bg-white border-2 border-primary/20 p-6 rounded-lg">
+          <div className="bg-white border-2 border-[hsl(var(--blue-primary))]/30 p-6 rounded-lg">
             <h4 className="font-semibold text-gray-900 mb-4 text-center">
               Struktura finansowania emerytury
             </h4>
@@ -67,7 +67,9 @@ export const PensionFundingModal: React.FC<PensionFundingModalProps> = ({
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--background))', 
-                    border: '1px solid hsl(var(--border))' 
+                    border: '2px solid hsl(var(--blue-primary))',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                   }}
                   formatter={(value: number) => [`${value}%`, 'Udział']}
                 />
@@ -76,49 +78,57 @@ export const PensionFundingModal: React.FC<PensionFundingModalProps> = ({
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-white border-2 border-primary/20 p-5 rounded-lg">
+            <div className="bg-white border-2 border-[hsl(var(--blue-primary))]/30 p-5 rounded-lg hover:border-[hsl(var(--blue-primary))] transition-colors">
               <div className="flex items-center gap-2 mb-3">
-                <Users className="w-5 h-5 text-primary" />
+                <div className="bg-[hsl(var(--blue-primary))]/10 p-2 rounded-lg">
+                  <Users className="w-5 h-5 text-[hsl(var(--blue-primary))]" />
+                </div>
                 <h4 className="font-semibold text-gray-900">Składka pracownika</h4>
               </div>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-700 text-sm">
                 Część Twojego wynagrodzenia brutto (około 9,76%) automatycznie trafia na Twoje konto emerytalne w ZUS.
               </p>
             </div>
 
-            <div className="bg-white border-2 border-primary/20 p-5 rounded-lg">
+            <div className="bg-white border-2 border-[hsl(var(--green-primary))]/30 p-5 rounded-lg hover:border-[hsl(var(--green-primary))] transition-colors">
               <div className="flex items-center gap-2 mb-3">
-                <Building2 className="w-5 h-5 text-primary" />
+                <div className="bg-[hsl(var(--green-primary))]/10 p-2 rounded-lg">
+                  <Building2 className="w-5 h-5 text-[hsl(var(--green-primary))]" />
+                </div>
                 <h4 className="font-semibold text-gray-900">Składka pracodawcy</h4>
               </div>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-700 text-sm">
                 Twój pracodawca dopłaca dodatkowe 9,76% od Twojego wynagrodzenia, co podwaja wpłaty na Twoje konto.
               </p>
             </div>
 
-            <div className="bg-white border-2 border-primary/20 p-5 rounded-lg">
+            <div className="bg-white border-2 border-[hsl(var(--blue-primary))]/30 p-5 rounded-lg hover:border-[hsl(var(--blue-primary))] transition-colors">
               <div className="flex items-center gap-2 mb-3">
-                <Banknote className="w-5 h-5 text-primary" />
+                <div className="bg-[hsl(var(--blue-primary))]/10 p-2 rounded-lg">
+                  <Banknote className="w-5 h-5 text-[hsl(var(--blue-primary))]" />
+                </div>
                 <h4 className="font-semibold text-gray-900">Waloryzacja</h4>
               </div>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-700 text-sm">
                 Zgromadzone środki są corocznie waloryzowane według wskaźnika ZUS, co zwiększa wartość Twojego kapitału.
               </p>
             </div>
 
-            <div className="bg-white border-2 border-primary/20 p-5 rounded-lg">
+            <div className="bg-white border-2 border-[hsl(var(--green-primary))]/30 p-5 rounded-lg hover:border-[hsl(var(--green-primary))] transition-colors">
               <div className="flex items-center gap-2 mb-3">
-                <Wallet className="w-5 h-5 text-primary" />
+                <div className="bg-[hsl(var(--green-primary))]/10 p-2 rounded-lg">
+                  <Wallet className="w-5 h-5 text-[hsl(var(--green-primary))]" />
+                </div>
                 <h4 className="font-semibold text-gray-900">Dotacje budżetowe</h4>
               </div>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-700 text-sm">
                 W niektórych przypadkach (np. minimalna emerytura) państwo dopłaca z budżetu różnicę.
               </p>
             </div>
           </div>
 
-          <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded">
-            <h4 className="font-semibold text-amber-900 mb-2">Ważne!</h4>
+          <div className="bg-gradient-to-r from-[hsl(var(--blue-primary))]/10 to-[hsl(var(--green-primary))]/10 border-l-4 border-[hsl(var(--blue-primary))] p-4 rounded">
+            <h4 className="font-semibold text-gray-900 mb-2">Ważne!</h4>
             <p className="text-gray-700 text-sm">
               Łącznie na Twoje konto emerytalne trafia <strong>19,52%</strong> Twojego wynagrodzenia brutto 
               (9,76% z Twojej pensji + 9,76% od pracodawcy). Im wyższa pensja i dłuższa kariera, tym więcej 
@@ -126,23 +136,23 @@ export const PensionFundingModal: React.FC<PensionFundingModalProps> = ({
             </p>
           </div>
 
-          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-5 rounded-lg">
-            <h4 className="font-semibold text-gray-900 mb-2">Jak zwiększyć swoją emeryturę?</h4>
+          <div className="bg-gradient-to-br from-[hsl(var(--green-primary))]/10 to-[hsl(var(--blue-primary))]/10 p-5 rounded-lg border border-[hsl(var(--green-primary))]/20">
+            <h4 className="font-semibold text-gray-900 mb-3">Jak zwiększyć swoją emeryturę?</h4>
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
+                <span className="text-[hsl(var(--blue-primary))] mt-1 text-lg">•</span>
                 <span><strong>Pracuj legalnie</strong> - tylko oficjalne zatrudnienie buduje Twój kapitał emerytalny</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
+                <span className="text-[hsl(var(--green-primary))] mt-1 text-lg">•</span>
                 <span><strong>Zwiększaj zarobki</strong> - wyższe wynagrodzenie = wyższe składki</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
+                <span className="text-[hsl(var(--blue-primary))] mt-1 text-lg">•</span>
                 <span><strong>Unikaj długich przerw</strong> - każdy rok bez pracy to brak wpłat na konto</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
+                <span className="text-[hsl(var(--green-primary))] mt-1 text-lg">•</span>
                 <span><strong>Rozważ III filar (PPE, IKE)</strong> - dodatkowe oszczędności emerytalne z ulgami podatkowymi</span>
               </li>
             </ul>
