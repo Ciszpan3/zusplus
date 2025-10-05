@@ -31,25 +31,52 @@ const Results: React.FC = () => {
     | PrognosiResponse
     | undefined;
 
-  const [age, setAge] = useState(27);
-  const [gender, setGender] = useState<"female" | "male">("female");
-  const [retirementAge, setRetirementAge] = useState(67);
-  const [monthlyIncome, setMonthlyIncome] = useState(8500);
-  const [careerBreaks, setCareerBreaks] = useState(0);
-  const [sickLeaveDays, setSickLeaveDays] = useState(15);
-  const [valorization, setValorization] = useState(0);
-  const [inflation, setInflation] = useState(0);
+  // Default values for reset
+  const DEFAULT_AGE = 27;
+  const DEFAULT_GENDER: "female" | "male" = "female";
+  const DEFAULT_RETIREMENT_AGE = 67;
+  const DEFAULT_MONTHLY_INCOME = 8500;
+  const DEFAULT_CAREER_BREAKS = 0;
+  const DEFAULT_SICK_LEAVE_DAYS = 15;
+  const DEFAULT_VALORIZATION = 0;
+  const DEFAULT_INFLATION = 0;
+
+  const [age, setAge] = useState(DEFAULT_AGE);
+  const [gender, setGender] = useState<"female" | "male">(DEFAULT_GENDER);
+  const [retirementAge, setRetirementAge] = useState(DEFAULT_RETIREMENT_AGE);
+  const [monthlyIncome, setMonthlyIncome] = useState(DEFAULT_MONTHLY_INCOME);
+  const [careerBreaks, setCareerBreaks] = useState(DEFAULT_CAREER_BREAKS);
+  const [sickLeaveDays, setSickLeaveDays] = useState(DEFAULT_SICK_LEAVE_DAYS);
+  const [valorization, setValorization] = useState(DEFAULT_VALORIZATION);
+  const [inflation, setInflation] = useState(DEFAULT_INFLATION);
   const [apiPensionNominal, setApiPensionNominal] = useState<number | null>(
     null
   );
   const [apiPensionReal, setApiPensionReal] = useState<number | null>(null);
 
+  // State for projected chart (left chart) - initially uses API data
+  const [projectedPensionNominal, setProjectedPensionNominal] = useState<
+    number | null
+  >(null);
+  const [projectedPensionReal, setProjectedPensionReal] = useState<
+    number | null
+  >(null);
+
+  // State for projected chart bar heights
+  const [projectedBarHeightNominal, setProjectedBarHeightNominal] =
+    useState<number>(120);
+  const [projectedBarHeightReal, setProjectedBarHeightReal] =
+    useState<number>(80);
+
   // Use real data if available, otherwise fallback to dummy data
   const actualSalary = prognosisData?.aktualna_wyplata || 8500;
   const yearsToRetirement = prognosisData?.lata_do_emerytury || 42;
-  const futurePensionReal = prognosisData?.przyszla_emerytura_realna || 4890;
+  const futurePensionReal =
+    projectedPensionReal || prognosisData?.przyszla_emerytura_realna || 4890;
   const futurePensionNominal =
-    prognosisData?.przyszla_emerytura_nominalna || 4890;
+    projectedPensionNominal ||
+    prognosisData?.przyszla_emerytura_nominalna ||
+    4890;
   const avgNationalPension = prognosisData?.srednia_krajowa_emerytura || 3200;
   const percentDifference = prognosisData?.roznica_procent || 53;
   const funFacts = prognosisData?.ciekawostki || [
@@ -102,7 +129,7 @@ const Results: React.FC = () => {
   const WeatherIcon = weatherInfo.icon;
 
   // Calculate bar heights with max limit (256px container - some padding)
-  const MAX_CHART_HEIGHT = 120; // h-64 = 256px, leave some space
+  const MAX_CHART_HEIGHT = 200; // Maximum height for chart bars
   const calculateBarHeight = (
     value: number,
     referenceValue: number,
@@ -110,6 +137,45 @@ const Results: React.FC = () => {
   ) => {
     const calculatedHeight = (value / referenceValue) * baseHeight;
     return Math.min(calculatedHeight, MAX_CHART_HEIGHT);
+  };
+
+  // Handle "Oblicz" button click - copy calculated values to projected chart
+  const handleCalculate = () => {
+    if (apiPensionNominal && apiPensionReal) {
+      // Copy values
+      setProjectedPensionNominal(apiPensionNominal);
+      setProjectedPensionReal(apiPensionReal);
+
+      // Calculate and copy bar heights from right chart to left chart
+      const baseValue = futurePensionReal || 4890;
+      const nominalHeight = calculateBarHeight(
+        apiPensionNominal,
+        baseValue,
+        120
+      );
+      const realHeight = calculateBarHeight(apiPensionReal, baseValue, 120);
+
+      setProjectedBarHeightNominal(nominalHeight);
+      setProjectedBarHeightReal(realHeight);
+    }
+  };
+
+  // Handle "Reset" button click - reset all sliders and inputs to default values
+  const handleReset = () => {
+    setAge(DEFAULT_AGE);
+    setGender(DEFAULT_GENDER);
+    setRetirementAge(DEFAULT_RETIREMENT_AGE);
+    setMonthlyIncome(DEFAULT_MONTHLY_INCOME);
+    setCareerBreaks(DEFAULT_CAREER_BREAKS);
+    setSickLeaveDays(DEFAULT_SICK_LEAVE_DAYS);
+    setValorization(DEFAULT_VALORIZATION);
+    setInflation(DEFAULT_INFLATION);
+    // Reset projected chart to original API data
+    setProjectedPensionNominal(null);
+    setProjectedPensionReal(null);
+    // Reset bar heights to default
+    setProjectedBarHeightNominal(120);
+    setProjectedBarHeightReal(80);
   };
 
   // Debounced API call for calculator
@@ -644,10 +710,16 @@ const Results: React.FC = () => {
 
                 {/* Action Buttons */}
                 <div className="grid grid-cols-2 gap-4 pt-4">
-                  <button className="bg-[hsl(var(--blue-primary))] text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                  <button
+                    onClick={handleCalculate}
+                    className="bg-[hsl(var(--blue-primary))] text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+                  >
                     Oblicz
                   </button>
-                  <button className="bg-white border-2 border-[hsl(var(--warning))] text-[hsl(var(--warning))] py-3 px-6 rounded-lg font-semibold hover:bg-orange-50 transition-colors">
+                  <button
+                    onClick={handleReset}
+                    className="bg-white border-2 border-[hsl(var(--warning))] text-[hsl(var(--warning))] py-3 px-6 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
+                  >
                     Reset
                   </button>
                 </div>
@@ -655,7 +727,7 @@ const Results: React.FC = () => {
             </div>
 
             {/* Right Side - Charts */}
-            <div className="space-y-6">
+            <div className="flex flex-col gap-6">
               {/* Projected Pension */}
               <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6">
                 <p className="text-gray-600 text-sm mb-2">
@@ -680,23 +752,28 @@ const Results: React.FC = () => {
               </div>
 
               {/* Bar Charts Comparison */}
-              <div className="bg-white rounded-xl p-6 shadow-lg overflow-visible">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-6">
+              <div className="bg-white rounded-xl p-6 shadow-lg overflow-visible flex-1 flex flex-col justify-end">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-6 align-bottom">
                   {/* Projected Chart */}
                   <div className="text-center">
-                    <div className="relative h-64 flex flex-col justify-end">
+                    <div
+                      className="relative flex flex-col justify-end"
+                      style={{ height: "256px", maxHeight: "256px" }}
+                    >
                       {/* Bars */}
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
                         <div
                           className="relative bg-[#00993F] rounded-t-lg"
                           style={{
-                            height: `${Math.min(120, MAX_CHART_HEIGHT)}px`,
+                            height: `${projectedBarHeightNominal}px`,
                           }}
                         >
                           <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
                             <div className="w-6 sm:w-8 h-0.5 bg-[#00993F]"></div>
                             <span className="text-[#00993F] font-bold text-[10px] sm:text-xs whitespace-nowrap">
-                              {Math.round(futurePensionReal).toLocaleString()}{" "}
+                              {Math.round(
+                                futurePensionNominal
+                              ).toLocaleString()}{" "}
                               PLN
                             </span>
                           </div>
@@ -704,15 +781,13 @@ const Results: React.FC = () => {
                         <div
                           className="relative bg-red-400 rounded-b-lg"
                           style={{
-                            height: `${Math.min(80, MAX_CHART_HEIGHT)}px`,
+                            height: `${projectedBarHeightReal}px`,
                           }}
                         >
                           <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
                             <div className="w-6 sm:w-8 h-0.5 bg-red-400"></div>
                             <span className="text-red-400 font-bold text-[10px] sm:text-xs whitespace-nowrap">
-                              {Math.round(
-                                futurePensionReal * 0.6
-                              ).toLocaleString()}{" "}
+                              {Math.round(futurePensionReal).toLocaleString()}{" "}
                               PLN
                             </span>
                           </div>
@@ -726,7 +801,10 @@ const Results: React.FC = () => {
 
                   {/* Calculated Chart */}
                   <div className="text-center">
-                    <div className="relative h-64 flex flex-col justify-end">
+                    <div
+                      className="relative flex flex-col justify-end"
+                      style={{ height: "256px", maxHeight: "256px" }}
+                    >
                       {/* Bars */}
                       {apiPensionNominal && apiPensionReal ? (
                         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
@@ -888,8 +966,8 @@ const Results: React.FC = () => {
       </section>
 
       <Footer />
-      
-      <DashboardAIChat 
+
+      <DashboardAIChat
         userEmail=""
         retirementData={{
           age,
