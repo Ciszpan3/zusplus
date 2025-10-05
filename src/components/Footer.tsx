@@ -20,7 +20,6 @@ const Footer: React.FC = () => {
               <div className="basis-auto">Pomoc i wsparcie</div>
             </button>
             <div className="flex flex-col relative aspect-[4.583] w-[110px] text-center underline px-[17px]">
-              <img src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/949d3fcf50acb82f57f4e6e977a093b5d465dbd9?placeholderIfAbsent=true" className="absolute h-full w-full object-cover inset-0" alt="Background" />
               <div className="relative flex gap-[7px]">
                 <div className="w-[53px]">O ZUS</div>
               </div>
