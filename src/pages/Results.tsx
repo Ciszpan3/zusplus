@@ -171,7 +171,7 @@ const Results: React.FC = () => {
   const DEFAULT_SICK_LEAVE_DAYS = formData?.sickLeaveDays
     ? parseInt(formData.sickLeaveDays)
     : 19;
-  const DEFAULT_VALORIZATION = 0;
+  const DEFAULT_VALORIZATION = 1;
   const DEFAULT_INFLATION = 0;
 
   const [age, setAge] = useState(DEFAULT_AGE);
@@ -944,7 +944,7 @@ const Results: React.FC = () => {
                       <Slider
                         value={[sickLeaveDays]}
                         onValueChange={(val) => setSickLeaveDays(val[0])}
-                        min={0}
+                        min={1}
                         max={100}
                         step={5}
                         className="w-full"
@@ -964,9 +964,9 @@ const Results: React.FC = () => {
                       <Slider
                         value={[valorization]}
                         onValueChange={(val) => setValorization(val[0])}
-                        min={0}
+                        min={0.1}
                         max={20}
-                        step={1}
+                        step={0.1}
                         className="w-full"
                       />
                     </div>
