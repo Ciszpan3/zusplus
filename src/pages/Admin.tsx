@@ -13,42 +13,43 @@ const Admin = () => {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [isChecking, setIsChecking] = useState(true);
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
-    checkAuthorization();
+    checkMFAStatus();
   }, [user, loading]);
 
-  const checkAuthorization = async () => {
+  const checkMFAStatus = async () => {
     if (loading) return;
-    
+
     if (!user) {
-      console.log('No user, redirecting to auth');
       navigate('/auth');
       return;
     }
 
     try {
+      // Get current session
       const { data: { session } } = await supabase.auth.getSession();
-      const aal = (session as any)?.aal;
       
-      console.log('Checking authorization, AAL:', aal);
-      
-      // User must have AAL2 (MFA verified) to access admin panel
-      if (aal !== 'aal2') {
-        console.log('User not fully authenticated, redirecting to auth');
+      if (!session) {
         navigate('/auth');
         return;
       }
+
+      // Check AAL level - must be aal2 (MFA verified)
+      const assuranceLevel = (session as any).aal;
       
-      setIsAuthorized(true);
+      if (assuranceLevel !== 'aal2') {
+        // Not fully authenticated with MFA
+        navigate('/auth');
+        return;
+      }
+
+      setIsChecking(false);
     } catch (error) {
-      console.error('Authorization check error:', error);
+      console.error('Auth check error:', error);
       navigate('/auth');
-    } finally {
-      setCheckingAuth(false);
     }
   };
 
@@ -81,7 +82,7 @@ const Admin = () => {
     }
   };
 
-  if (loading || checkingAuth) {
+  if (loading || isChecking) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -90,10 +91,6 @@ const Admin = () => {
         </div>
       </div>
     );
-  }
-
-  if (!isAuthorized) {
-    return null;
   }
 
   return (

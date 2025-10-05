@@ -1,104 +1,267 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { MFAVerification } from '@/components/MFAVerification';
-import { MFAEnrollment } from '@/components/MFAEnrollment';
-import { supabase } from '@/integrations/supabase/client';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { toast } from 'sonner';
+import { Shield, QrCode } from 'lucide-react';
 
-type AuthStep = 'login' | 'mfa-verify' | 'mfa-enroll';
+type AuthStep = 'login' | 'mfa-setup' | 'mfa-verify';
 
 const Auth = () => {
-  const { user, signIn } = useAuth();
   const navigate = useNavigate();
+  
+  // Login state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Auth flow state
   const [authStep, setAuthStep] = useState<AuthStep>('login');
-
-  useEffect(() => {
-    // If fully authenticated (AAL2), redirect to admin
-    checkAuthStatus();
-  }, [user]);
-
-  const checkAuthStatus = async () => {
-    if (!user) return;
-    
-    const { data: { session } } = await supabase.auth.getSession();
-    const aal = (session as any)?.aal;
-    
-    if (aal === 'aal2') {
-      // Fully authenticated with MFA
-      navigate('/admin');
-    }
-  };
+  
+  // MFA setup state
+  const [qrCode, setQrCode] = useState('');
+  const [secret, setSecret] = useState('');
+  const [factorId, setFactorId] = useState('');
+  
+  // MFA verification state
+  const [mfaCode, setMfaCode] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
-      const result = await signIn(email, password);
-      
-      if (result.error) {
-        // Error already shown by toast in useAuth
+      // Sign in with password
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        toast.error(signInError.message);
         setIsLoading(false);
         return;
       }
+
+      // Check if user has MFA enrolled
+      const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
       
-      if (result.needsMFA) {
-        // Check if user has MFA enrolled
-        const { data: factors } = await supabase.auth.mfa.listFactors();
-        
-        if (factors?.totp && factors.totp.length > 0) {
-          // Has MFA enrolled, need to verify
-          setAuthStep('mfa-verify');
-        } else {
-          // No MFA enrolled, need to enroll
-          setAuthStep('mfa-enroll');
-        }
+      if (factorsError) {
+        toast.error('Błąd sprawdzania MFA');
+        setIsLoading(false);
+        return;
+      }
+
+      const hasMFA = factors?.totp && factors.totp.length > 0;
+
+      if (!hasMFA) {
+        // No MFA - need to set it up
+        await startMFAEnrollment();
       } else {
-        // No MFA required (shouldn't happen for admin)
-        navigate('/admin');
+        // Has MFA - need to verify
+        setAuthStep('mfa-verify');
+        setIsLoading(false);
       }
     } catch (error: any) {
       console.error('Login error:', error);
       toast.error('Błąd logowania');
-    } finally {
       setIsLoading(false);
     }
   };
 
-  const handleMFAVerified = () => {
-    console.log('MFA verified, redirecting to admin');
-    navigate('/admin');
+  const startMFAEnrollment = async () => {
+    try {
+      const { data, error } = await supabase.auth.mfa.enroll({
+        factorType: 'totp',
+        friendlyName: 'Admin Authenticator'
+      });
+
+      if (error) throw error;
+
+      setQrCode(data.totp.qr_code);
+      setSecret(data.totp.secret);
+      setFactorId(data.id);
+      setAuthStep('mfa-setup');
+      setIsLoading(false);
+    } catch (error: any) {
+      toast.error('Błąd konfiguracji 2FA');
+      setIsLoading(false);
+    }
   };
 
-  const handleMFAEnrolled = async () => {
-    console.log('MFA enrolled, moving to verification');
-    setAuthStep('mfa-verify');
+  const verifyMFASetup = async () => {
+    if (mfaCode.length !== 6) return;
+
+    setIsLoading(true);
+    try {
+      const challenge = await supabase.auth.mfa.challenge({ factorId });
+      if (challenge.error) throw challenge.error;
+
+      const { error } = await supabase.auth.mfa.verify({
+        factorId,
+        challengeId: challenge.data.id,
+        code: mfaCode
+      });
+
+      if (error) throw error;
+
+      toast.success('2FA skonfigurowane!');
+      
+      // Navigate to admin after successful setup
+      navigate('/admin');
+    } catch (error: any) {
+      toast.error('Nieprawidłowy kod');
+      setMfaCode('');
+      setIsLoading(false);
+    }
   };
 
+  const verifyMFALogin = async () => {
+    if (mfaCode.length !== 6) return;
+
+    setIsLoading(true);
+    try {
+      const { data: factors } = await supabase.auth.mfa.listFactors();
+      const totpFactor = factors?.totp?.[0];
+      
+      if (!totpFactor) {
+        toast.error('Nie znaleziono 2FA');
+        setIsLoading(false);
+        return;
+      }
+
+      const challenge = await supabase.auth.mfa.challenge({ factorId: totpFactor.id });
+      if (challenge.error) throw challenge.error;
+
+      const { error } = await supabase.auth.mfa.verify({
+        factorId: totpFactor.id,
+        challengeId: challenge.data.id,
+        code: mfaCode
+      });
+
+      if (error) throw error;
+
+      toast.success('Zalogowano pomyślnie!');
+      
+      // Navigate to admin after successful login
+      navigate('/admin');
+    } catch (error: any) {
+      toast.error('Nieprawidłowy kod');
+      setMfaCode('');
+      setIsLoading(false);
+    }
+  };
+
+  // MFA Setup View
+  if (authStep === 'mfa-setup') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <QrCode className="h-5 w-5" />
+              Konfiguracja 2FA
+            </CardTitle>
+            <CardDescription>
+              Zeskanuj kod QR w aplikacji Google Authenticator
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {qrCode && (
+              <div className="flex flex-col items-center gap-4">
+                <div className="bg-white p-4 rounded-lg">
+                  <img src={qrCode} alt="QR Code" className="w-48 h-48" />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground mb-1">Lub wpisz ręcznie:</p>
+                  <code className="text-xs bg-muted px-2 py-1 rounded break-all">
+                    {secret}
+                  </code>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <Label>Wpisz kod weryfikacyjny</Label>
+              <InputOTP
+                maxLength={6}
+                value={mfaCode}
+                onChange={setMfaCode}
+                onComplete={verifyMFASetup}
+              >
+                <InputOTPGroup className="w-full justify-center">
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+
+              <Button 
+                onClick={verifyMFASetup} 
+                disabled={isLoading || mfaCode.length !== 6}
+                className="w-full"
+              >
+                {isLoading ? 'Weryfikacja...' : 'Potwierdź i aktywuj'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // MFA Verification View
   if (authStep === 'mfa-verify') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
-        <MFAVerification onVerified={handleMFAVerified} />
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              Weryfikacja 2FA
+            </CardTitle>
+            <CardDescription>
+              Wpisz 6-cyfrowy kod z aplikacji Google Authenticator
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <InputOTP
+              maxLength={6}
+              value={mfaCode}
+              onChange={setMfaCode}
+              onComplete={verifyMFALogin}
+            >
+              <InputOTPGroup className="w-full justify-center">
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
+              </InputOTPGroup>
+            </InputOTP>
+
+            <Button 
+              onClick={verifyMFALogin} 
+              disabled={isLoading || mfaCode.length !== 6}
+              className="w-full"
+            >
+              {isLoading ? 'Weryfikacja...' : 'Zweryfikuj'}
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  if (authStep === 'mfa-enroll') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
-        <MFAEnrollment onComplete={handleMFAEnrolled} />
-      </div>
-    );
-  }
-
+  // Login View
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
       <Card className="w-full max-w-md">
