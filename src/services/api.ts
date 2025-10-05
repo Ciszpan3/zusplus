@@ -1,7 +1,5 @@
-// Use proxy in development, direct URL in production
-const API_BASE_URL = import.meta.env.DEV
-  ? "/api" // Proxy w trybie deweloperskim
-  : "https://xvv7kcpl-8000.euw.devtunnels.ms"; // Bezpośredni URL w produkcji
+// Always use direct URL to avoid proxy issues
+const API_BASE_URL = "https://xvv7kcpl-8000.euw.devtunnels.ms";
 
 export interface PrognosiRequest {
   plec: "kobieta" | "mezczyzna";

@@ -5,7 +5,15 @@ import Header from "@/components/Header";
 import FormSection from "@/components/FormSection";
 import Footer from "@/components/Footer";
 import LoadingScreen from "@/components/LoadingScreen";
-import { AlertCircle, Rocket, PiggyBank, Wallet, Building2, Banknote, TrendingUp } from "lucide-react";
+import {
+  AlertCircle,
+  Rocket,
+  PiggyBank,
+  Wallet,
+  Building2,
+  Banknote,
+  TrendingUp,
+} from "lucide-react";
 
 interface FormData {
   age: string;
@@ -100,33 +108,40 @@ const Index: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Map form data to API format
+      // Map form data to API format - only required fields
       const requestBody: any = {
         plec: data.gender === "female" ? "kobieta" : "mezczyzna",
         wiek: parseInt(data.age),
         miesieczny_przychod: parseFloat(data.monthlyIncome),
         rok_rozpoczecia_kariery: parseInt(data.careerStartYear),
-        rok_przejscia_na_emeryture: parseInt(data.retirementYear),
       };
 
-      // Add optional fields only if enabled
-      if (optionalDataEnabled) {
-        if (data.zusBalance && parseFloat(data.zusBalance) > 0) {
-          requestBody.saldo_zus = parseFloat(data.zusBalance);
-        }
-        if (data.ofeBalance && parseFloat(data.ofeBalance) > 0) {
-          requestBody.saldo_ofe = parseFloat(data.ofeBalance);
-        }
-        if (data.postalCode && data.postalCode.trim() !== "") {
-          requestBody.kod_pocztowy = data.postalCode;
-        }
-        if (data.sickLeaveDays && parseInt(data.sickLeaveDays) > 0) {
-          requestBody.ilosc_dni_zwolnien = parseInt(data.sickLeaveDays);
-        }
-        if (data.expectedPensionAmount && parseFloat(data.expectedPensionAmount) > 0) {
-          requestBody.oczekiwana_emerytura = parseFloat(data.expectedPensionAmount);
-        }
+      // Add optional fields only if they have values
+      if (data.retirementYear && parseInt(data.retirementYear) > 0) {
+        requestBody.rok_przejscia_na_emeryture = parseInt(data.retirementYear);
       }
+      if (data.zusBalance && parseFloat(data.zusBalance) > 0) {
+        requestBody.saldo_zus = parseFloat(data.zusBalance);
+      }
+      if (data.ofeBalance && parseFloat(data.ofeBalance) > 0) {
+        requestBody.saldo_ofe = parseFloat(data.ofeBalance);
+      }
+      if (data.postalCode && data.postalCode.trim() !== "") {
+        requestBody.kod_pocztowy = data.postalCode;
+      }
+      if (data.sickLeaveDays && parseInt(data.sickLeaveDays) > 0) {
+        requestBody.ilosc_dni_zwolnien = parseInt(data.sickLeaveDays);
+      }
+      if (
+        data.expectedPensionAmount &&
+        parseFloat(data.expectedPensionAmount) > 0
+      ) {
+        requestBody.oczekiwana_emerytura = parseFloat(
+          data.expectedPensionAmount
+        );
+      }
+
+      console.log("Sending request body:", requestBody);
 
       // Fetch prognosis from API
       const { fetchPrognosis } = await import("@/services/api");
@@ -653,7 +668,10 @@ const Index: React.FC = () => {
                             <div className="space-y-6">
                               {/* Decorative header for optional section */}
                               <div className="relative mb-8">
-                                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                <div
+                                  className="absolute inset-0 flex items-center"
+                                  aria-hidden="true"
+                                >
                                   <div className="w-full border-t-2 border-gradient-to-r from-blue-200 via-purple-200 to-green-200"></div>
                                 </div>
                                 <div className="relative flex justify-center">
@@ -666,14 +684,21 @@ const Index: React.FC = () => {
 
                               <div className="grid md:grid-cols-2 gap-6">
                                 {/* Expected Pension Amount - MOVED TO TOP */}
-                                <div className="animate-fade-in bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border-2 border-green-200 hover:border-green-400 transition-all duration-300 hover:shadow-lg group" style={{ animationDelay: '100ms' }}>
+                                <div
+                                  className="animate-fade-in bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border-2 border-green-200 hover:border-green-400 transition-all duration-300 hover:shadow-lg group"
+                                  style={{ animationDelay: "100ms" }}
+                                >
                                   <div className="flex items-center gap-3 mb-4">
                                     <div className="bg-green-500 p-2.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
                                       <Banknote className="w-5 h-5 text-white" />
                                     </div>
                                     <div>
-                                      <h3 className="text-lg font-semibold text-gray-900">Oczekiwana kwota emerytury</h3>
-                                      <p className="text-sm text-gray-600">Ile chciałbyś otrzymywać miesięcznie?</p>
+                                      <h3 className="text-lg font-semibold text-gray-900">
+                                        Oczekiwana kwota emerytury
+                                      </h3>
+                                      <p className="text-sm text-gray-600">
+                                        Ile chciałbyś otrzymywać miesięcznie?
+                                      </p>
                                     </div>
                                   </div>
                                   <div className="w-full">
@@ -685,7 +710,8 @@ const Index: React.FC = () => {
                                         {...register("expectedPensionAmount", {
                                           min: {
                                             value: 0,
-                                            message: "Kwota nie może być ujemna",
+                                            message:
+                                              "Kwota nie może być ujemna",
                                           },
                                         })}
                                         type="number"
@@ -693,20 +719,36 @@ const Index: React.FC = () => {
                                         inputMode="numeric"
                                         onKeyDown={blockInvalid}
                                         onInput={(e) => {
-                                          e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, "");
+                                          e.currentTarget.value =
+                                            e.currentTarget.value.replace(
+                                              /[^0-9]/g,
+                                              ""
+                                            );
                                         }}
                                         onBlur={(e) => {
-                                          const n = parseInt(e.currentTarget.value || "0", 10);
-                                          const clamped = Math.max(0, isNaN(n) ? 0 : n);
-                                          setValue("expectedPensionAmount", String(clamped), {
-                                            shouldValidate: true,
-                                            shouldDirty: true,
-                                          });
+                                          const n = parseInt(
+                                            e.currentTarget.value || "0",
+                                            10
+                                          );
+                                          const clamped = Math.max(
+                                            0,
+                                            isNaN(n) ? 0 : n
+                                          );
+                                          setValue(
+                                            "expectedPensionAmount",
+                                            String(clamped),
+                                            {
+                                              shouldValidate: true,
+                                              shouldDirty: true,
+                                            }
+                                          );
                                         }}
                                         className="text-gray-700 font-semibold bg-transparent border-none outline-none flex-1 text-lg"
                                         placeholder="5000"
                                       />
-                                      <span className="text-green-600 font-bold">PLN</span>
+                                      <span className="text-green-600 font-bold">
+                                        PLN
+                                      </span>
                                     </div>
                                     {errors.expectedPensionAmount && (
                                       <span className="text-red-500 text-xs mt-1.5 block animate-fade-in">
@@ -717,14 +759,21 @@ const Index: React.FC = () => {
                                 </div>
 
                                 {/* ZUS Balance */}
-                                <div className="animate-fade-in bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-lg group" style={{ animationDelay: '200ms' }}>
+                                <div
+                                  className="animate-fade-in bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-lg group"
+                                  style={{ animationDelay: "200ms" }}
+                                >
                                   <div className="flex items-center gap-3 mb-4">
                                     <div className="bg-blue-500 p-2.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
                                       <PiggyBank className="w-5 h-5 text-white" />
                                     </div>
                                     <div>
-                                      <h3 className="text-lg font-semibold text-gray-900">Saldo ZUS</h3>
-                                      <p className="text-sm text-gray-600">Aktualne saldo na koncie ZUS</p>
+                                      <h3 className="text-lg font-semibold text-gray-900">
+                                        Saldo ZUS
+                                      </h3>
+                                      <p className="text-sm text-gray-600">
+                                        Aktualne saldo na koncie ZUS
+                                      </p>
                                     </div>
                                   </div>
                                   <div className="w-full">
@@ -736,7 +785,8 @@ const Index: React.FC = () => {
                                         {...register("zusBalance", {
                                           min: {
                                             value: 0,
-                                            message: "Saldo nie może być ujemne",
+                                            message:
+                                              "Saldo nie może być ujemne",
                                           },
                                         })}
                                         type="number"
@@ -744,20 +794,36 @@ const Index: React.FC = () => {
                                         inputMode="numeric"
                                         onKeyDown={blockInvalid}
                                         onInput={(e) => {
-                                          e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, "");
+                                          e.currentTarget.value =
+                                            e.currentTarget.value.replace(
+                                              /[^0-9]/g,
+                                              ""
+                                            );
                                         }}
                                         onBlur={(e) => {
-                                          const n = parseInt(e.currentTarget.value || "0", 10);
-                                          const clamped = Math.max(0, isNaN(n) ? 0 : n);
-                                          setValue("zusBalance", String(clamped), {
-                                            shouldValidate: true,
-                                            shouldDirty: true,
-                                          });
+                                          const n = parseInt(
+                                            e.currentTarget.value || "0",
+                                            10
+                                          );
+                                          const clamped = Math.max(
+                                            0,
+                                            isNaN(n) ? 0 : n
+                                          );
+                                          setValue(
+                                            "zusBalance",
+                                            String(clamped),
+                                            {
+                                              shouldValidate: true,
+                                              shouldDirty: true,
+                                            }
+                                          );
                                         }}
                                         className="text-gray-700 font-semibold bg-transparent border-none outline-none flex-1 text-lg"
                                         placeholder="0"
                                       />
-                                      <span className="text-blue-600 font-bold">PLN</span>
+                                      <span className="text-blue-600 font-bold">
+                                        PLN
+                                      </span>
                                     </div>
                                     {errors.zusBalance && (
                                       <span className="text-red-500 text-xs mt-1.5 block animate-fade-in">
@@ -768,14 +834,21 @@ const Index: React.FC = () => {
                                 </div>
 
                                 {/* OFE Balance */}
-                                <div className="animate-fade-in bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-lg group" style={{ animationDelay: '300ms' }}>
+                                <div
+                                  className="animate-fade-in bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-lg group"
+                                  style={{ animationDelay: "300ms" }}
+                                >
                                   <div className="flex items-center gap-3 mb-4">
                                     <div className="bg-purple-500 p-2.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
                                       <Wallet className="w-5 h-5 text-white" />
                                     </div>
                                     <div>
-                                      <h3 className="text-lg font-semibold text-gray-900">Saldo OFE</h3>
-                                      <p className="text-sm text-gray-600">Aktualne saldo OFE</p>
+                                      <h3 className="text-lg font-semibold text-gray-900">
+                                        Saldo OFE
+                                      </h3>
+                                      <p className="text-sm text-gray-600">
+                                        Aktualne saldo OFE
+                                      </p>
                                     </div>
                                   </div>
                                   <div className="w-full">
@@ -787,7 +860,8 @@ const Index: React.FC = () => {
                                         {...register("ofeBalance", {
                                           min: {
                                             value: 0,
-                                            message: "Saldo nie może być ujemne",
+                                            message:
+                                              "Saldo nie może być ujemne",
                                           },
                                         })}
                                         type="number"
@@ -795,20 +869,36 @@ const Index: React.FC = () => {
                                         inputMode="numeric"
                                         onKeyDown={blockInvalid}
                                         onInput={(e) => {
-                                          e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, "");
+                                          e.currentTarget.value =
+                                            e.currentTarget.value.replace(
+                                              /[^0-9]/g,
+                                              ""
+                                            );
                                         }}
                                         onBlur={(e) => {
-                                          const n = parseInt(e.currentTarget.value || "0", 10);
-                                          const clamped = Math.max(0, isNaN(n) ? 0 : n);
-                                          setValue("ofeBalance", String(clamped), {
-                                            shouldValidate: true,
-                                            shouldDirty: true,
-                                          });
+                                          const n = parseInt(
+                                            e.currentTarget.value || "0",
+                                            10
+                                          );
+                                          const clamped = Math.max(
+                                            0,
+                                            isNaN(n) ? 0 : n
+                                          );
+                                          setValue(
+                                            "ofeBalance",
+                                            String(clamped),
+                                            {
+                                              shouldValidate: true,
+                                              shouldDirty: true,
+                                            }
+                                          );
                                         }}
                                         className="text-gray-700 font-semibold bg-transparent border-none outline-none flex-1 text-lg"
                                         placeholder="0"
                                       />
-                                      <span className="text-purple-600 font-bold">PLN</span>
+                                      <span className="text-purple-600 font-bold">
+                                        PLN
+                                      </span>
                                     </div>
                                     {errors.ofeBalance && (
                                       <span className="text-red-500 text-xs mt-1.5 block animate-fade-in">
@@ -819,14 +909,21 @@ const Index: React.FC = () => {
                                 </div>
 
                                 {/* Sick Leave Days */}
-                                <div className="animate-fade-in bg-gradient-to-br from-red-50 to-orange-50 p-6 rounded-xl border-2 border-red-200 hover:border-red-400 transition-all duration-300 hover:shadow-lg group" style={{ animationDelay: '400ms' }}>
+                                <div
+                                  className="animate-fade-in bg-gradient-to-br from-red-50 to-orange-50 p-6 rounded-xl border-2 border-red-200 hover:border-red-400 transition-all duration-300 hover:shadow-lg group"
+                                  style={{ animationDelay: "400ms" }}
+                                >
                                   <div className="flex items-center gap-3 mb-4">
                                     <div className="bg-red-500 p-2.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
                                       <AlertCircle className="w-5 h-5 text-white" />
                                     </div>
                                     <div>
-                                      <h3 className="text-lg font-semibold text-gray-900">Zwolnienia lekarskie</h3>
-                                      <p className="text-sm text-gray-600">Ilość dni opuszczonych w pracy</p>
+                                      <h3 className="text-lg font-semibold text-gray-900">
+                                        Zwolnienia lekarskie
+                                      </h3>
+                                      <p className="text-sm text-gray-600">
+                                        Ilość dni opuszczonych w pracy
+                                      </p>
                                     </div>
                                   </div>
                                   <div className="w-full">
@@ -838,7 +935,8 @@ const Index: React.FC = () => {
                                         {...register("sickLeaveDays", {
                                           min: {
                                             value: 0,
-                                            message: "Ilość dni nie może być ujemna",
+                                            message:
+                                              "Ilość dni nie może być ujemna",
                                           },
                                         })}
                                         type="number"
@@ -846,20 +944,36 @@ const Index: React.FC = () => {
                                         inputMode="numeric"
                                         onKeyDown={blockInvalid}
                                         onInput={(e) => {
-                                          e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, "");
+                                          e.currentTarget.value =
+                                            e.currentTarget.value.replace(
+                                              /[^0-9]/g,
+                                              ""
+                                            );
                                         }}
                                         onBlur={(e) => {
-                                          const n = parseInt(e.currentTarget.value || "0", 10);
-                                          const clamped = Math.max(0, isNaN(n) ? 0 : n);
-                                          setValue("sickLeaveDays", String(clamped), {
-                                            shouldValidate: true,
-                                            shouldDirty: true,
-                                          });
+                                          const n = parseInt(
+                                            e.currentTarget.value || "0",
+                                            10
+                                          );
+                                          const clamped = Math.max(
+                                            0,
+                                            isNaN(n) ? 0 : n
+                                          );
+                                          setValue(
+                                            "sickLeaveDays",
+                                            String(clamped),
+                                            {
+                                              shouldValidate: true,
+                                              shouldDirty: true,
+                                            }
+                                          );
                                         }}
                                         className="text-gray-700 font-semibold bg-transparent border-none outline-none flex-1 text-lg"
                                         placeholder="0"
                                       />
-                                      <span className="text-red-600 font-bold">DNI</span>
+                                      <span className="text-red-600 font-bold">
+                                        DNI
+                                      </span>
                                     </div>
                                     {errors.sickLeaveDays && (
                                       <span className="text-red-500 text-xs mt-1.5 block animate-fade-in">
@@ -870,14 +984,21 @@ const Index: React.FC = () => {
                                 </div>
 
                                 {/* Postal Code */}
-                                <div className="animate-fade-in bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-xl border-2 border-indigo-200 hover:border-indigo-400 transition-all duration-300 hover:shadow-lg group md:col-span-2" style={{ animationDelay: '500ms' }}>
+                                <div
+                                  className="animate-fade-in bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-xl border-2 border-indigo-200 hover:border-indigo-400 transition-all duration-300 hover:shadow-lg group md:col-span-2"
+                                  style={{ animationDelay: "500ms" }}
+                                >
                                   <div className="flex items-center gap-3 mb-4">
                                     <div className="bg-indigo-500 p-2.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
                                       <Building2 className="w-5 h-5 text-white" />
                                     </div>
                                     <div>
-                                      <h3 className="text-lg font-semibold text-gray-900">Kod pocztowy</h3>
-                                      <p className="text-sm text-gray-600">Twoja lokalizacja</p>
+                                      <h3 className="text-lg font-semibold text-gray-900">
+                                        Kod pocztowy
+                                      </h3>
+                                      <p className="text-sm text-gray-600">
+                                        Twoja lokalizacja
+                                      </p>
                                     </div>
                                   </div>
                                   <div className="w-full max-w-md">
@@ -889,7 +1010,8 @@ const Index: React.FC = () => {
                                         {...register("postalCode", {
                                           pattern: {
                                             value: /^\d{2}-\d{3}$/,
-                                            message: "Kod pocztowy musi być w formacie XX-XXX",
+                                            message:
+                                              "Kod pocztowy musi być w formacie XX-XXX",
                                           },
                                         })}
                                         type="text"
