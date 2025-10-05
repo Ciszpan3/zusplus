@@ -42,6 +42,7 @@ export const fetchPrognosis = async (
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
+      "X-API-Key": "ZAQ!@WSXCDE$RFV!QAZ",
     },
     body: JSON.stringify(data),
   });
@@ -58,6 +59,7 @@ export const downloadReport = async (): Promise<Blob> => {
     method: "GET",
     headers: {
       Accept: "application/vnd.ms-excel",
+      "X-API-Key": "ZAQ!@WSXCDE$RFV!QAZ",
     },
   });
 
