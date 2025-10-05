@@ -91,11 +91,7 @@ const Results: React.FC = () => {
     4890;
   const avgNationalPension = prognosisData?.srednia_krajowa_emerytura || 3200;
   const percentDifference = prognosisData?.roznica_procent || 53;
-  const funFacts = prognosisData?.ciekawostki || [
-    "Regularne oszczędzanie: To klucz do komfortowej emerytury",
-    "System emerytalny: Działa na zasadzie pokoleniowej solidarności",
-    "III filar: Warto rozważyć dodatkowe oszczędności",
-  ];
+  const ileLat = prognosisData?.ile_lat;
 
   // Determine weather based on percentage difference
   const getWeatherInfo = () => {
@@ -495,6 +491,18 @@ const Results: React.FC = () => {
       {/* Scenarios Section */}
       <section className="py-16 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
+          {/* Conditional Image Display */}
+          {ileLat && (
+            <div className="text-center mb-12">
+              <img 
+                src={new URL('@/assets/ile-lat-image.png', import.meta.url).href} 
+                alt="Ile lat informacja" 
+                className="mx-auto mb-4 w-48 h-auto"
+              />
+              <p className="text-gray-700 font-semibold text-lg">{ileLat}</p>
+            </div>
+          )}
+          
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-4 mb-3">
               <h2 className="text-gray-900 text-3xl font-bold">Scenariusze</h2>
@@ -1045,41 +1053,6 @@ const Results: React.FC = () => {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-gray-900 text-3xl font-bold mb-3">
-              Ciekawostki
-            </h2>
-            <p className="text-gray-600">Dowiedź się czegoś nowego</p>
-          </div>
-
-          <Accordion type="single" collapsible className="space-y-4">
-            {funFacts.map((fact, index) => (
-              <AccordionItem
-                key={index}
-                value={`item-${index}`}
-                className="bg-blue-50 border-2 border-blue-100 rounded-lg px-6 overflow-hidden"
-              >
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="bg-blue-200 w-8 h-8 rounded-full flex items-center justify-center shrink-0">
-                      <Info className="w-4 h-4 text-[hsl(var(--blue-primary))]" />
-                    </div>
-                    <span className="text-gray-900 font-semibold">
-                      {fact.split(":")[0]}
-                    </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 pl-11 pb-4">
-                  {fact.includes(":") ? fact.split(":")[1].trim() : fact}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
 
       <Footer />
 

@@ -124,7 +124,7 @@ const Index: React.FC = () => {
           requestBody.ilosc_dni_zwolnien = parseInt(data.sickLeaveDays);
         }
         if (data.expectedPensionAmount && parseFloat(data.expectedPensionAmount) > 0) {
-          requestBody.oczekiwana_kwota_emerytury = parseFloat(data.expectedPensionAmount);
+          requestBody.oczekiwana_emerytura = parseFloat(data.expectedPensionAmount);
         }
       }
 

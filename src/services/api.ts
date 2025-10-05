@@ -13,6 +13,7 @@ export interface PrognosiRequest {
   saldo_ofe?: number;
   kod_pocztowy?: string;
   ilosc_dni_zwolnien?: number;
+  oczekiwana_emerytura?: number;
 }
 
 export interface PrognosiResponse {
@@ -32,7 +33,7 @@ export interface PrognosiResponse {
     lata_skladkowe: number;
     srednia_skladka_miesieczna: number;
   };
-  ciekawostki: string[];
+  ile_lat?: string;
 }
 
 export const fetchPrognosis = async (
