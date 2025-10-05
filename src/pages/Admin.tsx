@@ -3,7 +3,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
 import { DashboardAIChat } from '@/components/DashboardAIChat';
 import { downloadReport } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
@@ -13,45 +12,14 @@ const Admin = () => {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isChecking, setIsChecking] = useState(true);
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
-    checkMFAStatus();
-  }, [user, loading]);
-
-  const checkMFAStatus = async () => {
-    if (loading) return;
-
-    if (!user) {
-      navigate('/auth');
-      return;
-    }
-
-    try {
-      // Get current session
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        navigate('/auth');
-        return;
-      }
-
-      // Check AAL level - must be aal2 (MFA verified)
-      const assuranceLevel = (session as any).aal;
-      
-      if (assuranceLevel !== 'aal2') {
-        // Not fully authenticated with MFA
-        navigate('/auth');
-        return;
-      }
-
-      setIsChecking(false);
-    } catch (error) {
-      console.error('Auth check error:', error);
+    // Simple guard - only check if user exists
+    if (!loading && !user) {
       navigate('/auth');
     }
-  };
+  }, [user, loading, navigate]);
 
   const handleDownloadReport = async () => {
     setDownloading(true);
@@ -82,7 +50,7 @@ const Admin = () => {
     }
   };
 
-  if (loading || isChecking) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -91,6 +59,10 @@ const Admin = () => {
         </div>
       </div>
     );
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (

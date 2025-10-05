@@ -109,13 +109,12 @@ const Auth = () => {
 
       if (error) throw error;
 
-      toast.success('2FA skonfigurowane!');
+      toast.success('2FA skonfigurowane pomyślnie!');
       
-      // Wait for session to refresh with aal2
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Hard redirect to ensure fresh state
-      window.location.href = '/admin';
+      // Direct navigation - user is now authenticated
+      setTimeout(() => {
+        navigate('/admin');
+      }, 500);
     } catch (error: any) {
       toast.error('Nieprawidłowy kod');
       setMfaCode('');
@@ -150,11 +149,10 @@ const Auth = () => {
 
       toast.success('Zalogowano pomyślnie!');
       
-      // Wait for session to refresh with aal2
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Hard redirect to ensure fresh state
-      window.location.href = '/admin';
+      // Direct navigation - user is now authenticated
+      setTimeout(() => {
+        navigate('/admin');
+      }, 500);
     } catch (error: any) {
       toast.error('Nieprawidłowy kod');
       setMfaCode('');
