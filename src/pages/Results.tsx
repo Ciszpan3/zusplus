@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import { useReactToPrint } from 'react-to-print';
 import {
   User,
   Sun,
@@ -12,7 +13,6 @@ import {
   Briefcase,
   Umbrella,
   Info,
-  Download,
 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -33,14 +33,17 @@ const Results: React.FC = () => {
     | PrognosiResponse
     | undefined;
 
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = useReactToPrint({
+    contentRef: componentRef,
+    documentTitle: 'Raport Emerytury',
+  });
+
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
-
-  const handleDownloadPDF = () => {
-    window.print();
-  };
 
   // Default values for reset
   const DEFAULT_AGE = 27;
@@ -344,21 +347,10 @@ const Results: React.FC = () => {
   ]);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="sticky top-0 z-50 bg-white shadow-sm">
-        <div className="flex justify-between items-center px-6">
-          <Header />
-          <button
-            onClick={handleDownloadPDF}
-            className="flex items-center gap-2 bg-[hsl(var(--blue-primary))] text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity font-medium text-xs whitespace-nowrap my-2"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Pobierz raport
-          </button>
-        </div>
-      </div>
-
-      <div>
+    <>
+      <Header showDownloadButton={true} onDownloadPDF={handlePrint} />
+      <div className="bg-gray-50 min-h-screen" ref={componentRef}>
+        <div>
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-[hsl(var(--green-primary))] to-[hsl(var(--blue-primary))] py-12 px-6">
@@ -1070,11 +1062,11 @@ const Results: React.FC = () => {
           </div>
         </div>
       </section>
-      </div>
+        </div>
 
-      <Footer />
+        <Footer />
 
-      <DashboardAIChat
+        <DashboardAIChat
         userEmail=""
         retirementData={{
           age,
@@ -1097,7 +1089,8 @@ const Results: React.FC = () => {
           weatherDescription: weatherInfo.description,
         }}
       />
-    </div>
+      </div>
+    </>
   );
 };
 
