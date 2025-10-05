@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { useReactToPrint } from 'react-to-print';
 import {
   User,
   Sun,
@@ -33,12 +32,65 @@ const Results: React.FC = () => {
     | PrognosiResponse
     | undefined;
 
-  const componentRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  const handlePrint = useReactToPrint({
-    contentRef: componentRef,
-    documentTitle: 'Raport Emerytury',
-  });
+  const handleDownloadPDF = async () => {
+    const loadScript = (src: string) =>
+      new Promise<void>((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.async = true;
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error(`Failed to load ${src}`));
+        document.head.appendChild(s);
+      });
+
+    const w = window as any;
+    if (!w.html2canvas) {
+      await loadScript('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js');
+    }
+    if (!w.jspdf) {
+      await loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
+    }
+
+    const html2canvas = w.html2canvas as (element: HTMLElement, opts?: any) => Promise<HTMLCanvasElement>;
+    const { jsPDF } = w.jspdf as { jsPDF: any };
+
+    if (!contentRef.current) return;
+    const element = contentRef.current;
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      windowHeight: element.scrollHeight,
+      windowWidth: element.scrollWidth,
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+    const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const ratio = pdfWidth / imgWidth;
+    const imgHeightInPdf = imgHeight * ratio;
+
+    let position = 0;
+    let heightLeft = imgHeightInPdf;
+
+    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeightInPdf);
+    heightLeft -= pdfHeight;
+
+    while (heightLeft > 0) {
+      position -= pdfHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeightInPdf);
+      heightLeft -= pdfHeight;
+    }
+
+    pdf.save('raport-emerytury.pdf');
+  };
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -348,8 +400,8 @@ const Results: React.FC = () => {
 
   return (
     <>
-      <Header showDownloadButton={true} onDownloadPDF={handlePrint} />
-      <div className="bg-gray-50 min-h-screen" ref={componentRef}>
+      <Header showDownloadButton={true} onDownloadPDF={handleDownloadPDF} />
+      <div className="bg-gray-50 min-h-screen" ref={contentRef}>
         <div>
 
       {/* Hero Section */}
