@@ -18,7 +18,10 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className="bg-[rgba(255,255,255,0.95)] border flex w-full flex-col items-stretch justify-center px-[70px] py-px border-b max-md:max-w-full max-md:px-5">
       <div className="bg-[rgba(0,0,0,0)] flex w-full max-w-[1280px] mx-auto items-center gap-5 justify-between pl-px pr-6 py-2 max-md:pr-5">
-        <div className="bg-[rgba(0,0,0,0)] flex flex-col">
+        <button
+          onClick={() => navigate("/")}
+          className="bg-[rgba(0,0,0,0)] flex flex-col hover:opacity-80 transition-opacity cursor-pointer"
+        >
           <div className="flex items-center gap-[17px]">
             <img
               src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/87d3a42ba1845afa2ddbc508f801908312c27032?placeholderIfAbsent=true"
@@ -34,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </button>
         <div className="flex items-center gap-3">
           {showBackButton && (
             <button
