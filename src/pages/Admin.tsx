@@ -3,69 +3,60 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MFAEnrollment } from '@/components/MFAEnrollment';
-import { supabase } from '@/integrations/supabase/client';
 import { DashboardAIChat } from '@/components/DashboardAIChat';
+import { downloadReport } from '@/services/api';
+import { useToast } from '@/hooks/use-toast';
+import { Download } from 'lucide-react';
 
 const Admin = () => {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
-  const [needsMFASetup, setNeedsMFASetup] = useState(false);
-  const [checkingMFA, setCheckingMFA] = useState(true);
+  const { toast } = useToast();
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
+    // Simple guard - only check if user exists
     if (!loading && !user) {
       navigate('/auth');
-      return;
     }
+  }, [user, loading, navigate]);
 
-    if (user && !needsMFASetup && checkingMFA) {
-      checkMFAStatus();
-    }
-  }, [user, loading]);
-
-  const checkMFAStatus = async () => {
+  const handleDownloadReport = async () => {
+    setDownloading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const aal = (session as any)?.aal;
-
-      if (aal !== 'aal2') {
-        // Check if user has enrolled MFA
-        const { data: factors } = await supabase.auth.mfa.listFactors();
-        if (!factors?.totp || factors.totp.length === 0) {
-          setNeedsMFASetup(true);
-        } else {
-          // Has MFA but not verified - redirect to login
-          navigate('/auth');
-        }
-      }
+      const blob = await downloadReport();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `raport_${new Date().toISOString().split('T')[0]}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Raport pobrany",
+        description: "Plik Excel został pomyślnie pobrany.",
+      });
     } catch (error) {
-      console.error('Error checking MFA status:', error);
+      console.error('Error downloading report:', error);
+      toast({
+        title: "Błąd",
+        description: "Nie udało się pobrać raportu. Spróbuj ponownie.",
+        variant: "destructive",
+      });
     } finally {
-      setCheckingMFA(false);
+      setDownloading(false);
     }
   };
 
-  const handleMFAComplete = () => {
-    setNeedsMFASetup(false);
-    window.location.reload();
-  };
-
-  if (loading || checkingMFA) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+          <p className="mt-4 text-muted-foreground">Ładowanie...</p>
         </div>
-      </div>
-    );
-  }
-
-  if (needsMFASetup) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
-        <MFAEnrollment onComplete={handleMFAComplete} />
       </div>
     );
   }
@@ -78,9 +69,9 @@ const Admin = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Admin Panel</h1>
+          <h1 className="text-2xl font-bold">Panel Administratora</h1>
           <Button onClick={signOut} variant="outline">
-            Sign Out
+            Wyloguj się
           </Button>
         </div>
       </header>
@@ -88,18 +79,26 @@ const Admin = () => {
       <main className="container mx-auto px-4 py-8">
         <Card>
           <CardHeader>
-            <CardTitle>Welcome to Admin Panel</CardTitle>
-            <CardDescription>You are logged in as: {user.email}</CardDescription>
+            <CardTitle>Witaj w Panelu Administratora</CardTitle>
+            <CardDescription>Zalogowany jako: {user?.email}</CardDescription>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              This is your protected admin dashboard. More features coming soon!
-            </p>
+          <CardContent className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Raporty</h3>
+              <Button 
+                onClick={handleDownloadReport} 
+                disabled={downloading}
+                className="w-full sm:w-auto"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                {downloading ? 'Pobieranie...' : 'Pobierz raport Excel'}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </main>
       
-      <DashboardAIChat userEmail={user.email || ''} />
+      <DashboardAIChat userEmail={user?.email || ''} />
     </div>
   );
 };

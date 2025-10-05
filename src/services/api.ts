@@ -52,3 +52,18 @@ export const fetchPrognosis = async (
 
   return response.json();
 };
+
+export const downloadReport = async (): Promise<Blob> => {
+  const response = await fetch(`${API_BASE_URL}/raport`, {
+    method: "GET",
+    headers: {
+      Accept: "application/vnd.ms-excel",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.blob();
+};
