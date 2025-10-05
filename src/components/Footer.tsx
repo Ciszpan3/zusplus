@@ -1,11 +1,12 @@
 import React from 'react';
+import zusLogo from "@/assets/zus-logo.png";
 const Footer: React.FC = () => {
   return <footer className="bg-gray-900 w-full mt-[40px] pt-8 pb-[18px] px-20 max-md:max-w-full max-md:mt-10 max-md:px-5">
       <div className="bg-[rgba(0,0,0,0)] w-full max-md:max-w-full max-md:pr-5">
         <div className="bg-[rgba(0,0,0,0)] flex w-full items-stretch gap-5 flex-wrap justify-between max-md:max-w-full">
           <div className="bg-[rgba(0,0,0,0)] pb-3.5">
             <div className="flex items-center gap-[18px]">
-              <img src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/1a8c9939f4f61ec48db841316e63b529c6a6eaf0?placeholderIfAbsent=true" className="aspect-[1.82] object-contain w-[62px] self-stretch shrink-0 my-auto" alt="ZUSight Logo" />
+              <img src={zusLogo} className="aspect-[1.82] object-contain w-[62px] self-stretch shrink-0 my-auto" alt="ZUSight Logo" />
               <div className="bg-[rgba(0,0,0,0)] self-stretch flex flex-col items-stretch w-[124px] my-auto">
                 <div className="text-white text-lg font-bold leading-loose">ZUS PLUS</div>
                 <div className="text-gray-500 text-sm font-normal leading-5 z-10 mt-2.5 max-md:-mr-2">

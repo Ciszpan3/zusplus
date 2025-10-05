@@ -1,6 +1,7 @@
 import React from "react";
 import { Download, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import zusLogo from "@/assets/zus-logo.png";
 
 interface HeaderProps {
   onDownloadPDF?: () => void;
@@ -24,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({
         >
           <div className="flex items-center gap-[17px]">
             <img
-              src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/87d3a42ba1845afa2ddbc508f801908312c27032?placeholderIfAbsent=true"
+              src={zusLogo}
               className="aspect-[1.82] object-contain w-[62px] self-stretch shrink-0 my-auto"
               alt="ZUSight Logo"
             />
