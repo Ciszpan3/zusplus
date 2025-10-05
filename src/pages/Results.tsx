@@ -24,6 +24,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { PrognosiResponse } from "@/services/api";
 import { DashboardAIChat } from "@/components/DashboardAIChat";
+import { AIRecommendations } from "@/components/AIRecommendations";
 
 const Results: React.FC = () => {
   const location = useLocation();
@@ -394,9 +395,33 @@ const Results: React.FC = () => {
       <section className="py-16 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-gray-900 text-3xl font-bold mb-3">
-              Scenariusze
-            </h2>
+            <div className="flex items-center justify-center gap-4 mb-3">
+              <h2 className="text-gray-900 text-3xl font-bold">
+                Scenariusze
+              </h2>
+              <AIRecommendations
+                retirementData={{
+                  age,
+                  gender,
+                  retirementAge,
+                  monthlyIncome,
+                  careerBreaks,
+                  sickLeaveDays,
+                  valorization,
+                  inflation,
+                  actualSalary,
+                  yearsToRetirement,
+                  futurePensionReal,
+                  futurePensionNominal,
+                  avgNationalPension,
+                  percentDifference,
+                  apiPensionNominal,
+                  apiPensionReal,
+                  weatherStatus: weatherInfo.text,
+                  weatherDescription: weatherInfo.description,
+                }}
+              />
+            </div>
             <p className="text-gray-600">
               Baw się różnymi scenariuszami i zobacz, jak wpłyną one na Twoją
               przyszłość
