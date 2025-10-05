@@ -29,6 +29,7 @@ import { AIRecommendations } from "@/components/AIRecommendations";
 import { RetirementCalculationModal } from "@/components/EducationalModals/RetirementCalculationModal";
 import { InflationModal } from "@/components/EducationalModals/InflationModal";
 import { PensionFundingModal } from "@/components/EducationalModals/PensionFundingModal";
+import { WeatherExplanationModal } from "@/components/EducationalModals/WeatherExplanationModal";
 import { Button } from "@/components/ui/button";
 
 const Results: React.FC = () => {
@@ -214,6 +215,7 @@ const Results: React.FC = () => {
   const [isRetirementModalOpen, setIsRetirementModalOpen] = useState(false);
   const [isInflationModalOpen, setIsInflationModalOpen] = useState(false);
   const [isPensionFundingModalOpen, setIsPensionFundingModalOpen] = useState(false);
+  const [isWeatherModalOpen, setIsWeatherModalOpen] = useState(false);
 
   // Use real data if available, otherwise fallback to dummy data
   const actualSalary = prognosisData?.aktualna_wyplata || 8500;
@@ -531,13 +533,17 @@ const Results: React.FC = () => {
                 </div>
 
                 {/* Weather Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <div 
+                  className="bg-white rounded-2xl p-6 shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
+                  onClick={() => setIsWeatherModalOpen(true)}
+                >
                   <div className="text-center">
                     <div className="bg-[hsl(var(--blue-primary))] text-white text-xs font-semibold px-3 py-1 rounded-full inline-block mb-4">
                       Mając {retirementAge} lat
                     </div>
-                    <h3 className="text-gray-900 font-bold text-xl mb-3">
+                    <h3 className="text-gray-900 font-bold text-xl mb-3 flex items-center justify-center gap-2">
                       Pogoda Emerytury
+                      <Info className="w-5 h-5 text-[hsl(var(--blue-primary))]" />
                     </h3>
                     <div className="flex items-center justify-center gap-2 mb-3">
                       <WeatherIcon
@@ -549,6 +555,9 @@ const Results: React.FC = () => {
                     </div>
                     <p className="text-gray-600 text-sm leading-relaxed">
                       {weatherInfo.description}
+                    </p>
+                    <p className="text-xs text-[hsl(var(--blue-primary))] mt-3 font-medium">
+                      Kliknij, aby dowiedzieć się więcej
                     </p>
                   </div>
                 </div>
@@ -1579,6 +1588,10 @@ const Results: React.FC = () => {
         <PensionFundingModal
           isOpen={isPensionFundingModalOpen}
           onClose={() => setIsPensionFundingModalOpen(false)}
+        />
+        <WeatherExplanationModal
+          isOpen={isWeatherModalOpen}
+          onClose={() => setIsWeatherModalOpen(false)}
         />
       </div>
     </>
