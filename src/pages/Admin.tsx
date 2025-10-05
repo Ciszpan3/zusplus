@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MFAEnrollment } from '@/components/MFAEnrollment';
 import { supabase } from '@/integrations/supabase/client';
+import { DashboardAIChat } from '@/components/DashboardAIChat';
 
 const Admin = () => {
   const { user, signOut, loading } = useAuth();
@@ -97,6 +98,8 @@ const Admin = () => {
           </CardContent>
         </Card>
       </main>
+      
+      <DashboardAIChat userEmail={user.email || ''} />
     </div>
   );
 };
