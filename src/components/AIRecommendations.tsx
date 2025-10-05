@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2, TrendingUp } from 'lucide-react';
 
 interface AIRecommendationsProps {
   retirementData: {
@@ -29,15 +30,28 @@ interface AIRecommendationsProps {
   };
 }
 
+
+const GRADIENT_COLORS = [
+  'from-purple-500/20 to-pink-500/20 border-purple-200',
+  'from-blue-500/20 to-cyan-500/20 border-blue-200',
+  'from-green-500/20 to-emerald-500/20 border-green-200',
+  'from-orange-500/20 to-red-500/20 border-orange-200',
+  'from-indigo-500/20 to-purple-500/20 border-indigo-200',
+];
+
+const formatRecommendation = (text: string) => {
+  return text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>');
+};
+
 export const AIRecommendations = ({ retirementData }: AIRecommendationsProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [recommendations, setRecommendations] = useState<string>('');
+  const [recommendations, setRecommendations] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const generateRecommendations = async () => {
     setIsLoading(true);
-    setRecommendations('');
+    setRecommendations([]);
 
     try {
       const dashboardContext = {
@@ -72,7 +86,8 @@ export const AIRecommendations = ({ retirementData }: AIRecommendationsProps) =>
       if (error) throw error;
       if (data.error) throw new Error(data.error);
 
-      setRecommendations(data.recommendations);
+      const recs = data.recommendations.split('\n').filter((line: string) => line.trim());
+      setRecommendations(recs);
     } catch (error) {
       console.error('Error generating recommendations:', error);
       toast({
@@ -87,7 +102,7 @@ export const AIRecommendations = ({ retirementData }: AIRecommendationsProps) =>
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
-    if (open && !recommendations && !isLoading) {
+    if (open && recommendations.length === 0 && !isLoading) {
       generateRecommendations();
     }
   };
@@ -103,58 +118,77 @@ export const AIRecommendations = ({ retirementData }: AIRecommendationsProps) =>
           Rekomendacje AI
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <Sparkles className="w-6 h-6 text-primary" />
             AI Recommender — co możesz zrobić dziś
           </DialogTitle>
           <DialogDescription>
-            Personalizowane rekomendacje na podstawie analizy Twojego raportu emerytalnego
+            Personalizowane rekomendacje oparte na analizie Twojego raportu emerytalnego
           </DialogDescription>
         </DialogHeader>
         
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-12 gap-4">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <p className="text-muted-foreground">Analizuję Twój raport i generuję rekomendacje...</p>
+          <div className="flex flex-col items-center justify-center py-16 gap-4">
+            <Loader2 className="w-12 h-12 animate-spin text-primary" />
+            <p className="text-muted-foreground text-lg">Analizuję Twój raport i generuję rekomendacje...</p>
           </div>
-        ) : recommendations ? (
-          <Card className="border-2">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
-              <CardTitle className="text-lg">📈 Twoje spersonalizowane rekomendacje</CardTitle>
-              <CardDescription>
-                Posortowane od największego do najmniejszego wpływu na emeryturę
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                {recommendations.split('\n').filter(line => line.trim()).map((rec, idx) => (
-                  <div 
-                    key={idx}
-                    className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors animate-fade-in border border-border/50"
-                    style={{ animationDelay: `${idx * 100}ms` }}
-                  >
-                    <div className="flex-1 text-sm leading-relaxed">
-                      {rec}
-                    </div>
-                  </div>
+        ) : recommendations.length > 0 ? (
+          <div className="py-6">
+            <div className="flex items-center gap-2 mb-6">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              <h3 className="text-lg font-semibold">Twoje spersonalizowane rekomendacje</h3>
+            </div>
+            
+            <Carousel className="w-full max-w-3xl mx-auto">
+              <CarouselContent>
+                {recommendations.map((rec, idx) => (
+                  <CarouselItem key={idx} className="md:basis-1/2 lg:basis-1/2">
+                    <Card className={`h-full bg-gradient-to-br ${GRADIENT_COLORS[idx % GRADIENT_COLORS.length]} border-2 shadow-lg hover:shadow-xl transition-all animate-fade-in`}
+                          style={{ animationDelay: `${idx * 150}ms` }}>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start gap-3">
+                          <div className="bg-white/90 p-3 rounded-full shadow-md">
+                            <TrendingUp className="w-6 h-6 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <CardTitle className="text-base leading-relaxed">
+                              <span 
+                                className="text-gray-700"
+                                dangerouslySetInnerHTML={{ __html: formatRecommendation(rec) }}
+                              />
+                            </CardTitle>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-white/80">
+                          <p className="text-xs text-gray-600 font-medium">
+                            Rekomendacja #{idx + 1} • Oparta na AI
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
                 ))}
-              </div>
-              
-              <div className="mt-6 pt-6 border-t">
-                <Button 
-                  onClick={generateRecommendations} 
-                  variant="outline" 
-                  className="w-full gap-2"
-                  disabled={isLoading}
-                >
-                  <Sparkles className="w-4 h-4" />
-                  Wygeneruj nowe rekomendacje
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CarouselContent>
+              <CarouselPrevious className="bg-white/90 hover:bg-white" />
+              <CarouselNext className="bg-white/90 hover:bg-white" />
+            </Carousel>
+            
+            <div className="mt-8 flex justify-center">
+              <Button 
+                onClick={generateRecommendations} 
+                variant="outline" 
+                className="gap-2 border-2 hover:bg-primary/5"
+                disabled={isLoading}
+              >
+                <Sparkles className="w-4 h-4" />
+                Wygeneruj nowe rekomendacje
+              </Button>
+            </div>
+          </div>
         ) : null}
       </DialogContent>
     </Dialog>
