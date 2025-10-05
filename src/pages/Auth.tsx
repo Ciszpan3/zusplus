@@ -111,8 +111,11 @@ const Auth = () => {
 
       toast.success('2FA skonfigurowane!');
       
-      // Navigate to admin after successful setup
-      navigate('/admin');
+      // Wait for session to refresh with aal2
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Hard redirect to ensure fresh state
+      window.location.href = '/admin';
     } catch (error: any) {
       toast.error('Nieprawidłowy kod');
       setMfaCode('');
@@ -147,8 +150,11 @@ const Auth = () => {
 
       toast.success('Zalogowano pomyślnie!');
       
-      // Navigate to admin after successful login
-      navigate('/admin');
+      // Wait for session to refresh with aal2
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Hard redirect to ensure fresh state
+      window.location.href = '/admin';
     } catch (error: any) {
       toast.error('Nieprawidłowy kod');
       setMfaCode('');
