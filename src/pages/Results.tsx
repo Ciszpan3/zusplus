@@ -43,7 +43,7 @@ const Results: React.FC = () => {
   const DEFAULT_RETIREMENT_AGE = 67;
   const DEFAULT_MONTHLY_INCOME = 8500;
   const DEFAULT_CAREER_BREAKS = 0;
-  const DEFAULT_SICK_LEAVE_DAYS = 15;
+  const DEFAULT_SICK_LEAVE_DAYS = 19;
   const DEFAULT_VALORIZATION = 0;
   const DEFAULT_INFLATION = 0;
 
@@ -682,7 +682,7 @@ const Results: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <label className="text-gray-700 text-sm font-medium">
-                      Procent zwolnień (50znaczy aktualnie 18/36)
+                      Procent składek [Obowiązuje aktualnie 19%]
                     </label>
                     <span className="text-[hsl(var(--blue-primary))] font-bold">
                       {sickLeaveDays} %
