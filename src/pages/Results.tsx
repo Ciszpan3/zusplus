@@ -1010,7 +1010,7 @@ const Results: React.FC = () => {
                   {/* Projected Pension */}
                   <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6">
                     <p className="text-gray-600 text-sm mb-2">
-                      Przewidywana emerytura
+                      Nominalna emerytura
                     </p>
                     <p className="text-[hsl(var(--blue-primary))] text-4xl font-bold">
                       {Math.round(futurePensionReal).toLocaleString("pl-PL")}{" "}
@@ -1021,7 +1021,7 @@ const Results: React.FC = () => {
                   {/* Calculated Pension from API */}
                   <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6">
                     <p className="text-gray-600 text-sm mb-2">
-                      Emerytura obliczona
+                      Emerytura realna
                     </p>
                     <p className="text-[hsl(var(--blue-primary))] text-4xl font-bold">
                       {apiPensionNominal
