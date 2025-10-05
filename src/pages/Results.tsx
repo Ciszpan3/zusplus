@@ -1052,7 +1052,6 @@ const Results: React.FC = () => {
           </div>
         </div>
       </section>
-      </div>
 
       <Footer />
 
