@@ -6,12 +6,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { MFAEnrollment } from '@/components/MFAEnrollment';
 import { supabase } from '@/integrations/supabase/client';
 import { DashboardAIChat } from '@/components/DashboardAIChat';
+import { downloadReport } from '@/services/api';
+import { useToast } from '@/hooks/use-toast';
+import { Download } from 'lucide-react';
 
 const Admin = () => {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [needsMFASetup, setNeedsMFASetup] = useState(false);
   const [checkingMFA, setCheckingMFA] = useState(true);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -51,6 +56,35 @@ const Admin = () => {
     window.location.reload();
   };
 
+  const handleDownloadReport = async () => {
+    setDownloading(true);
+    try {
+      const blob = await downloadReport();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `raport_${new Date().toISOString().split('T')[0]}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Raport pobrany",
+        description: "Plik Excel został pomyślnie pobrany.",
+      });
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      toast({
+        title: "Błąd",
+        description: "Nie udało się pobrać raportu. Spróbuj ponownie.",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   if (loading || checkingMFA) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -88,13 +122,21 @@ const Admin = () => {
       <main className="container mx-auto px-4 py-8">
         <Card>
           <CardHeader>
-            <CardTitle>Welcome to Admin Panel</CardTitle>
-            <CardDescription>You are logged in as: {user.email}</CardDescription>
+            <CardTitle>Panel Administratora</CardTitle>
+            <CardDescription>Zalogowany jako: {user.email}</CardDescription>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              This is your protected admin dashboard. More features coming soon!
-            </p>
+          <CardContent className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Raporty</h3>
+              <Button 
+                onClick={handleDownloadReport} 
+                disabled={downloading}
+                className="w-full sm:w-auto"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                {downloading ? 'Pobieranie...' : 'Pobierz raport Excel'}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </main>
