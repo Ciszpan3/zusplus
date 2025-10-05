@@ -26,7 +26,8 @@ const Footer: React.FC = () => {
               </div>
             </div>
             <div className="bg-[rgba(0,0,0,0)] text-sm my-auto pt-px pb-2 px-0.5">
-              <div>© 2024 ZUS Social Insurance Institution</div>
+              <div>© 2025
+ ZUS Social Insurance Institution</div>
             </div>
           </div>
         </div>
