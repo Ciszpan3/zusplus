@@ -1,21 +1,13 @@
 import React from 'react';
-
 const Footer: React.FC = () => {
-  return (
-    <footer className="bg-gray-900 w-full mt-[257px] pt-8 pb-[18px] px-20 max-md:max-w-full max-md:mt-10 max-md:px-5">
+  return <footer className="bg-gray-900 w-full mt-[257px] pt-8 pb-[18px] px-20 max-md:max-w-full max-md:mt-10 max-md:px-5">
       <div className="bg-[rgba(0,0,0,0)] w-full max-md:max-w-full max-md:pr-5">
         <div className="bg-[rgba(0,0,0,0)] flex w-full items-stretch gap-5 flex-wrap justify-between max-md:max-w-full">
           <div className="bg-[rgba(0,0,0,0)] pb-3.5">
             <div className="flex items-center gap-[18px]">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/1a8c9939f4f61ec48db841316e63b529c6a6eaf0?placeholderIfAbsent=true"
-                className="aspect-[1.82] object-contain w-[62px] self-stretch shrink-0 my-auto"
-                alt="ZUSight Logo"
-              />
+              <img src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/1a8c9939f4f61ec48db841316e63b529c6a6eaf0?placeholderIfAbsent=true" className="aspect-[1.82] object-contain w-[62px] self-stretch shrink-0 my-auto" alt="ZUSight Logo" />
               <div className="bg-[rgba(0,0,0,0)] self-stretch flex flex-col items-stretch w-[124px] my-auto">
-                <div className="text-white text-lg font-bold leading-loose">
-                  ZUSight
-                </div>
+                <div className="text-white text-lg font-bold leading-loose">ZUS PLUS</div>
                 <div className="text-gray-500 text-sm font-normal leading-5 z-10 mt-2.5 max-md:-mr-2">
                   Twoja przyszłość Twoje oszczędności
                 </div>
@@ -24,19 +16,11 @@ const Footer: React.FC = () => {
           </div>
           <div className="bg-[rgba(0,0,0,0)] flex items-stretch gap-6 text-base text-white font-normal flex-wrap my-auto max-md:max-w-full">
             <button className="bg-[rgba(0,0,0,0)] flex items-stretch gap-2 text-center underline px-[5px] py-0.5 hover:text-gray-300 transition-colors">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/22ce5b11d16ddeb83dea833256827e47e3bd716a?placeholderIfAbsent=true"
-                className="aspect-[0.8] object-contain w-4 shrink-0"
-                alt="Help icon"
-              />
+              <img src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/22ce5b11d16ddeb83dea833256827e47e3bd716a?placeholderIfAbsent=true" className="aspect-[0.8] object-contain w-4 shrink-0" alt="Help icon" />
               <div className="basis-auto">Pomoc i wsparcie</div>
             </button>
             <div className="flex flex-col relative aspect-[4.583] w-[110px] text-center underline px-[17px]">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/949d3fcf50acb82f57f4e6e977a093b5d465dbd9?placeholderIfAbsent=true"
-                className="absolute h-full w-full object-cover inset-0"
-                alt="Background"
-              />
+              <img src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/949d3fcf50acb82f57f4e6e977a093b5d465dbd9?placeholderIfAbsent=true" className="absolute h-full w-full object-cover inset-0" alt="Background" />
               <div className="relative flex gap-[7px]">
                 <div className="w-[53px]">O ZUS</div>
               </div>
@@ -47,8 +31,6 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
