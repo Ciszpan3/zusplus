@@ -652,359 +652,258 @@ const Index: React.FC = () => {
                           {optionalDataEnabled && (
                             <div className="space-y-6">
                               {/* Decorative header for optional section */}
-                              <div className="relative">
+                              <div className="relative mb-8">
                                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                  <div className="w-full border-t-2 border-dashed border-blue-200"></div>
+                                  <div className="w-full border-t-2 border-gradient-to-r from-blue-200 via-purple-200 to-green-200"></div>
                                 </div>
                                 <div className="relative flex justify-center">
-                                  <span className="bg-white px-6 py-2 text-sm font-semibold text-blue-600 flex items-center gap-2 animate-fade-in">
+                                  <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
                                     <TrendingUp className="w-4 h-4" />
                                     Dodatkowe informacje finansowe
                                   </span>
                                 </div>
                               </div>
 
-                              {/* Expected Pension Amount Section - MOVED TO TOP */}
-                              <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-                                <FormSection
-                                  icon="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/5f70b7e2df99e5163513911aa4307cd9ad5ecc66?placeholderIfAbsent=true"
-                                  title="Oczekiwana kwota emerytury"
-                                  description="Ile chciałbyś otrzymywać jako emeryturę miesięcznie?"
-                                  iconAlt="Expected pension icon"
-                                >
-                                  <div className="relative">
-                                    <div className="absolute -left-8 top-8 opacity-10">
-                                      <Banknote className="w-24 h-24 text-green-500" />
+                              <div className="grid md:grid-cols-2 gap-6">
+                                {/* Expected Pension Amount - MOVED TO TOP */}
+                                <div className="animate-fade-in bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border-2 border-green-200 hover:border-green-400 transition-all duration-300 hover:shadow-lg group" style={{ animationDelay: '100ms' }}>
+                                  <div className="flex items-center gap-3 mb-4">
+                                    <div className="bg-green-500 p-2.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
+                                      <Banknote className="w-5 h-5 text-white" />
                                     </div>
-                                    <div className="bg-[rgba(0,0,0,0)] w-[461px] max-w-full pb-7 relative z-10">
-                                      <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-500 font-normal leading-none pt-px pb-2 max-md:max-w-full max-md:pr-5">
-                                        <div>Kwota miesięczna (opcjonalne)</div>
-                                      </label>
-                                      <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
-                                        <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full transition-all duration-300 hover:border-green-500 hover:shadow-md focus-within:border-green-500 focus-within:ring-2 focus-within:ring-green-100">
-                                          <input
-                                            {...register("expectedPensionAmount", {
-                                              min: {
-                                                value: 0,
-                                                message: "Kwota nie może być ujemna",
-                                              },
-                                            })}
-                                            type="number"
-                                            min="0"
-                                            inputMode="numeric"
-                                            onKeyDown={blockInvalid}
-                                            onInput={(e) => {
-                                              e.currentTarget.value =
-                                                e.currentTarget.value.replace(
-                                                  /[^0-9]/g,
-                                                  ""
-                                                );
-                                            }}
-                                            onBlur={(e) => {
-                                              const n = parseInt(
-                                                e.currentTarget.value || "0",
-                                                10
-                                              );
-                                              const clamped = Math.max(
-                                                0,
-                                                isNaN(n) ? 0 : n
-                                              );
-                                              setValue(
-                                                "expectedPensionAmount",
-                                                String(clamped),
-                                                {
-                                                  shouldValidate: true,
-                                                  shouldDirty: true,
-                                                }
-                                              );
-                                            }}
-                                            className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
-                                            placeholder="5000"
-                                          />
-                                          <div className="text-gray-500 font-medium">
-                                            PLN
-                                          </div>
-                                        </div>
-                                      </div>
-                                      {errors.expectedPensionAmount && (
-                                        <span className="text-red-500 text-sm mt-1 animate-fade-in">
-                                          {errors.expectedPensionAmount.message}
-                                        </span>
-                                      )}
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-gray-900">Oczekiwana kwota emerytury</h3>
+                                      <p className="text-sm text-gray-600">Ile chciałbyś otrzymywać miesięcznie?</p>
                                     </div>
                                   </div>
-                                </FormSection>
-                              </div>
-
-                              {/* ZUS Balance Section */}
-                              <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
-                                <FormSection
-                                  icon="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/5f70b7e2df99e5163513911aa4307cd9ad5ecc66?placeholderIfAbsent=true"
-                                  title="Saldo ZUS"
-                                  description="Aktualne saldo ZUS"
-                                  iconAlt="ZUS icon"
-                                >
-                                  <div className="relative">
-                                    <div className="absolute -right-8 top-8 opacity-10">
-                                      <PiggyBank className="w-24 h-24 text-blue-500" />
-                                    </div>
-                                    <div className="bg-[rgba(0,0,0,0)] w-[461px] max-w-full pb-7 relative z-10">
-                                      <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-500 font-normal leading-none pt-px pb-2 max-md:max-w-full max-md:pr-5">
-                                        <div>Aktualne saldo ZUS</div>
-                                      </label>
-                                      <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
-                                        <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full transition-all duration-300 hover:border-blue-500 hover:shadow-md focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100">
-                                          <input
-                                            {...register("zusBalance", {
-                                              min: {
-                                                value: 0,
-                                                message:
-                                                  "Saldo nie może być ujemne",
-                                              },
-                                            })}
-                                            type="number"
-                                            min="0"
-                                            inputMode="numeric"
-                                            onKeyDown={blockInvalid}
-                                            onInput={(e) => {
-                                              e.currentTarget.value =
-                                                e.currentTarget.value.replace(
-                                                  /[^0-9]/g,
-                                                  ""
-                                                );
-                                            }}
-                                            onBlur={(e) => {
-                                              const n = parseInt(
-                                                e.currentTarget.value || "0",
-                                                10
-                                              );
-                                              const clamped = Math.max(
-                                                0,
-                                                isNaN(n) ? 0 : n
-                                              );
-                                              setValue(
-                                                "zusBalance",
-                                                String(clamped),
-                                                {
-                                                  shouldValidate: true,
-                                                  shouldDirty: true,
-                                                }
-                                              );
-                                            }}
-                                            className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
-                                            placeholder="0"
-                                          />
-                                          <div className="text-gray-500 font-medium">
-                                            PLN
-                                          </div>
-                                        </div>
-                                      </div>
-                                      {errors.zusBalance && (
-                                        <span className="text-red-500 text-sm mt-1 animate-fade-in">
-                                          {errors.zusBalance.message}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                </FormSection>
-                              </div>
-
-                              {/* OFE Balance Section */}
-                              <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
-                                <FormSection
-                                  icon="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/5f70b7e2df99e5163513911aa4307cd9ad5ecc66?placeholderIfAbsent=true"
-                                  title="Saldo OFE"
-                                  description="Aktualne saldo OFE"
-                                  iconAlt="OFE icon"
-                                >
-                                  <div className="relative">
-                                    <div className="absolute -left-8 top-8 opacity-10">
-                                      <Wallet className="w-24 h-24 text-purple-500" />
-                                    </div>
-                                    <div className="bg-[rgba(0,0,0,0)] w-[461px] max-w-full pb-7 relative z-10">
-                                      <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-500 font-normal leading-none pt-px pb-2 max-md:max-w-full max-md:pr-5">
-                                        <div>Aktualne saldo OFE</div>
-                                      </label>
-                                      <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
-                                        <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full transition-all duration-300 hover:border-purple-500 hover:shadow-md focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-100">
-                                          <input
-                                            {...register("ofeBalance", {
-                                              min: {
-                                                value: 0,
-                                                message:
-                                                  "Saldo nie może być ujemne",
-                                              },
-                                            })}
-                                            type="number"
-                                            min="0"
-                                            inputMode="numeric"
-                                            onKeyDown={blockInvalid}
-                                            onInput={(e) => {
-                                              e.currentTarget.value =
-                                                e.currentTarget.value.replace(
-                                                  /[^0-9]/g,
-                                                  ""
-                                                );
-                                            }}
-                                            onBlur={(e) => {
-                                              const n = parseInt(
-                                                e.currentTarget.value || "0",
-                                                10
-                                              );
-                                              const clamped = Math.max(
-                                                0,
-                                                isNaN(n) ? 0 : n
-                                              );
-                                              setValue(
-                                                "ofeBalance",
-                                                String(clamped),
-                                                {
-                                                  shouldValidate: true,
-                                                  shouldDirty: true,
-                                                }
-                                              );
-                                            }}
-                                            className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
-                                            placeholder="0"
-                                          />
-                                          <div className="text-gray-500 font-medium">
-                                            PLN
-                                          </div>
-                                        </div>
-                                      </div>
-                                      {errors.ofeBalance && (
-                                        <span className="text-red-500 text-sm mt-1 animate-fade-in">
-                                          {errors.ofeBalance.message}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                </FormSection>
-                              </div>
-
-                              {/* Sick Leave Days Section */}
-                              <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
-                                <div className="bg-[rgba(0,0,0,0)] w-full mt-[25px] max-md:max-w-full">
-                                  <div className="bg-[rgba(0,0,0,0)] flex items-stretch gap-3 flex-wrap pr-20 max-md:pr-5">
-                                    <div className="bg-[rgba(196,48,48,0.15)] flex items-center justify-center w-10 h-10 my-auto rounded-full">
-                                      <AlertCircle className="w-5 h-5 text-[rgba(196,48,48,1)]" />
-                                    </div>
-                                    <div className="bg-[rgba(0,0,0,0)] flex flex-col items-stretch grow shrink-0 basis-0 w-fit pb-1.5">
-                                      <div className="text-[rgba(0,65,110,1)] text-lg font-semibold leading-loose">
-                                        Ilość dni opuszczonych - Zwolnienia
-                                        lekarskie
-                                      </div>
-                                      <div className="text-gray-500 text-sm font-normal leading-none mt-2.5">
-                                        Posiedziało się w domu? Warto o tym
-                                        wspomnieć
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="bg-[rgba(0,0,0,0)] flex flex-col mt-4 max-md:max-w-full max-md:pr-5">
-                                    <div className="relative">
-                                      <div className="absolute -right-8 top-8 opacity-10">
-                                        <Building2 className="w-24 h-24 text-red-500" />
-                                      </div>
-                                      <div className="bg-[rgba(0,0,0,0)] w-[461px] max-w-full pb-7 relative z-10">
-                                        <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-500 font-normal leading-none justify-center py-[3px] max-md:max-w-full max-md:pr-5">
-                                          <div>Ilość dni poza pracą</div>
-                                        </label>
-                                        <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
-                                          <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full transition-all duration-300 hover:border-red-500 hover:shadow-md focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-100">
-                                            <input
-                                              {...register("sickLeaveDays", {
-                                                min: {
-                                                  value: 0,
-                                                  message:
-                                                    "Ilość dni nie może być ujemna",
-                                                },
-                                              })}
-                                              type="number"
-                                              min="0"
-                                              inputMode="numeric"
-                                              onKeyDown={blockInvalid}
-                                              onInput={(e) => {
-                                                e.currentTarget.value =
-                                                  e.currentTarget.value.replace(
-                                                    /[^0-9]/g,
-                                                    ""
-                                                  );
-                                              }}
-                                              onBlur={(e) => {
-                                                const n = parseInt(
-                                                  e.currentTarget.value || "0",
-                                                  10
-                                                );
-                                                const clamped = Math.max(
-                                                  0,
-                                                  isNaN(n) ? 0 : n
-                                                );
-                                                setValue(
-                                                  "sickLeaveDays",
-                                                  String(clamped),
-                                                  {
-                                                    shouldValidate: true,
-                                                    shouldDirty: true,
-                                                  }
-                                                );
-                                              }}
-                                              className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
-                                              placeholder="0"
-                                            />
-                                            <div className="text-gray-500 font-medium">
-                                              DNI
-                                            </div>
-                                          </div>
-                                        </div>
-                                        {errors.sickLeaveDays && (
-                                          <span className="text-red-500 text-sm mt-1 animate-fade-in">
-                                            {errors.sickLeaveDays.message}
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Postal Code Section */}
-                              <div className="animate-fade-in" style={{ animationDelay: '500ms' }}>
-                                <div className="bg-[rgba(0,0,0,0)] flex gap-[13px] text-lg text-[rgba(0,65,110,1)] font-semibold leading-loose flex-wrap mt-[15px] pr-20 py-0.5 max-md:max-w-full max-md:pr-5">
-                                  <img
-                                    src="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/59edbd2ecba2ebbd7bf467378dd57accac1863e9?placeholderIfAbsent=true"
-                                    className="aspect-[1] object-contain w-10 shrink-0 rounded-full"
-                                    alt="Postal code icon"
-                                  />
-                                  <div className="bg-[rgba(0,0,0,0)] flex flex-col mt-1 pb-[31px]">
-                                    <div>Kod pocztowy</div>
-                                  </div>
-                                </div>
-                                <div className="bg-[rgba(0,0,0,0)] flex flex-col font-normal mt-2 pb-[39px] max-md:max-w-full max-md:pr-5">
-                                  <div className="bg-[rgba(0,0,0,0)] w-[461px] max-w-full pb-7">
-                                    <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-500 leading-none justify-center py-1 max-md:max-w-full max-md:pr-5">
-                                      <div>Kod pocztowy</div>
+                                  <div className="w-full">
+                                    <label className="text-xs text-gray-600 font-medium mb-2 block">
+                                      Kwota miesięczna (opcjonalne)
                                     </label>
-                                    <div className="bg-[rgba(0,0,0,0)] text-base text-gray-600 whitespace-nowrap mt-2 max-md:max-w-full">
+                                    <div className="bg-white border-2 border-green-300 flex gap-3 justify-between p-4 rounded-lg transition-all duration-300 hover:border-green-500 focus-within:border-green-500 focus-within:ring-4 focus-within:ring-green-100 shadow-sm">
+                                      <input
+                                        {...register("expectedPensionAmount", {
+                                          min: {
+                                            value: 0,
+                                            message: "Kwota nie może być ujemna",
+                                          },
+                                        })}
+                                        type="number"
+                                        min="0"
+                                        inputMode="numeric"
+                                        onKeyDown={blockInvalid}
+                                        onInput={(e) => {
+                                          e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, "");
+                                        }}
+                                        onBlur={(e) => {
+                                          const n = parseInt(e.currentTarget.value || "0", 10);
+                                          const clamped = Math.max(0, isNaN(n) ? 0 : n);
+                                          setValue("expectedPensionAmount", String(clamped), {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                          });
+                                        }}
+                                        className="text-gray-700 font-semibold bg-transparent border-none outline-none flex-1 text-lg"
+                                        placeholder="5000"
+                                      />
+                                      <span className="text-green-600 font-bold">PLN</span>
+                                    </div>
+                                    {errors.expectedPensionAmount && (
+                                      <span className="text-red-500 text-xs mt-1.5 block animate-fade-in">
+                                        {errors.expectedPensionAmount.message}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* ZUS Balance */}
+                                <div className="animate-fade-in bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-lg group" style={{ animationDelay: '200ms' }}>
+                                  <div className="flex items-center gap-3 mb-4">
+                                    <div className="bg-blue-500 p-2.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
+                                      <PiggyBank className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-gray-900">Saldo ZUS</h3>
+                                      <p className="text-sm text-gray-600">Aktualne saldo na koncie ZUS</p>
+                                    </div>
+                                  </div>
+                                  <div className="w-full">
+                                    <label className="text-xs text-gray-600 font-medium mb-2 block">
+                                      Aktualne saldo ZUS
+                                    </label>
+                                    <div className="bg-white border-2 border-blue-300 flex gap-3 justify-between p-4 rounded-lg transition-all duration-300 hover:border-blue-500 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100 shadow-sm">
+                                      <input
+                                        {...register("zusBalance", {
+                                          min: {
+                                            value: 0,
+                                            message: "Saldo nie może być ujemne",
+                                          },
+                                        })}
+                                        type="number"
+                                        min="0"
+                                        inputMode="numeric"
+                                        onKeyDown={blockInvalid}
+                                        onInput={(e) => {
+                                          e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, "");
+                                        }}
+                                        onBlur={(e) => {
+                                          const n = parseInt(e.currentTarget.value || "0", 10);
+                                          const clamped = Math.max(0, isNaN(n) ? 0 : n);
+                                          setValue("zusBalance", String(clamped), {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                          });
+                                        }}
+                                        className="text-gray-700 font-semibold bg-transparent border-none outline-none flex-1 text-lg"
+                                        placeholder="0"
+                                      />
+                                      <span className="text-blue-600 font-bold">PLN</span>
+                                    </div>
+                                    {errors.zusBalance && (
+                                      <span className="text-red-500 text-xs mt-1.5 block animate-fade-in">
+                                        {errors.zusBalance.message}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* OFE Balance */}
+                                <div className="animate-fade-in bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-lg group" style={{ animationDelay: '300ms' }}>
+                                  <div className="flex items-center gap-3 mb-4">
+                                    <div className="bg-purple-500 p-2.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
+                                      <Wallet className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-gray-900">Saldo OFE</h3>
+                                      <p className="text-sm text-gray-600">Aktualne saldo OFE</p>
+                                    </div>
+                                  </div>
+                                  <div className="w-full">
+                                    <label className="text-xs text-gray-600 font-medium mb-2 block">
+                                      Aktualne saldo OFE
+                                    </label>
+                                    <div className="bg-white border-2 border-purple-300 flex gap-3 justify-between p-4 rounded-lg transition-all duration-300 hover:border-purple-500 focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-100 shadow-sm">
+                                      <input
+                                        {...register("ofeBalance", {
+                                          min: {
+                                            value: 0,
+                                            message: "Saldo nie może być ujemne",
+                                          },
+                                        })}
+                                        type="number"
+                                        min="0"
+                                        inputMode="numeric"
+                                        onKeyDown={blockInvalid}
+                                        onInput={(e) => {
+                                          e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, "");
+                                        }}
+                                        onBlur={(e) => {
+                                          const n = parseInt(e.currentTarget.value || "0", 10);
+                                          const clamped = Math.max(0, isNaN(n) ? 0 : n);
+                                          setValue("ofeBalance", String(clamped), {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                          });
+                                        }}
+                                        className="text-gray-700 font-semibold bg-transparent border-none outline-none flex-1 text-lg"
+                                        placeholder="0"
+                                      />
+                                      <span className="text-purple-600 font-bold">PLN</span>
+                                    </div>
+                                    {errors.ofeBalance && (
+                                      <span className="text-red-500 text-xs mt-1.5 block animate-fade-in">
+                                        {errors.ofeBalance.message}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Sick Leave Days */}
+                                <div className="animate-fade-in bg-gradient-to-br from-red-50 to-orange-50 p-6 rounded-xl border-2 border-red-200 hover:border-red-400 transition-all duration-300 hover:shadow-lg group" style={{ animationDelay: '400ms' }}>
+                                  <div className="flex items-center gap-3 mb-4">
+                                    <div className="bg-red-500 p-2.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
+                                      <AlertCircle className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-gray-900">Zwolnienia lekarskie</h3>
+                                      <p className="text-sm text-gray-600">Ilość dni opuszczonych w pracy</p>
+                                    </div>
+                                  </div>
+                                  <div className="w-full">
+                                    <label className="text-xs text-gray-600 font-medium mb-2 block">
+                                      Ilość dni poza pracą
+                                    </label>
+                                    <div className="bg-white border-2 border-red-300 flex gap-3 justify-between p-4 rounded-lg transition-all duration-300 hover:border-red-500 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-100 shadow-sm">
+                                      <input
+                                        {...register("sickLeaveDays", {
+                                          min: {
+                                            value: 0,
+                                            message: "Ilość dni nie może być ujemna",
+                                          },
+                                        })}
+                                        type="number"
+                                        min="0"
+                                        inputMode="numeric"
+                                        onKeyDown={blockInvalid}
+                                        onInput={(e) => {
+                                          e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, "");
+                                        }}
+                                        onBlur={(e) => {
+                                          const n = parseInt(e.currentTarget.value || "0", 10);
+                                          const clamped = Math.max(0, isNaN(n) ? 0 : n);
+                                          setValue("sickLeaveDays", String(clamped), {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                          });
+                                        }}
+                                        className="text-gray-700 font-semibold bg-transparent border-none outline-none flex-1 text-lg"
+                                        placeholder="0"
+                                      />
+                                      <span className="text-red-600 font-bold">DNI</span>
+                                    </div>
+                                    {errors.sickLeaveDays && (
+                                      <span className="text-red-500 text-xs mt-1.5 block animate-fade-in">
+                                        {errors.sickLeaveDays.message}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Postal Code */}
+                                <div className="animate-fade-in bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-xl border-2 border-indigo-200 hover:border-indigo-400 transition-all duration-300 hover:shadow-lg group md:col-span-2" style={{ animationDelay: '500ms' }}>
+                                  <div className="flex items-center gap-3 mb-4">
+                                    <div className="bg-indigo-500 p-2.5 rounded-lg shadow-md group-hover:scale-110 transition-transform">
+                                      <Building2 className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-gray-900">Kod pocztowy</h3>
+                                      <p className="text-sm text-gray-600">Twoja lokalizacja</p>
+                                    </div>
+                                  </div>
+                                  <div className="w-full max-w-md">
+                                    <label className="text-xs text-gray-600 font-medium mb-2 block">
+                                      Kod pocztowy
+                                    </label>
+                                    <div className="bg-white border-2 border-indigo-300 p-4 rounded-lg transition-all duration-300 hover:border-indigo-500 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-100 shadow-sm">
                                       <input
                                         {...register("postalCode", {
                                           pattern: {
                                             value: /^\d{2}-\d{3}$/,
-                                            message:
-                                              "Kod pocztowy musi być w formacie XX-XXX",
+                                            message: "Kod pocztowy musi być w formacie XX-XXX",
                                           },
                                         })}
                                         type="text"
                                         maxLength={6}
                                         onChange={handlePostalCodeChange}
-                                        className="bg-white border-gray-400 border flex flex-col justify-center px-4 py-[19px] rounded-lg border-solid max-md:max-w-full max-md:pr-5 w-full transition-all duration-300 hover:border-blue-500 hover:shadow-md focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        className="text-gray-700 font-semibold bg-transparent border-none outline-none w-full text-lg"
                                         placeholder="00-000"
                                       />
-                                      {errors.postalCode && (
-                                        <span className="text-red-500 text-sm mt-1 animate-fade-in">
-                                          {errors.postalCode.message}
-                                        </span>
-                                      )}
                                     </div>
+                                    {errors.postalCode && (
+                                      <span className="text-red-500 text-xs mt-1.5 block animate-fade-in">
+                                        {errors.postalCode.message}
+                                      </span>
+                                    )}
                                   </div>
                                 </div>
                               </div>
