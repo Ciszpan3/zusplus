@@ -61,33 +61,37 @@ const Results: React.FC = () => {
     const element = contentRef.current;
 
     const canvas = await html2canvas(element, {
-      scale: 2,
+      scale: 1.5,
       useCORS: true,
       logging: false,
       windowHeight: element.scrollHeight,
       windowWidth: element.scrollWidth,
     });
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
     const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     const imgWidth = canvas.width;
     const imgHeight = canvas.height;
-    const ratio = pdfWidth / imgWidth;
+    
+    // Add 10mm padding on each side
+    const padding = 10;
+    const availableWidth = pdfWidth - (padding * 2);
+    const ratio = availableWidth / imgWidth;
     const imgHeightInPdf = imgHeight * ratio;
 
-    let position = 0;
+    let position = padding;
     let heightLeft = imgHeightInPdf;
 
-    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeightInPdf);
-    heightLeft -= pdfHeight;
+    pdf.addImage(imgData, 'JPEG', padding, position, availableWidth, imgHeightInPdf);
+    heightLeft -= (pdfHeight - padding * 2);
 
     while (heightLeft > 0) {
-      position -= pdfHeight;
+      position -= (pdfHeight - padding * 2);
       pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeightInPdf);
-      heightLeft -= pdfHeight;
+      pdf.addImage(imgData, 'JPEG', padding, position, availableWidth, imgHeightInPdf);
+      heightLeft -= (pdfHeight - padding * 2);
     }
 
     pdf.save('raport-emerytury.pdf');
