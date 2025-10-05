@@ -31,6 +31,7 @@ const Results: React.FC = () => {
   const prognosisData = location.state?.prognosisData as
     | PrognosiResponse
     | undefined;
+  const formData = location.state?.formData as any;
 
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -97,13 +98,16 @@ const Results: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
-  // Default values for reset
-  const DEFAULT_AGE = 27;
-  const DEFAULT_GENDER: "female" | "male" = "female";
-  const DEFAULT_RETIREMENT_AGE = 67;
-  const DEFAULT_MONTHLY_INCOME = 8500;
+  // Default values from formData or fallback to defaults
+  const DEFAULT_AGE = formData?.age ? parseInt(formData.age) : 27;
+  const DEFAULT_GENDER: "female" | "male" = formData?.gender || "female";
+  const currentYear = new Date().getFullYear();
+  const DEFAULT_RETIREMENT_AGE = formData?.retirementYear 
+    ? parseInt(formData.retirementYear) - currentYear + DEFAULT_AGE
+    : 67;
+  const DEFAULT_MONTHLY_INCOME = formData?.monthlyIncome ? parseFloat(formData.monthlyIncome) : 8500;
   const DEFAULT_CAREER_BREAKS = 0;
-  const DEFAULT_SICK_LEAVE_DAYS = 19;
+  const DEFAULT_SICK_LEAVE_DAYS = formData?.sickLeaveDays ? parseInt(formData.sickLeaveDays) : 19;
   const DEFAULT_VALORIZATION = 0;
   const DEFAULT_INFLATION = 0;
 

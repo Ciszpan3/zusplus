@@ -145,8 +145,8 @@ const Index: React.FC = () => {
       const { fetchPrognosis } = await import("@/services/api");
       const prognosisData = await fetchPrognosis(requestBody);
 
-      // Navigate to results with the API data
-      navigate("/results", { state: { prognosisData } });
+      // Navigate to results with the API data and form inputs
+      navigate("/results", { state: { prognosisData, formData: data } });
     } catch (error) {
       console.error("Error fetching prognosis:", error);
       setIsLoading(false);
