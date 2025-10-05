@@ -1,5 +1,5 @@
 // Always use direct URL to avoid proxy issues
-const API_BASE_URL = "https://xvv7kcpl-8000.euw.devtunnels.ms";
+export const API_BASE_URL = "https://xvv7kcpl-8000.euw.devtunnels.ms";
 
 export interface PrognosiRequest {
   plec: "kobieta" | "mezczyzna";

@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/accordion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { PrognosiResponse } from "@/services/api";
+import { PrognosiResponse, API_BASE_URL } from "@/services/api";
 import { DashboardAIChat } from "@/components/DashboardAIChat";
 import { AIRecommendations } from "@/components/AIRecommendations";
 
@@ -418,10 +418,8 @@ const Results: React.FC = () => {
 
         console.log("Wysyłam zapytanie do API:", requestBody);
 
-        // Use proxy in development, direct URL in production
-        const apiUrl = import.meta.env.DEV
-          ? "/api/prognoza-wykres" // Proxy
-          : "https://xvv7kcpl-8000.euw.devtunnels.ms/prognoza-wykres"; // Direct
+        // Use API_BASE_URL from api.ts
+        const apiUrl = `${API_BASE_URL}/prognoza-wykres`;
 
         try {
           const response = await fetch(apiUrl, {
@@ -449,7 +447,7 @@ const Results: React.FC = () => {
       };
 
       fetchCalculatedPension();
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [
@@ -995,7 +993,7 @@ const Results: React.FC = () => {
                         onClick={handleCalculate}
                         className="bg-[hsl(var(--blue-primary))] text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity"
                       >
-                        Oblicz
+                        Aktualizuj
                       </button>
                       <button
                         onClick={handleReset}
@@ -1208,6 +1206,279 @@ const Results: React.FC = () => {
               </div>
             </div>
           </section>
+
+          {/* Szczegóły - Ciekawostki Section */}
+          {prognosisData?.szczegoly && (
+            <section className="py-16 px-6 bg-white">
+              <div className="max-w-7xl mx-auto">
+                <div className="text-center mb-12">
+                  <h2 className="text-gray-900 text-3xl font-bold mb-3">
+                    Szczegóły Twojej Prognozy
+                  </h2>
+                  <p className="text-gray-600">
+                    Poznaj dokładne dane wykorzystane do obliczenia Twojej
+                    przyszłej emerytury
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Card 1 - Podstawa obliczenia */}
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-blue-500 p-3 rounded-lg">
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-gray-900 font-bold text-lg">
+                        Podstawa Obliczenia
+                      </h3>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-gray-600 text-sm">
+                        Twoja podstawa emerytury
+                      </p>
+                      <p className="text-blue-600 text-3xl font-bold">
+                        {prognosisData.szczegoly.podstawa_obliczenia_emerytury.toLocaleString(
+                          "pl-PL",
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }
+                        )}{" "}
+                        PLN
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 2 - Oczekiwana długość życia */}
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-green-500 p-3 rounded-lg">
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-gray-900 font-bold text-lg">
+                        Czas na Emeryturze
+                      </h3>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-gray-600 text-sm">
+                        Średnie dalsze trwanie życia
+                      </p>
+                      <p className="text-green-600 text-3xl font-bold">
+                        {Math.round(
+                          prognosisData.szczegoly
+                            .srednie_dalsze_trwanie_zycia_miesiace / 12
+                        )}{" "}
+                        lat
+                      </p>
+                      <p className="text-gray-500 text-xs">
+                        (
+                        {
+                          prognosisData.szczegoly
+                            .srednie_dalsze_trwanie_zycia_miesiace
+                        }{" "}
+                        miesięcy)
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 3 - Suma składek */}
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-purple-500 p-3 rounded-lg">
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-gray-900 font-bold text-lg">
+                        Szacowana Suma Składek
+                      </h3>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-gray-600 text-sm">
+                        Twoje składki emerytalne
+                      </p>
+                      <p className="text-purple-600 text-3xl font-bold">
+                        {prognosisData.szczegoly.szacowana_suma_skladek.toLocaleString(
+                          "pl-PL",
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }
+                        )}{" "}
+                        PLN
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 4 - Kapitał początkowy */}
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-orange-500 p-3 rounded-lg">
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-gray-900 font-bold text-lg">
+                        Kapitał Początkowy
+                      </h3>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-gray-600 text-sm">
+                        Twój kapitał startowy
+                      </p>
+                      <p className="text-orange-600 text-3xl font-bold">
+                        {prognosisData.szczegoly.kapital_poczatkowy.toLocaleString(
+                          "pl-PL",
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }
+                        )}{" "}
+                        PLN
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 5 - Wskaźniki */}
+                  <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border border-teal-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-teal-500 p-3 rounded-lg">
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-gray-900 font-bold text-lg">
+                        Wskaźniki Ekonomiczne
+                      </h3>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-gray-600 text-sm">Waloryzacja</p>
+                        <p className="text-teal-600 text-2xl font-bold">
+                          {(
+                            (prognosisData.szczegoly.wspolczynnik_waloryzacji -
+                              1) *
+                            100
+                          ).toFixed(2)}
+                          %
+                        </p>
+                      </div>
+                      <div className="border-t border-teal-200 pt-2">
+                        <p className="text-gray-600 text-sm">Inflacja</p>
+                        <p className="text-teal-600 text-2xl font-bold">
+                          {(
+                            prognosisData.szczegoly.wspolczynnik_inflacji * 100
+                          ).toFixed(2)}
+                          %
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card 6 - Lata składkowe i średnia składka */}
+                  <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 border border-indigo-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-indigo-500 p-3 rounded-lg">
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-gray-900 font-bold text-lg">
+                        Twoja Aktywność
+                      </h3>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-gray-600 text-sm">Lata składkowe</p>
+                        <p className="text-indigo-600 text-2xl font-bold">
+                          {prognosisData.szczegoly.lata_skladkowe} lat
+                        </p>
+                      </div>
+                      <div className="border-t border-indigo-200 pt-2">
+                        <p className="text-gray-600 text-sm">
+                          Średnia składka miesięczna
+                        </p>
+                        <p className="text-indigo-600 text-2xl font-bold">
+                          {prognosisData.szczegoly.srednia_skladka_miesieczna.toLocaleString(
+                            "pl-PL",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}{" "}
+                          PLN
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
         </div>
 
         <Footer />

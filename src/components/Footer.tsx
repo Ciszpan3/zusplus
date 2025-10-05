@@ -1,6 +1,6 @@
 import React from 'react';
 const Footer: React.FC = () => {
-  return <footer className="bg-gray-900 w-full mt-[257px] pt-8 pb-[18px] px-20 max-md:max-w-full max-md:mt-10 max-md:px-5">
+  return <footer className="bg-gray-900 w-full mt-[40px] pt-8 pb-[18px] px-20 max-md:max-w-full max-md:mt-10 max-md:px-5">
       <div className="bg-[rgba(0,0,0,0)] w-full max-md:max-w-full max-md:pr-5">
         <div className="bg-[rgba(0,0,0,0)] flex w-full items-stretch gap-5 flex-wrap justify-between max-md:max-w-full">
           <div className="bg-[rgba(0,0,0,0)] pb-3.5">
