@@ -34,7 +34,7 @@ const Results: React.FC = () => {
 
   // Scroll to top when component mounts
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
   // Default values for reset
@@ -73,6 +73,12 @@ const Results: React.FC = () => {
     useState<number>(120);
   const [projectedBarHeightReal, setProjectedBarHeightReal] =
     useState<number>(80);
+
+  // State for calculated chart bar heights (right chart)
+  const [calculatedBarHeightNominal, setCalculatedBarHeightNominal] =
+    useState<number>(120);
+  const [calculatedBarHeightReal, setCalculatedBarHeightReal] =
+    useState<number>(120);
 
   // Use real data if available, otherwise fallback to dummy data
   const actualSalary = prognosisData?.aktualna_wyplata || 8500;
@@ -135,14 +141,18 @@ const Results: React.FC = () => {
   const WeatherIcon = weatherInfo.icon;
 
   // Calculate bar heights with max limit (256px container - some padding)
-  const MAX_CHART_HEIGHT = 200; // Maximum height for chart bars
+  const MAX_CHART_HEIGHT = 250; // Maximum height for chart bars
+  const MIN_CHART_HEIGHT = 30; // Minimum height for chart bars
   const calculateBarHeight = (
     value: number,
     referenceValue: number,
     baseHeight: number
   ) => {
     const calculatedHeight = (value / referenceValue) * baseHeight;
-    return Math.min(calculatedHeight, MAX_CHART_HEIGHT);
+    return Math.max(
+      MIN_CHART_HEIGHT,
+      Math.min(calculatedHeight, MAX_CHART_HEIGHT)
+    );
   };
 
   // Handle "Oblicz" button click - copy calculated values to projected chart
@@ -152,17 +162,9 @@ const Results: React.FC = () => {
       setProjectedPensionNominal(apiPensionNominal);
       setProjectedPensionReal(apiPensionReal);
 
-      // Calculate and copy bar heights from right chart to left chart
-      const baseValue = futurePensionReal || 4890;
-      const nominalHeight = calculateBarHeight(
-        apiPensionNominal,
-        baseValue,
-        120
-      );
-      const realHeight = calculateBarHeight(apiPensionReal, baseValue, 120);
-
-      setProjectedBarHeightNominal(nominalHeight);
-      setProjectedBarHeightReal(realHeight);
+      // Copy the EXACT bar heights from right chart to left chart
+      setProjectedBarHeightNominal(calculatedBarHeightNominal);
+      setProjectedBarHeightReal(calculatedBarHeightReal);
     }
   };
 
@@ -179,10 +181,104 @@ const Results: React.FC = () => {
     // Reset projected chart to original API data
     setProjectedPensionNominal(null);
     setProjectedPensionReal(null);
-    // Reset bar heights to default
-    setProjectedBarHeightNominal(120);
-    setProjectedBarHeightReal(80);
+
+    // Reset bar heights to original proportional values
+    if (prognosisData) {
+      const nominalValue = prognosisData.przyszla_emerytura_nominalna || 4890;
+      const realValue = prognosisData.przyszla_emerytura_realna || 4890;
+
+      // Calculate heights so their sum equals MAX_CHART_HEIGHT
+      const totalValue = nominalValue + realValue;
+
+      let nominalHeight = (nominalValue / totalValue) * MAX_CHART_HEIGHT;
+      let realHeight = (realValue / totalValue) * MAX_CHART_HEIGHT;
+
+      // Ensure minimum height of 30px for both
+      nominalHeight = Math.max(MIN_CHART_HEIGHT, nominalHeight);
+      realHeight = Math.max(MIN_CHART_HEIGHT, realHeight);
+
+      // If both are at minimum, adjust proportionally
+      if (
+        nominalHeight === MIN_CHART_HEIGHT &&
+        realHeight === MIN_CHART_HEIGHT
+      ) {
+        const remaining = MAX_CHART_HEIGHT - MIN_CHART_HEIGHT * 2;
+        const ratio = nominalValue / totalValue;
+        nominalHeight = MIN_CHART_HEIGHT + remaining * ratio;
+        realHeight = MIN_CHART_HEIGHT + remaining * (1 - ratio);
+      }
+
+      setProjectedBarHeightNominal(nominalHeight);
+      setProjectedBarHeightReal(realHeight);
+    }
   };
+
+  // Update calculated chart bar heights when API data changes
+  useEffect(() => {
+    if (apiPensionNominal && apiPensionReal) {
+      // Calculate heights so their sum equals MAX_CHART_HEIGHT
+      const totalValue = apiPensionNominal + apiPensionReal;
+
+      // Each bar gets a portion of MAX_CHART_HEIGHT proportional to its value
+      let nominalHeight = (apiPensionNominal / totalValue) * MAX_CHART_HEIGHT;
+      let realHeight = (apiPensionReal / totalValue) * MAX_CHART_HEIGHT;
+
+      // Ensure minimum height of 30px for both
+      nominalHeight = Math.max(MIN_CHART_HEIGHT, nominalHeight);
+      realHeight = Math.max(MIN_CHART_HEIGHT, realHeight);
+
+      // If both are at minimum, adjust proportionally
+      if (
+        nominalHeight === MIN_CHART_HEIGHT &&
+        realHeight === MIN_CHART_HEIGHT
+      ) {
+        const remaining = MAX_CHART_HEIGHT - MIN_CHART_HEIGHT * 2;
+        const ratio = apiPensionNominal / totalValue;
+        nominalHeight = MIN_CHART_HEIGHT + remaining * ratio;
+        realHeight = MIN_CHART_HEIGHT + remaining * (1 - ratio);
+      }
+
+      setCalculatedBarHeightNominal(nominalHeight);
+      setCalculatedBarHeightReal(realHeight);
+    }
+  }, [
+    apiPensionNominal,
+    apiPensionReal,
+    prognosisData?.przyszla_emerytura_realna,
+  ]);
+
+  // Update projected chart bar heights based on initial data
+  useEffect(() => {
+    if (prognosisData) {
+      const nominalValue = prognosisData.przyszla_emerytura_nominalna || 4890;
+      const realValue = prognosisData.przyszla_emerytura_realna || 4890;
+
+      // Calculate heights so their sum equals MAX_CHART_HEIGHT
+      const totalValue = nominalValue + realValue;
+
+      // Each bar gets a portion of MAX_CHART_HEIGHT proportional to its value
+      let nominalHeight = (nominalValue / totalValue) * MAX_CHART_HEIGHT;
+      let realHeight = (realValue / totalValue) * MAX_CHART_HEIGHT;
+
+      // Ensure minimum height of 30px for both
+      nominalHeight = Math.max(MIN_CHART_HEIGHT, nominalHeight);
+      realHeight = Math.max(MIN_CHART_HEIGHT, realHeight);
+
+      // If both are at minimum, adjust proportionally
+      if (
+        nominalHeight === MIN_CHART_HEIGHT &&
+        realHeight === MIN_CHART_HEIGHT
+      ) {
+        const remaining = MAX_CHART_HEIGHT - MIN_CHART_HEIGHT * 2;
+        const ratio = nominalValue / totalValue;
+        nominalHeight = MIN_CHART_HEIGHT + remaining * ratio;
+        realHeight = MIN_CHART_HEIGHT + remaining * (1 - ratio);
+      }
+
+      setProjectedBarHeightNominal(nominalHeight);
+      setProjectedBarHeightReal(realHeight);
+    }
+  }, [prognosisData]);
 
   // Debounced API call for calculator
   useEffect(() => {
@@ -401,9 +497,7 @@ const Results: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-4 mb-3">
-              <h2 className="text-gray-900 text-3xl font-bold">
-                Scenariusze
-              </h2>
+              <h2 className="text-gray-900 text-3xl font-bold">Scenariusze</h2>
               <AIRecommendations
                 retirementData={{
                   age,
@@ -841,11 +935,7 @@ const Results: React.FC = () => {
                           <div
                             className="relative bg-[#00993F] rounded-t-lg"
                             style={{
-                              height: `${calculateBarHeight(
-                                apiPensionNominal,
-                                futurePensionReal,
-                                120
-                              )}px`,
+                              height: `${calculatedBarHeightNominal}px`,
                             }}
                           >
                             <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
@@ -859,11 +949,7 @@ const Results: React.FC = () => {
                           <div
                             className="relative bg-red-400 rounded-b-lg"
                             style={{
-                              height: `${calculateBarHeight(
-                                apiPensionReal,
-                                futurePensionReal,
-                                120
-                              )}px`,
+                              height: `${calculatedBarHeightReal}px`,
                             }}
                           >
                             <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
