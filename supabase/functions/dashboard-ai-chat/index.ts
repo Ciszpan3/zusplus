@@ -21,12 +21,40 @@ serve(async (req) => {
     console.log("Processing chat request:", { message, dashboardContext });
 
     const systemPrompt = `Jesteś pomocnym asystentem AI w polskim panelu administracyjnym aplikacji emerytalnej. 
-Pomagasz użytkownikom zrozumieć ich dane i odpowiadasz na pytania związane z ich kontem i danymi emerytalnymi.
+Pomagasz użytkownikom zrozumieć ich dane emerytalne i odpowiadasz na pytania związane z ich prognozą emerytury.
 
-Kontekst użytkownika:
-${JSON.stringify(dashboardContext, null, 2)}
+${dashboardContext.retirementData ? `
+DANE UŻYTKOWNIKA:
+- Wiek: ${dashboardContext.retirementData.wiek} lat
+- Płeć: ${dashboardContext.retirementData.plec}
+- Wiek przejścia na emeryturę: ${dashboardContext.retirementData.wiek_przejscia_na_emeryture} lat
+- Miesięczny dochód: ${dashboardContext.retirementData.miesieczny_dochod} PLN
+- Przerwy w karierze: ${dashboardContext.retirementData.przerwy_w_karierze} miesięcy
+- Dni zwolnień: ${dashboardContext.retirementData.dni_zwolnien} dni
+- Waloryzacja: ${dashboardContext.retirementData.waloryzacja}%
+- Inflacja: ${dashboardContext.retirementData.inflacja}%
 
-Zawsze odpowiadaj po polsku. Bądź pomocny, jasny i konkretny. Jeśli nie masz informacji potrzebnych do odpowiedzi, powiedz o tym użytkownikowi.`;
+PROGNOZA EMERYTURY:
+- Aktualna wypłata: ${dashboardContext.retirementData.aktualna_wyplata} PLN
+- Lata do emerytury: ${dashboardContext.retirementData.lata_do_emerytury} lat
+- Przyszła emerytura (realna): ${Math.round(dashboardContext.retirementData.przyszla_emerytura_realna)} PLN/miesiąc
+- Przyszła emerytura (nominalna): ${Math.round(dashboardContext.retirementData.przyszla_emerytura_nominalna)} PLN/miesiąc
+- Średnia krajowa emerytura: ${Math.round(dashboardContext.retirementData.srednia_krajowa_emerytura)} PLN/miesiąc
+- Różnica do średniej: ${dashboardContext.retirementData.roznica_procent.toFixed(1)}%
+- Status pogody emerytury: ${dashboardContext.retirementData.status_pogody}
+- ${dashboardContext.retirementData.opis_pogody}
+
+${dashboardContext.retirementData.emerytura_z_kalkulatora_nominalna ? `
+DANE Z KALKULATORA:
+- Prognoza nominalna: ${Math.round(dashboardContext.retirementData.emerytura_z_kalkulatora_nominalna)} PLN
+- Prognoza realna: ${Math.round(dashboardContext.retirementData.emerytura_z_kalkulatora_realna || 0)} PLN
+` : ''}
+` : 'Użytkownik nie ma jeszcze danych o emeryturze.'}
+
+Zawsze odpowiadaj po polsku. Bądź pomocny, jasny i konkretny. 
+Pomagaj użytkownikowi zrozumieć jego sytuację emerytalną i udzielaj praktycznych porad.
+Jeśli nie masz informacji potrzebnych do odpowiedzi, powiedz o tym użytkownikowi.
+Używaj danych z kontekstu do odpowiedzi na pytania użytkownika.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

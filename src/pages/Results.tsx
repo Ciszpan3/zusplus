@@ -23,6 +23,7 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { PrognosiResponse } from "@/services/api";
+import { DashboardAIChat } from "@/components/DashboardAIChat";
 
 const Results: React.FC = () => {
   const location = useLocation();
@@ -887,6 +888,30 @@ const Results: React.FC = () => {
       </section>
 
       <Footer />
+      
+      <DashboardAIChat 
+        userEmail=""
+        retirementData={{
+          age,
+          gender,
+          retirementAge,
+          monthlyIncome,
+          careerBreaks,
+          sickLeaveDays,
+          valorization,
+          inflation,
+          actualSalary,
+          yearsToRetirement,
+          futurePensionReal,
+          futurePensionNominal,
+          avgNationalPension,
+          percentDifference,
+          apiPensionNominal,
+          apiPensionReal,
+          weatherStatus: weatherInfo.text,
+          weatherDescription: weatherInfo.description,
+        }}
+      />
     </div>
   );
 };

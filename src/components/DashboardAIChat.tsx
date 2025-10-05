@@ -13,9 +13,29 @@ interface Message {
 
 interface DashboardAIChatProps {
   userEmail: string;
+  retirementData?: {
+    age: number;
+    gender: string;
+    retirementAge: number;
+    monthlyIncome: number;
+    careerBreaks: number;
+    sickLeaveDays: number;
+    valorization: number;
+    inflation: number;
+    actualSalary: number;
+    yearsToRetirement: number;
+    futurePensionReal: number;
+    futurePensionNominal: number;
+    avgNationalPension: number;
+    percentDifference: number;
+    apiPensionNominal: number | null;
+    apiPensionReal: number | null;
+    weatherStatus: string;
+    weatherDescription: string;
+  };
 }
 
-export const DashboardAIChat = ({ userEmail }: DashboardAIChatProps) => {
+export const DashboardAIChat = ({ userEmail, retirementData }: DashboardAIChatProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -42,6 +62,26 @@ export const DashboardAIChat = ({ userEmail }: DashboardAIChatProps) => {
     try {
       const dashboardContext = {
         userEmail,
+        retirementData: retirementData ? {
+          wiek: retirementData.age,
+          plec: retirementData.gender === 'female' ? 'kobieta' : 'mężczyzna',
+          wiek_przejscia_na_emeryture: retirementData.retirementAge,
+          miesieczny_dochod: retirementData.monthlyIncome,
+          przerwy_w_karierze: retirementData.careerBreaks,
+          dni_zwolnien: retirementData.sickLeaveDays,
+          waloryzacja: retirementData.valorization,
+          inflacja: retirementData.inflation,
+          aktualna_wyplata: retirementData.actualSalary,
+          lata_do_emerytury: retirementData.yearsToRetirement,
+          przyszla_emerytura_realna: retirementData.futurePensionReal,
+          przyszla_emerytura_nominalna: retirementData.futurePensionNominal,
+          srednia_krajowa_emerytura: retirementData.avgNationalPension,
+          roznica_procent: retirementData.percentDifference,
+          emerytura_z_kalkulatora_nominalna: retirementData.apiPensionNominal,
+          emerytura_z_kalkulatora_realna: retirementData.apiPensionReal,
+          status_pogody: retirementData.weatherStatus,
+          opis_pogody: retirementData.weatherDescription,
+        } : null,
         timestamp: new Date().toISOString(),
       };
 
