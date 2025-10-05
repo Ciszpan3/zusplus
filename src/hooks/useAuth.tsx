@@ -74,29 +74,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    if (error) {
-      toast.error(error.message);
-      return { error };
-    }
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        toast.error(error.message);
+        return { error };
+      }
 
-    // Check if MFA is required
-    const { data: { session } } = await supabase.auth.getSession();
-    const currentAAL = (session as any)?.aal;
-    
-    if (currentAAL === 'aal1') {
-      // User needs MFA verification
-      return { error: null, needsMFA: true };
+      // Check if MFA is required
+      const { data: { session } } = await supabase.auth.getSession();
+      const currentAAL = (session as any)?.aal;
+      
+      if (currentAAL === 'aal1') {
+        // User needs MFA verification
+        return { error: null, needsMFA: true };
+      }
+      
+      toast.success('Successfully signed in!');
+      
+      return { error: null, needsMFA: false };
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to sign in');
+      return { error: err };
     }
-    
-    toast.success('Successfully signed in!');
-    navigate('/admin');
-    
-    return { error: null, needsMFA: false };
   };
 
   const signUp = async (email: string, password: string) => {

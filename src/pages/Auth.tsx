@@ -24,11 +24,19 @@ const Auth = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const result = await signIn(email, password);
-    setIsLoading(false);
-    
-    if (result.needsMFA) {
-      setShowMFA(true);
+    try {
+      const result = await signIn(email, password);
+      
+      if (result.needsMFA) {
+        setShowMFA(true);
+      } else if (!result.error) {
+        // Success - user state change will trigger navigation
+        // via the useEffect above
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
