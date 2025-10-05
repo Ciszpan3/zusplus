@@ -78,6 +78,13 @@ const Results: React.FC = () => {
   const weatherInfo = getWeatherInfo();
   const WeatherIcon = weatherInfo.icon;
 
+  // Calculate bar heights with max limit (256px container - some padding)
+  const MAX_CHART_HEIGHT = 120; // h-64 = 256px, leave some space
+  const calculateBarHeight = (value: number, referenceValue: number, baseHeight: number) => {
+    const calculatedHeight = (value / referenceValue) * baseHeight;
+    return Math.min(calculatedHeight, MAX_CHART_HEIGHT);
+  };
+
 
   // Debounced API call for calculator
   useEffect(() => {
@@ -96,12 +103,17 @@ const Results: React.FC = () => {
         
         console.log('Wysyłam zapytanie do API:', requestBody);
         
+        // Use proxy in development, direct URL in production
+        const apiUrl = import.meta.env.DEV 
+          ? '/api/prognoza-wykres'  // Proxy
+          : 'https://xvv7kcpl-8000.euw.devtunnels.ms/prognoza-wykres';  // Direct
+        
         try {
-          const response = await fetch('https://xvv7kcpl-8000.euw.devtunnels.ms/prognoza-wykres', {
+          const response = await fetch(apiUrl, {
             method: 'POST',
-            mode: 'cors',
             headers: {
               'Content-Type': 'application/json',
+              'Accept': 'application/json',
             },
             body: JSON.stringify(requestBody),
           });
@@ -122,7 +134,7 @@ const Results: React.FC = () => {
       };
 
       fetchCalculatedPension();
-    }, 1500);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [age, gender, retirementAge, monthlyIncome, careerBreaks, sickLeaveDays, valorization, inflation]);
@@ -463,8 +475,8 @@ const Results: React.FC = () => {
                   <Slider
                     value={[inflation]}
                     onValueChange={(val) => setInflation(val[0])}
-                    min={-300}
-                    max={300}
+                    min={-15}
+                    max={15}
                     step={1}
                     className="w-full"
                   />
@@ -499,23 +511,23 @@ const Results: React.FC = () => {
               </div>
 
               {/* Bar Charts Comparison */}
-              <div className="bg-white rounded-xl p-6 shadow-lg">
-                <div className="grid grid-cols-2 gap-6">
+              <div className="bg-white rounded-xl p-6 shadow-lg overflow-visible">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-6">
                   {/* Projected Chart */}
                   <div className="text-center">
-                    <div className="relative h-64 flex flex-col justify-end overflow-hidden">
+                    <div className="relative h-64 flex flex-col justify-end">
                       {/* Bars */}
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
-                        <div className="relative bg-[#00993F] rounded-t-lg" style={{ height: '120px' }}>
-                          <div className="absolute top-2 -right-24 flex items-center gap-2">
-                            <div className="w-8 h-0.5 bg-[#00993F]"></div>
-                            <span className="text-[#00993F] font-bold text-xs whitespace-nowrap">{Math.round(futurePensionReal).toLocaleString()} PLN</span>
+                        <div className="relative bg-[#00993F] rounded-t-lg" style={{ height: `${Math.min(120, MAX_CHART_HEIGHT)}px` }}>
+                          <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
+                            <div className="w-6 sm:w-8 h-0.5 bg-[#00993F]"></div>
+                            <span className="text-[#00993F] font-bold text-[10px] sm:text-xs whitespace-nowrap">{Math.round(futurePensionReal).toLocaleString()} PLN</span>
                           </div>
                         </div>
-                        <div className="relative bg-red-400 rounded-b-lg" style={{ height: '80px' }}>
-                          <div className="absolute top-2 -right-24 flex items-center gap-2">
-                            <div className="w-8 h-0.5 bg-red-400"></div>
-                            <span className="text-red-400 font-bold text-xs whitespace-nowrap">{Math.round(futurePensionReal * 0.6).toLocaleString()} PLN</span>
+                        <div className="relative bg-red-400 rounded-b-lg" style={{ height: `${Math.min(80, MAX_CHART_HEIGHT)}px` }}>
+                          <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
+                            <div className="w-6 sm:w-8 h-0.5 bg-red-400"></div>
+                            <span className="text-red-400 font-bold text-[10px] sm:text-xs whitespace-nowrap">{Math.round(futurePensionReal * 0.6).toLocaleString()} PLN</span>
                           </div>
                         </div>
                       </div>
@@ -525,19 +537,19 @@ const Results: React.FC = () => {
 
                   {/* Calculated Chart */}
                   <div className="text-center">
-                    <div className="relative h-64 flex flex-col justify-end overflow-hidden">
+                    <div className="relative h-64 flex flex-col justify-end">
                       {/* Bars */}
                       {apiPensionNominal && apiPensionReal ? (
                         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
                           <div 
                             className="relative bg-[#00993F] rounded-t-lg" 
                             style={{ 
-                              height: `${(apiPensionNominal / futurePensionReal) * 120}px` 
+                              height: `${calculateBarHeight(apiPensionNominal, futurePensionReal, 120)}px` 
                             }}
                           >
-                            <div className="absolute top-2 -right-24 flex items-center gap-2">
-                              <div className="w-8 h-0.5 bg-[#00993F]"></div>
-                              <span className="text-[#00993F] font-bold text-xs whitespace-nowrap">
+                            <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
+                              <div className="w-6 sm:w-8 h-0.5 bg-[#00993F]"></div>
+                              <span className="text-[#00993F] font-bold text-[10px] sm:text-xs whitespace-nowrap">
                                 {Math.round(apiPensionNominal).toLocaleString()} PLN
                               </span>
                             </div>
@@ -545,12 +557,12 @@ const Results: React.FC = () => {
                           <div 
                             className="relative bg-red-400 rounded-b-lg" 
                             style={{ 
-                              height: `${(apiPensionReal / futurePensionReal) * 120}px` 
+                              height: `${calculateBarHeight(apiPensionReal, futurePensionReal, 120)}px` 
                             }}
                           >
-                            <div className="absolute top-2 -right-24 flex items-center gap-2">
-                              <div className="w-8 h-0.5 bg-red-400"></div>
-                              <span className="text-red-400 font-bold text-xs whitespace-nowrap">
+                            <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
+                              <div className="w-6 sm:w-8 h-0.5 bg-red-400"></div>
+                              <span className="text-red-400 font-bold text-[10px] sm:text-xs whitespace-nowrap">
                                 {Math.round(apiPensionReal).toLocaleString()} PLN
                               </span>
                             </div>

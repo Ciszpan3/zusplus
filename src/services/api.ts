@@ -1,4 +1,7 @@
-const API_BASE_URL = 'https://xvv7kcpl-8000.euw.devtunnels.ms';
+// Use proxy in development, direct URL in production
+const API_BASE_URL = import.meta.env.DEV 
+  ? '/api'  // Proxy w trybie deweloperskim
+  : 'https://xvv7kcpl-8000.euw.devtunnels.ms';  // Bezpośredni URL w produkcji
 
 export interface PrognosiRequest {
   plec: 'kobieta' | 'mezczyzna';
@@ -37,6 +40,7 @@ export const fetchPrognosis = async (data: PrognosiRequest): Promise<PrognosiRes
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
     body: JSON.stringify(data),
   });
