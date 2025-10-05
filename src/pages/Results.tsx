@@ -1,38 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { User, Sun, CloudSun, Cloud, CloudRain, CloudLightning, TrendingUp, Plane, Briefcase, Umbrella, Info } from 'lucide-react';
-import { Slider } from '@/components/ui/slider';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { PrognosiResponse } from '@/services/api';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import {
+  User,
+  Sun,
+  CloudSun,
+  Cloud,
+  CloudRain,
+  CloudLightning,
+  TrendingUp,
+  Plane,
+  Briefcase,
+  Umbrella,
+  Info,
+} from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { PrognosiResponse } from "@/services/api";
 
 const Results: React.FC = () => {
   const location = useLocation();
-  const prognosisData = location.state?.prognosisData as PrognosiResponse | undefined;
-  
+  const prognosisData = location.state?.prognosisData as
+    | PrognosiResponse
+    | undefined;
+
   const [age, setAge] = useState(27);
-  const [gender, setGender] = useState<'female' | 'male'>('female');
+  const [gender, setGender] = useState<"female" | "male">("female");
   const [retirementAge, setRetirementAge] = useState(67);
   const [monthlyIncome, setMonthlyIncome] = useState(8500);
   const [careerBreaks, setCareerBreaks] = useState(0);
   const [sickLeaveDays, setSickLeaveDays] = useState(15);
   const [valorization, setValorization] = useState(0);
   const [inflation, setInflation] = useState(0);
-  const [apiPensionNominal, setApiPensionNominal] = useState<number | null>(null);
+  const [apiPensionNominal, setApiPensionNominal] = useState<number | null>(
+    null
+  );
   const [apiPensionReal, setApiPensionReal] = useState<number | null>(null);
 
   // Use real data if available, otherwise fallback to dummy data
   const actualSalary = prognosisData?.aktualna_wyplata || 8500;
   const yearsToRetirement = prognosisData?.lata_do_emerytury || 42;
   const futurePensionReal = prognosisData?.przyszla_emerytura_realna || 4890;
-  const futurePensionNominal = prognosisData?.przyszla_emerytura_nominalna || 4890;
+  const futurePensionNominal =
+    prognosisData?.przyszla_emerytura_nominalna || 4890;
   const avgNationalPension = prognosisData?.srednia_krajowa_emerytura || 3200;
   const percentDifference = prognosisData?.roznica_procent || 53;
   const funFacts = prognosisData?.ciekawostki || [
     "Regularne oszczędzanie: To klucz do komfortowej emerytury",
     "System emerytalny: Działa na zasadzie pokoleniowej solidarności",
-    "III filar: Warto rozważyć dodatkowe oszczędności"
+    "III filar: Warto rozważyć dodatkowe oszczędności",
   ];
 
   // Determine weather based on percentage difference
@@ -42,35 +64,35 @@ const Results: React.FC = () => {
         icon: Sun,
         text: "Słonecznie",
         description: "Twoja emerytura znacznie przewyższa średnią krajową!",
-        color: "text-yellow-400"
+        color: "text-yellow-400",
       };
     } else if (percentDifference > 0) {
       return {
         icon: CloudSun,
         text: "Częściowo słonecznie",
         description: "Twoja emerytura jest powyżej średniej krajowej",
-        color: "text-yellow-500"
+        color: "text-yellow-500",
       };
     } else if (percentDifference > -15) {
       return {
         icon: Cloud,
         text: "Pochmurnie",
         description: "Twoja emerytura jest zbliżona do średniej krajowej",
-        color: "text-gray-400"
+        color: "text-gray-400",
       };
     } else if (percentDifference > -40) {
       return {
         icon: CloudRain,
         text: "Deszczowo",
         description: "Twoja emerytura jest poniżej średniej krajowej",
-        color: "text-blue-400"
+        color: "text-blue-400",
       };
     } else {
       return {
         icon: CloudLightning,
         text: "Burzowo",
         description: "Twoja emerytura jest znacznie poniżej średniej",
-        color: "text-purple-400"
+        color: "text-purple-400",
       };
     }
   };
@@ -80,11 +102,14 @@ const Results: React.FC = () => {
 
   // Calculate bar heights with max limit (256px container - some padding)
   const MAX_CHART_HEIGHT = 120; // h-64 = 256px, leave some space
-  const calculateBarHeight = (value: number, referenceValue: number, baseHeight: number) => {
+  const calculateBarHeight = (
+    value: number,
+    referenceValue: number,
+    baseHeight: number
+  ) => {
     const calculatedHeight = (value / referenceValue) * baseHeight;
     return Math.min(calculatedHeight, MAX_CHART_HEIGHT);
   };
-
 
   // Debounced API call for calculator
   useEffect(() => {
@@ -92,7 +117,7 @@ const Results: React.FC = () => {
       const fetchCalculatedPension = async () => {
         const requestBody = {
           wiek: age,
-          plec: gender === 'female' ? 'kobieta' : 'mezczyzna',
+          plec: gender === "female" ? "kobieta" : "mezczyzna",
           wiek_przejscia_na_emeryture: retirementAge,
           miesieczny_dochod: monthlyIncome,
           przerwy_w_kariere: careerBreaks,
@@ -100,36 +125,36 @@ const Results: React.FC = () => {
           wskaznik_waloryzacji: valorization / 100 + 1,
           wskaznik_inflacji: inflation / 100,
         };
-        
-        console.log('Wysyłam zapytanie do API:', requestBody);
-        
+
+        console.log("Wysyłam zapytanie do API:", requestBody);
+
         // Use proxy in development, direct URL in production
-        const apiUrl = import.meta.env.DEV 
-          ? '/api/prognoza-wykres'  // Proxy
-          : 'https://xvv7kcpl-8000.euw.devtunnels.ms/prognoza-wykres';  // Direct
-        
+        const apiUrl = import.meta.env.DEV
+          ? "/api/prognoza-wykres" // Proxy
+          : "https://xvv7kcpl-8000.euw.devtunnels.ms/prognoza-wykres"; // Direct
+
         try {
           const response = await fetch(apiUrl, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
+              "Content-Type": "application/json",
+              Accept: "application/json",
             },
             body: JSON.stringify(requestBody),
           });
 
-          console.log('Odpowiedź API status:', response.status);
-          
+          console.log("Odpowiedź API status:", response.status);
+
           if (response.ok) {
             const data = await response.json();
-            console.log('Dane z API:', data);
+            console.log("Dane z API:", data);
             setApiPensionNominal(data.przyszla_emerytura_nominalna);
             setApiPensionReal(data.przyszla_emerytura_realna);
           } else {
-            console.error('API zwróciło błąd:', response.status);
+            console.error("API zwróciło błąd:", response.status);
           }
         } catch (error) {
-          console.error('Błąd podczas wywoływania API:', error);
+          console.error("Błąd podczas wywoływania API:", error);
         }
       };
 
@@ -137,17 +162,28 @@ const Results: React.FC = () => {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [age, gender, retirementAge, monthlyIncome, careerBreaks, sickLeaveDays, valorization, inflation]);
+  }, [
+    age,
+    gender,
+    retirementAge,
+    monthlyIncome,
+    careerBreaks,
+    sickLeaveDays,
+    valorization,
+    inflation,
+  ]);
 
   return (
     <div className="bg-gray-50 min-h-screen">
       <Header />
-      
+
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-[hsl(var(--green-primary))] to-[hsl(var(--blue-primary))] py-12 px-6">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-white text-4xl font-bold mb-8">Twoja przyszłość prezentuje się tak...</h1>
-          
+          <h1 className="text-white text-4xl font-bold mb-8">
+            Twoja przyszłość prezentuje się tak...
+          </h1>
+
           <div className="grid md:grid-cols-3 gap-6">
             {/* Profile Card */}
             <div className="bg-white rounded-2xl p-6 shadow-lg">
@@ -156,22 +192,37 @@ const Results: React.FC = () => {
                   <User className="w-6 h-6 text-[hsl(var(--blue-primary))]" />
                 </div>
                 <div>
-                  <h3 className="text-gray-900 font-semibold text-lg">Twój profil</h3>
+                  <h3 className="text-gray-900 font-semibold text-lg">
+                    Twój profil
+                  </h3>
                   <p className="text-gray-500 text-sm">{age} Lat</p>
                 </div>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm">Aktualna wypłata</span>
-                  <span className="text-[hsl(var(--blue-primary))] font-bold">{actualSalary.toLocaleString('pl-PL')} PLN</span>
+                  <span className="text-gray-600 text-sm">
+                    Aktualna wypłata
+                  </span>
+                  <span className="text-[hsl(var(--blue-primary))] font-bold">
+                    {actualSalary.toLocaleString("pl-PL")} PLN
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm">Lata do emerytury</span>
-                  <span className="text-[hsl(var(--blue-primary))] font-bold">{yearsToRetirement} lat</span>
+                  <span className="text-gray-600 text-sm">
+                    Lata do emerytury
+                  </span>
+                  <span className="text-[hsl(var(--blue-primary))] font-bold">
+                    {yearsToRetirement} lat
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm">Przyszła emerytura</span>
-                  <span className="text-[hsl(var(--blue-primary))] font-bold text-lg">{Math.round(futurePensionReal).toLocaleString('pl-PL')} PLN/month</span>
+                  <span className="text-gray-600 text-sm">
+                    Przyszła emerytura
+                  </span>
+                  <span className="text-[hsl(var(--blue-primary))] font-bold text-lg">
+                    {Math.round(futurePensionReal).toLocaleString("pl-PL")}{" "}
+                    PLN/month
+                  </span>
                 </div>
               </div>
             </div>
@@ -182,10 +233,14 @@ const Results: React.FC = () => {
                 <div className="bg-[hsl(var(--blue-primary))] text-white text-xs font-semibold px-3 py-1 rounded-full inline-block mb-4">
                   Mając {retirementAge} lat
                 </div>
-                <h3 className="text-gray-900 font-bold text-xl mb-3">Pogoda Emerytury</h3>
+                <h3 className="text-gray-900 font-bold text-xl mb-3">
+                  Pogoda Emerytury
+                </h3>
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <WeatherIcon className={`w-12 h-12 ${weatherInfo.color}`} />
-                  <span className="text-gray-900 font-semibold text-lg">{weatherInfo.text}</span>
+                  <span className="text-gray-900 font-semibold text-lg">
+                    {weatherInfo.text}
+                  </span>
                 </div>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   {weatherInfo.description}
@@ -195,32 +250,71 @@ const Results: React.FC = () => {
 
             {/* Quick Comparison Card */}
             <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <h3 className="text-gray-900 font-semibold text-lg mb-4">Szybkie porównanie</h3>
+              <h3 className="text-gray-900 font-semibold text-lg mb-4">
+                Szybkie porównanie
+              </h3>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600 text-sm">Twoja przyszła emerytura</span>
-                    <span className="text-[hsl(var(--blue-primary))] font-bold">{Math.round(futurePensionReal).toLocaleString('pl-PL')} PLN</span>
+                    <span className="text-gray-600 text-sm">
+                      Twoja przyszła emerytura
+                    </span>
+                    <span className="text-[hsl(var(--blue-primary))] font-bold">
+                      {Math.round(futurePensionReal).toLocaleString("pl-PL")}{" "}
+                      PLN
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-[hsl(var(--blue-primary))] h-2 rounded-full transition-all" style={{
-                      width: `${Math.min(100, (futurePensionReal / avgNationalPension) * 60)}%`
-                    }}></div>
+                    <div
+                      className="bg-[hsl(var(--blue-primary))] h-2 rounded-full transition-all"
+                      style={{
+                        width: `${Math.min(
+                          100,
+                          (futurePensionReal / avgNationalPension) * 60
+                        )}%`,
+                      }}
+                    ></div>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600 text-sm">Średnia krajowa</span>
-                    <span className="text-gray-900 font-bold">{Math.round(avgNationalPension).toLocaleString('pl-PL')} PLN</span>
+                    <span className="text-gray-600 text-sm">
+                      Średnia krajowa
+                    </span>
+                    <span className="text-gray-900 font-bold">
+                      {Math.round(avgNationalPension).toLocaleString("pl-PL")}{" "}
+                      PLN
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gray-400 h-2 rounded-full" style={{ width: '50%' }}></div>
+                    <div
+                      className="bg-gray-400 h-2 rounded-full"
+                      style={{ width: "50%" }}
+                    ></div>
                   </div>
                 </div>
-                <div className={`p-3 rounded-lg mt-4 ${percentDifference >= 0 ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-                  <p className="text-gray-600 text-xs mb-1">Twoja emerytura byłaby</p>
-                  <p className={`font-bold text-lg ${percentDifference >= 0 ? 'text-[hsl(var(--success))]' : 'text-destructive'}`}>
-                    {percentDifference > 0 ? '+' : ''}{percentDifference.toFixed(0)}% {percentDifference >= 0 ? 'wyższa od średniej!' : 'niższa od średniej!'}
+                <div
+                  className={`p-3 rounded-lg mt-4 ${
+                    percentDifference >= 0
+                      ? "bg-green-50 border border-green-200"
+                      : "bg-red-50 border border-red-200"
+                  }`}
+                >
+                  <p className="text-gray-600 text-xs mb-1">
+                    Twoja emerytura byłaby
+                  </p>
+                  <p
+                    className={`font-bold text-lg ${
+                      percentDifference >= 0
+                        ? "text-[hsl(var(--success))]"
+                        : "text-destructive"
+                    }`}
+                  >
+                    {percentDifference > 0 ? "+" : ""}
+                    {percentDifference.toFixed(0)}%{" "}
+                    {percentDifference >= 0
+                      ? "wyższa od średniej!"
+                      : "niższa od średniej!"}
                   </p>
                 </div>
               </div>
@@ -233,11 +327,18 @@ const Results: React.FC = () => {
       <section className="py-16 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-gray-900 text-3xl font-bold mb-3">Scenariusze</h2>
-            <p className="text-gray-600">Baw się różnymi scenariuszami i zobacz, jak wpłyną one na Twoją przyszłość</p>
+            <h2 className="text-gray-900 text-3xl font-bold mb-3">
+              Scenariusze
+            </h2>
+            <p className="text-gray-600">
+              Baw się różnymi scenariuszami i zobacz, jak wpłyną one na Twoją
+              przyszłość
+            </p>
           </div>
 
-          <h3 className="text-[hsl(var(--blue-primary))] text-xl font-semibold mb-6">Wpływ wyborów życiowych</h3>
+          <h3 className="text-[hsl(var(--blue-primary))] text-xl font-semibold mb-6">
+            Wpływ wyborów życiowych
+          </h3>
           <div className="grid md:grid-cols-3 gap-6">
             {/* Scenario 1 - Career Break */}
             <div className="bg-blue-50 rounded-xl p-6 border-2 border-blue-100">
@@ -246,7 +347,9 @@ const Results: React.FC = () => {
                   <Plane className="w-5 h-5 text-[hsl(var(--blue-primary))]" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-gray-900 font-semibold text-base mb-1">Chcesz sobie zrobić dwa lata przerwy?</h4>
+                  <h4 className="text-gray-900 font-semibold text-base mb-1">
+                    Chcesz sobie zrobić dwa lata przerwy?
+                  </h4>
                   <p className="text-gray-500 text-xs">W wieku 30 lat</p>
                 </div>
               </div>
@@ -254,13 +357,17 @@ const Results: React.FC = () => {
                 <p className="text-xs text-gray-600 mb-2">Pension Impact</p>
                 <div className="flex items-center gap-2 mb-1">
                   <div className="flex-1 bg-red-200 h-1.5 rounded-full"></div>
-                  <span className="text-red-600 font-semibold text-sm whitespace-nowrap">-6% / -294 PLN</span>
+                  <span className="text-red-600 font-semibold text-sm whitespace-nowrap">
+                    -6% / -294 PLN
+                  </span>
                 </div>
               </div>
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-xs text-gray-600">Emerytura</p>
-                  <p className="text-[hsl(var(--blue-primary))] font-bold text-lg">4,596 PLN</p>
+                  <p className="text-[hsl(var(--blue-primary))] font-bold text-lg">
+                    4,596 PLN
+                  </p>
                 </div>
                 <button className="bg-[hsl(var(--blue-primary))] text-white px-4 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity">
                   Wyróbuj
@@ -275,7 +382,9 @@ const Results: React.FC = () => {
                   <Briefcase className="w-5 h-5 text-[hsl(var(--success))]" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-gray-900 font-semibold text-base mb-1">Zmiana na lepiej płatną pracę?</h4>
+                  <h4 className="text-gray-900 font-semibold text-base mb-1">
+                    Zmiana na lepiej płatną pracę?
+                  </h4>
                   <p className="text-gray-500 text-xs">+15% wzrost wypłaty</p>
                 </div>
               </div>
@@ -283,13 +392,17 @@ const Results: React.FC = () => {
                 <p className="text-xs text-gray-600 mb-2">Wzrost emerytury</p>
                 <div className="flex items-center gap-2 mb-1">
                   <div className="flex-1 bg-green-200 h-1.5 rounded-full"></div>
-                  <span className="text-[hsl(var(--success))] font-semibold text-sm whitespace-nowrap">+7% / +342 PLN</span>
+                  <span className="text-[hsl(var(--success))] font-semibold text-sm whitespace-nowrap">
+                    +7% / +342 PLN
+                  </span>
                 </div>
               </div>
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-xs text-gray-600">Emerytura</p>
-                  <p className="text-[hsl(var(--blue-primary))] font-bold text-lg">5,232 PLN</p>
+                  <p className="text-[hsl(var(--blue-primary))] font-bold text-lg">
+                    5,232 PLN
+                  </p>
                 </div>
                 <button className="bg-[hsl(var(--success))] text-white px-4 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity">
                   Akceptuj
@@ -304,21 +417,29 @@ const Results: React.FC = () => {
                   <Umbrella className="w-5 h-5 text-[hsl(var(--warning))]" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-gray-900 font-semibold text-base mb-1">Pracuj dwa lata dłużej?</h4>
-                  <p className="text-gray-500 text-xs">Przejdź na emeryturę w wieku 69 lat, a nie 67</p>
+                  <h4 className="text-gray-900 font-semibold text-base mb-1">
+                    Pracuj dwa lata dłużej?
+                  </h4>
+                  <p className="text-gray-500 text-xs">
+                    Przejdź na emeryturę w wieku 69 lat, a nie 67
+                  </p>
                 </div>
               </div>
               <div className="mb-3">
                 <p className="text-xs text-gray-600 mb-2">Miesięczny wzrost</p>
                 <div className="flex items-center gap-2 mb-1">
                   <div className="flex-1 bg-orange-200 h-1.5 rounded-full"></div>
-                  <span className="text-[hsl(var(--warning))] font-semibold text-sm whitespace-nowrap">+420 PLN</span>
+                  <span className="text-[hsl(var(--warning))] font-semibold text-sm whitespace-nowrap">
+                    +420 PLN
+                  </span>
                 </div>
               </div>
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-xs text-gray-600">Emerytura</p>
-                  <p className="text-[hsl(var(--blue-primary))] font-bold text-lg">5,310 PLN</p>
+                  <p className="text-[hsl(var(--blue-primary))] font-bold text-lg">
+                    5,310 PLN
+                  </p>
                 </div>
                 <button className="bg-[hsl(var(--warning))] text-white px-4 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity">
                   Rozważ
@@ -333,21 +454,33 @@ const Results: React.FC = () => {
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-gray-900 text-3xl font-bold mb-3">Kalkulator Emerytury</h2>
-            <p className="text-gray-600">Sprawdź ile realnie czcza jak twoja emerytura może urosną<br />Wykrze zmieniaj się na bieżąco</p>
+            <h2 className="text-gray-900 text-3xl font-bold mb-3">
+              Kalkulator Emerytury
+            </h2>
+            <p className="text-gray-600">
+              Sprawdź ile realnie czcza jak twoja emerytura może urosną
+              <br />
+              Wykrze zmieniaj się na bieżąco
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Left Side - Sliders */}
             <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h3 className="text-[hsl(var(--blue-primary))] text-lg font-semibold mb-6">Sterowanie symulacją na żywo</h3>
-              
+              <h3 className="text-[hsl(var(--blue-primary))] text-lg font-semibold mb-6">
+                Sterowanie symulacją na żywo
+              </h3>
+
               <div className="space-y-6">
                 {/* Age */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <label className="text-gray-700 text-sm font-medium">Wiek</label>
-                    <span className="text-[hsl(var(--blue-primary))] font-bold">{age} lat</span>
+                    <label className="text-gray-700 text-sm font-medium">
+                      Wiek
+                    </label>
+                    <span className="text-[hsl(var(--blue-primary))] font-bold">
+                      {age} lat
+                    </span>
                   </div>
                   <Slider
                     value={[age]}
@@ -361,24 +494,26 @@ const Results: React.FC = () => {
 
                 {/* Gender */}
                 <div>
-                  <label className="text-gray-700 text-sm font-medium mb-3 block">Płeć</label>
+                  <label className="text-gray-700 text-sm font-medium mb-3 block">
+                    Płeć
+                  </label>
                   <div className="flex gap-4">
                     <button
-                      onClick={() => setGender('female')}
+                      onClick={() => setGender("female")}
                       className={`flex-1 py-2 px-4 rounded-lg border-2 font-medium transition-colors ${
-                        gender === 'female'
-                          ? 'bg-[hsl(var(--success))] text-white border-[hsl(var(--success))]'
-                          : 'bg-white text-gray-700 border-gray-300 hover:border-[hsl(var(--success))]'
+                        gender === "female"
+                          ? "bg-[hsl(var(--success))] text-white border-[hsl(var(--success))]"
+                          : "bg-white text-gray-700 border-gray-300 hover:border-[hsl(var(--success))]"
                       }`}
                     >
                       Kobieta
                     </button>
                     <button
-                      onClick={() => setGender('male')}
+                      onClick={() => setGender("male")}
                       className={`flex-1 py-2 px-4 rounded-lg border-2 font-medium transition-colors ${
-                        gender === 'male'
-                          ? 'bg-gray-600 text-white border-gray-600'
-                          : 'bg-white text-gray-700 border-gray-300 hover:border-gray-600'
+                        gender === "male"
+                          ? "bg-gray-600 text-white border-gray-600"
+                          : "bg-white text-gray-700 border-gray-300 hover:border-gray-600"
                       }`}
                     >
                       Mężczyzna
@@ -389,8 +524,12 @@ const Results: React.FC = () => {
                 {/* Retirement Age */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <label className="text-gray-700 text-sm font-medium">Wiek przejścia na emeryturę</label>
-                    <span className="text-[hsl(var(--blue-primary))] font-bold">{retirementAge} lat</span>
+                    <label className="text-gray-700 text-sm font-medium">
+                      Wiek przejścia na emeryturę
+                    </label>
+                    <span className="text-[hsl(var(--blue-primary))] font-bold">
+                      {retirementAge} lat
+                    </span>
                   </div>
                   <Slider
                     value={[retirementAge]}
@@ -405,8 +544,12 @@ const Results: React.FC = () => {
                 {/* Monthly Income */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <label className="text-gray-700 text-sm font-medium">Miesięczny przychód</label>
-                    <span className="text-[hsl(var(--blue-primary))] font-bold">{monthlyIncome.toLocaleString()} PLN</span>
+                    <label className="text-gray-700 text-sm font-medium">
+                      Miesięczny przychód
+                    </label>
+                    <span className="text-[hsl(var(--blue-primary))] font-bold">
+                      {monthlyIncome.toLocaleString()} PLN
+                    </span>
                   </div>
                   <Slider
                     value={[monthlyIncome]}
@@ -421,8 +564,12 @@ const Results: React.FC = () => {
                 {/* Career Breaks */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <label className="text-gray-700 text-sm font-medium">Przerwy w karierze (lata)</label>
-                    <span className="text-[hsl(var(--blue-primary))] font-bold">{careerBreaks} lat</span>
+                    <label className="text-gray-700 text-sm font-medium">
+                      Przerwy w karierze (lata)
+                    </label>
+                    <span className="text-[hsl(var(--blue-primary))] font-bold">
+                      {careerBreaks} lat
+                    </span>
                   </div>
                   <Slider
                     value={[careerBreaks]}
@@ -437,8 +584,12 @@ const Results: React.FC = () => {
                 {/* Sick Leave Days */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <label className="text-gray-700 text-sm font-medium">Procent zwolnień (50znaczy aktualnie 18/36)</label>
-                    <span className="text-[hsl(var(--blue-primary))] font-bold">{sickLeaveDays} %</span>
+                    <label className="text-gray-700 text-sm font-medium">
+                      Procent zwolnień (50znaczy aktualnie 18/36)
+                    </label>
+                    <span className="text-[hsl(var(--blue-primary))] font-bold">
+                      {sickLeaveDays} %
+                    </span>
                   </div>
                   <Slider
                     value={[sickLeaveDays]}
@@ -453,8 +604,12 @@ const Results: React.FC = () => {
                 {/* Valorization */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <label className="text-gray-700 text-sm font-medium">Wskaźnik waloryzacji</label>
-                    <span className="text-[hsl(var(--blue-primary))] font-bold">{valorization} %</span>
+                    <label className="text-gray-700 text-sm font-medium">
+                      Wskaźnik waloryzacji
+                    </label>
+                    <span className="text-[hsl(var(--blue-primary))] font-bold">
+                      {valorization} %
+                    </span>
                   </div>
                   <Slider
                     value={[valorization]}
@@ -469,8 +624,12 @@ const Results: React.FC = () => {
                 {/* Inflation */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <label className="text-gray-700 text-sm font-medium">Wskaźnik inflacji</label>
-                    <span className="text-[hsl(var(--blue-primary))] font-bold">{inflation} %</span>
+                    <label className="text-gray-700 text-sm font-medium">
+                      Wskaźnik inflacji
+                    </label>
+                    <span className="text-[hsl(var(--blue-primary))] font-bold">
+                      {inflation} %
+                    </span>
                   </div>
                   <Slider
                     value={[inflation]}
@@ -498,15 +657,24 @@ const Results: React.FC = () => {
             <div className="space-y-6">
               {/* Projected Pension */}
               <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6">
-                <p className="text-gray-600 text-sm mb-2">Przewidywana emerytura</p>
-                <p className="text-[hsl(var(--blue-primary))] text-4xl font-bold">{Math.round(futurePensionReal).toLocaleString('pl-PL')} PLN</p>
+                <p className="text-gray-600 text-sm mb-2">
+                  Przewidywana emerytura
+                </p>
+                <p className="text-[hsl(var(--blue-primary))] text-4xl font-bold">
+                  {Math.round(futurePensionReal).toLocaleString("pl-PL")} PLN
+                </p>
               </div>
 
               {/* Calculated Pension from API */}
               <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6">
-                <p className="text-gray-600 text-sm mb-2">Emerytura obliczona</p>
+                <p className="text-gray-600 text-sm mb-2">
+                  Emerytura obliczona
+                </p>
                 <p className="text-[hsl(var(--blue-primary))] text-4xl font-bold">
-                  {apiPensionNominal ? Math.round(apiPensionNominal).toLocaleString('pl-PL') : '---'} PLN
+                  {apiPensionNominal
+                    ? Math.round(apiPensionNominal).toLocaleString("pl-PL")
+                    : "---"}{" "}
+                  PLN
                 </p>
               </div>
 
@@ -518,21 +686,41 @@ const Results: React.FC = () => {
                     <div className="relative h-64 flex flex-col justify-end">
                       {/* Bars */}
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
-                        <div className="relative bg-[#00993F] rounded-t-lg" style={{ height: `${Math.min(120, MAX_CHART_HEIGHT)}px` }}>
+                        <div
+                          className="relative bg-[#00993F] rounded-t-lg"
+                          style={{
+                            height: `${Math.min(120, MAX_CHART_HEIGHT)}px`,
+                          }}
+                        >
                           <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
                             <div className="w-6 sm:w-8 h-0.5 bg-[#00993F]"></div>
-                            <span className="text-[#00993F] font-bold text-[10px] sm:text-xs whitespace-nowrap">{Math.round(futurePensionReal).toLocaleString()} PLN</span>
+                            <span className="text-[#00993F] font-bold text-[10px] sm:text-xs whitespace-nowrap">
+                              {Math.round(futurePensionReal).toLocaleString()}{" "}
+                              PLN
+                            </span>
                           </div>
                         </div>
-                        <div className="relative bg-red-400 rounded-b-lg" style={{ height: `${Math.min(80, MAX_CHART_HEIGHT)}px` }}>
+                        <div
+                          className="relative bg-red-400 rounded-b-lg"
+                          style={{
+                            height: `${Math.min(80, MAX_CHART_HEIGHT)}px`,
+                          }}
+                        >
                           <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
                             <div className="w-6 sm:w-8 h-0.5 bg-red-400"></div>
-                            <span className="text-red-400 font-bold text-[10px] sm:text-xs whitespace-nowrap">{Math.round(futurePensionReal * 0.6).toLocaleString()} PLN</span>
+                            <span className="text-red-400 font-bold text-[10px] sm:text-xs whitespace-nowrap">
+                              {Math.round(
+                                futurePensionReal * 0.6
+                              ).toLocaleString()}{" "}
+                              PLN
+                            </span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <p className="text-gray-900 font-semibold mt-4">Wykres poglądowy</p>
+                    <p className="text-gray-900 font-semibold mt-4">
+                      Wykres poglądowy
+                    </p>
                   </div>
 
                   {/* Calculated Chart */}
@@ -541,29 +729,39 @@ const Results: React.FC = () => {
                       {/* Bars */}
                       {apiPensionNominal && apiPensionReal ? (
                         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24">
-                          <div 
-                            className="relative bg-[#00993F] rounded-t-lg" 
-                            style={{ 
-                              height: `${calculateBarHeight(apiPensionNominal, futurePensionReal, 120)}px` 
+                          <div
+                            className="relative bg-[#00993F] rounded-t-lg"
+                            style={{
+                              height: `${calculateBarHeight(
+                                apiPensionNominal,
+                                futurePensionReal,
+                                120
+                              )}px`,
                             }}
                           >
                             <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
                               <div className="w-6 sm:w-8 h-0.5 bg-[#00993F]"></div>
                               <span className="text-[#00993F] font-bold text-[10px] sm:text-xs whitespace-nowrap">
-                                {Math.round(apiPensionNominal).toLocaleString()} PLN
+                                {Math.round(apiPensionNominal).toLocaleString()}{" "}
+                                PLN
                               </span>
                             </div>
                           </div>
-                          <div 
-                            className="relative bg-red-400 rounded-b-lg" 
-                            style={{ 
-                              height: `${calculateBarHeight(apiPensionReal, futurePensionReal, 120)}px` 
+                          <div
+                            className="relative bg-red-400 rounded-b-lg"
+                            style={{
+                              height: `${calculateBarHeight(
+                                apiPensionReal,
+                                futurePensionReal,
+                                120
+                              )}px`,
                             }}
                           >
                             <div className="absolute top-2 -right-20 sm:-right-24 flex items-center gap-1 sm:gap-2 min-w-max">
                               <div className="w-6 sm:w-8 h-0.5 bg-red-400"></div>
                               <span className="text-red-400 font-bold text-[10px] sm:text-xs whitespace-nowrap">
-                                {Math.round(apiPensionReal).toLocaleString()} PLN
+                                {Math.round(apiPensionReal).toLocaleString()}{" "}
+                                PLN
                               </span>
                             </div>
                           </div>
@@ -574,7 +772,9 @@ const Results: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <p className="text-gray-900 font-semibold mt-4">Wykres obliczany</p>
+                    <p className="text-gray-900 font-semibold mt-4">
+                      Wykres obliczany
+                    </p>
                   </div>
                 </div>
               </div>
@@ -587,21 +787,32 @@ const Results: React.FC = () => {
       <section className="py-16 px-6 bg-gradient-to-r from-[hsl(var(--green-primary))] to-[hsl(var(--blue-primary))]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-white text-3xl font-bold mb-3">Wiedziałeś że?</h2>
-            <p className="text-white/90">Uczysz się, odkrywając swoją przyszłość</p>
+            <h2 className="text-white text-3xl font-bold mb-3">
+              Wiedziałeś że?
+            </h2>
+            <p className="text-white/90">
+              Uczysz się, odkrywając swoją przyszłość
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
             {/* Card 1 */}
             <div className="bg-white rounded-xl p-6">
               <div className="bg-orange-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                <span className="text-[hsl(var(--warning))] text-2xl font-bold">?</span>
+                <span className="text-[hsl(var(--warning))] text-2xl font-bold">
+                  ?
+                </span>
               </div>
-              <h3 className="text-gray-900 font-bold text-lg mb-3">Każdy dodatkowy rok liczy</h3>
+              <h3 className="text-gray-900 font-bold text-lg mb-3">
+                Każdy dodatkowy rok liczy
+              </h3>
               <p className="text-gray-600 text-sm leading-relaxed mb-2">
-                Jak nie masz poczekowane pracy każda wycieczka zrobi się więce w wieku 25 sot
+                Jak nie masz poczekowane pracy każda wycieczka zrobi się więce w
+                wieku 25 sot
               </p>
-              <p className="text-[hsl(var(--warning))] font-bold text-lg">+8% co rok</p>
+              <p className="text-[hsl(var(--warning))] font-bold text-lg">
+                +8% co rok
+              </p>
             </div>
 
             {/* Card 2 */}
@@ -609,11 +820,16 @@ const Results: React.FC = () => {
               <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
                 <TrendingUp className="text-[hsl(var(--success))] w-6 h-6" />
               </div>
-              <h3 className="text-gray-900 font-bold text-lg mb-3">Most Pokoleniowy</h3>
+              <h3 className="text-gray-900 font-bold text-lg mb-3">
+                Most Pokoleniowy
+              </h3>
               <p className="text-gray-600 text-sm leading-relaxed mb-2">
-                Twoje składki dziś wspierają obecnych emerytów, a przyszłe pokolenia wspomogą Ciebie
+                Twoje składki dziś wspierają obecnych emerytów, a przyszłe
+                pokolenia wspomogą Ciebie
               </p>
-              <p className="text-[hsl(var(--success))] font-bold">Social solidarity</p>
+              <p className="text-[hsl(var(--success))] font-bold">
+                Social solidarity
+              </p>
             </div>
 
             {/* Card 3 */}
@@ -621,9 +837,12 @@ const Results: React.FC = () => {
               <div className="bg-red-100 w-12 h-12 rounded-full flex items-center justify-center mb-4">
                 <span className="text-red-500 text-2xl font-bold">!</span>
               </div>
-              <h3 className="text-gray-900 font-bold text-lg mb-3">Wprócz na emeryturę</h3>
+              <h3 className="text-gray-900 font-bold text-lg mb-3">
+                Wprócz na emeryturę
+              </h3>
               <p className="text-gray-600 text-sm leading-relaxed mb-2">
-                ZUS oferuje Ci przed emeryturze, której składki i dłuższe płacić jeszcze w wieku 65 lat
+                ZUS oferuje Ci przed emeryturze, której składki i dłuższe płacić
+                jeszcze w wieku 65 lat
               </p>
               <p className="text-red-600 font-bold">Full protection</p>
             </div>
@@ -635,14 +854,16 @@ const Results: React.FC = () => {
       <section className="py-16 px-6 bg-white">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-gray-900 text-3xl font-bold mb-3">Ciekawostki</h2>
+            <h2 className="text-gray-900 text-3xl font-bold mb-3">
+              Ciekawostki
+            </h2>
             <p className="text-gray-600">Dowiedź się czegoś nowego</p>
           </div>
 
           <Accordion type="single" collapsible className="space-y-4">
             {funFacts.map((fact, index) => (
-              <AccordionItem 
-                key={index} 
+              <AccordionItem
+                key={index}
                 value={`item-${index}`}
                 className="bg-blue-50 border-2 border-blue-100 rounded-lg px-6 overflow-hidden"
               >
@@ -651,11 +872,13 @@ const Results: React.FC = () => {
                     <div className="bg-blue-200 w-8 h-8 rounded-full flex items-center justify-center shrink-0">
                       <Info className="w-4 h-4 text-[hsl(var(--blue-primary))]" />
                     </div>
-                    <span className="text-gray-900 font-semibold">{fact.split(':')[0]}</span>
+                    <span className="text-gray-900 font-semibold">
+                      {fact.split(":")[0]}
+                    </span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-600 pl-11 pb-4">
-                  {fact.includes(':') ? fact.split(':')[1].trim() : fact}
+                  {fact.includes(":") ? fact.split(":")[1].trim() : fact}
                 </AccordionContent>
               </AccordionItem>
             ))}

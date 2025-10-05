@@ -9,15 +9,17 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     proxy: {
-      '/api': {
-        target: 'https://xvv7kcpl-8000.euw.devtunnels.ms',
+      "/api": {
+        target: "https://xvv7kcpl-8000.euw.devtunnels.ms",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api/, ""),
         secure: false,
-      }
-    }
+      },
+    },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), mode === "development" && componentTagger()].filter(
+    Boolean
+  ),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
