@@ -12,6 +12,7 @@ import {
   Briefcase,
   Umbrella,
   Info,
+  GraduationCap,
 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -25,6 +26,10 @@ import Footer from "@/components/Footer";
 import { PrognosiResponse, API_BASE_URL } from "@/services/api";
 import { DashboardAIChat } from "@/components/DashboardAIChat";
 import { AIRecommendations } from "@/components/AIRecommendations";
+import { RetirementCalculationModal } from "@/components/EducationalModals/RetirementCalculationModal";
+import { InflationModal } from "@/components/EducationalModals/InflationModal";
+import { PensionFundingModal } from "@/components/EducationalModals/PensionFundingModal";
+import { Button } from "@/components/ui/button";
 
 const Results: React.FC = () => {
   const location = useLocation();
@@ -204,6 +209,11 @@ const Results: React.FC = () => {
     useState<number>(120);
   const [calculatedBarHeightReal, setCalculatedBarHeightReal] =
     useState<number>(120);
+
+  // Educational modals state
+  const [isRetirementModalOpen, setIsRetirementModalOpen] = useState(false);
+  const [isInflationModalOpen, setIsInflationModalOpen] = useState(false);
+  const [isPensionFundingModalOpen, setIsPensionFundingModalOpen] = useState(false);
 
   // Use real data if available, otherwise fallback to dummy data
   const actualSalary = prognosisData?.aktualna_wyplata || 8500;
@@ -641,6 +651,56 @@ const Results: React.FC = () => {
                   </p>
                 </div>
               )}
+
+              {/* Educational Buttons */}
+              <div className="mb-12">
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  <GraduationCap className="w-6 h-6 text-primary" />
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Poznaj podstawy planowania emerytalnego
+                  </h2>
+                </div>
+                <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                  <Button
+                    onClick={() => setIsRetirementModalOpen(true)}
+                    variant="outline"
+                    className="h-auto py-4 px-6 flex flex-col items-center gap-2 hover:bg-primary/5 border-2 hover:border-primary transition-all"
+                  >
+                    <div className="bg-primary/10 p-3 rounded-full">
+                      <Info className="w-6 h-6 text-primary" />
+                    </div>
+                    <span className="font-semibold text-center">
+                      Jak obliczana jest emerytura?
+                    </span>
+                  </Button>
+
+                  <Button
+                    onClick={() => setIsInflationModalOpen(true)}
+                    variant="outline"
+                    className="h-auto py-4 px-6 flex flex-col items-center gap-2 hover:bg-primary/5 border-2 hover:border-primary transition-all"
+                  >
+                    <div className="bg-primary/10 p-3 rounded-full">
+                      <TrendingUp className="w-6 h-6 text-primary" />
+                    </div>
+                    <span className="font-semibold text-center">
+                      Jak działa inflacja?
+                    </span>
+                  </Button>
+
+                  <Button
+                    onClick={() => setIsPensionFundingModalOpen(true)}
+                    variant="outline"
+                    className="h-auto py-4 px-6 flex flex-col items-center gap-2 hover:bg-primary/5 border-2 hover:border-primary transition-all"
+                  >
+                    <div className="bg-primary/10 p-3 rounded-full">
+                      <Briefcase className="w-6 h-6 text-primary" />
+                    </div>
+                    <span className="font-semibold text-center">
+                      Skąd brane są pieniądze?
+                    </span>
+                  </Button>
+                </div>
+              </div>
 
               <div className="text-center mb-12">
                 <div className="flex items-center justify-center gap-4 mb-3">
@@ -1505,6 +1565,20 @@ const Results: React.FC = () => {
             weatherStatus: weatherInfo.text,
             weatherDescription: weatherInfo.description,
           }}
+        />
+
+        {/* Educational Modals */}
+        <RetirementCalculationModal
+          isOpen={isRetirementModalOpen}
+          onClose={() => setIsRetirementModalOpen(false)}
+        />
+        <InflationModal
+          isOpen={isInflationModalOpen}
+          onClose={() => setIsInflationModalOpen(false)}
+        />
+        <PensionFundingModal
+          isOpen={isPensionFundingModalOpen}
+          onClose={() => setIsPensionFundingModalOpen(false)}
         />
       </div>
     </>
