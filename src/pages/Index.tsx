@@ -43,6 +43,8 @@ const Index: React.FC = () => {
     watch,
     setValue,
     formState: { errors },
+    setError,
+    clearErrors,
   } = useForm<FormData>({
     defaultValues: {
       age: "25",
@@ -57,7 +59,7 @@ const Index: React.FC = () => {
       expectedPensionAmount: "",
       optionalDataEnabled: true,
     },
-    mode: "onSubmit",
+    mode: "onChange",
   });
 
   const watchedGender = watch("gender");
@@ -98,6 +100,68 @@ const Index: React.FC = () => {
       setYearsToRetirement(years > 0 ? years : 0);
     }
   }, [watchedAge, watchedRetirementYear, watchedGender]);
+
+  // Validate logical consistency
+  useEffect(() => {
+    const currentYear = new Date().getFullYear();
+    const age = parseInt(watchedAge);
+    const careerStart = parseInt(watchedCareerStart);
+    const retirementYear = parseInt(watchedRetirementYear);
+    const birthYear = currentYear - age;
+
+    // Clear previous errors
+    clearErrors("careerStartYear");
+    clearErrors("retirementYear");
+
+    // Validate career start year
+    if (careerStart && age) {
+      const ageAtCareerStart = careerStart - birthYear;
+      
+      if (careerStart > currentYear) {
+        setError("careerStartYear", {
+          type: "manual",
+          message: "Rok rozpoczęcia kariery nie może być w przyszłości",
+        });
+      } else if (ageAtCareerStart < 15) {
+        setError("careerStartYear", {
+          type: "manual",
+          message: `Nie mogłeś zacząć kariery przed ukończeniem 15 lat (urodziłeś się w ${birthYear})`,
+        });
+      } else if (ageAtCareerStart > age) {
+        setError("careerStartYear", {
+          type: "manual",
+          message: "Rok rozpoczęcia kariery nie może być po twoim obecnym wieku",
+        });
+      }
+    }
+
+    // Validate retirement year
+    if (retirementYear && age && careerStart) {
+      const ageAtRetirement = retirementYear - birthYear;
+      
+      if (retirementYear <= currentYear) {
+        setError("retirementYear", {
+          type: "manual",
+          message: "Rok przejścia na emeryturę musi być w przyszłości",
+        });
+      } else if (retirementYear <= careerStart) {
+        setError("retirementYear", {
+          type: "manual",
+          message: "Rok przejścia na emeryturę musi być po rozpoczęciu kariery",
+        });
+      } else if (ageAtRetirement < 18) {
+        setError("retirementYear", {
+          type: "manual",
+          message: "Nie możesz przejść na emeryturę przed ukończeniem 18 lat",
+        });
+      } else if (ageAtRetirement > 100) {
+        setError("retirementYear", {
+          type: "manual",
+          message: "Rok przejścia na emeryturę jest zbyt odległy (miałbyś ponad 100 lat)",
+        });
+      }
+    }
+  }, [watchedAge, watchedCareerStart, watchedRetirementYear, setError, clearErrors]);
 
   const blockInvalid = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (["e", "E", "+", "-", "."].includes(e.key)) e.preventDefault();
@@ -498,6 +562,24 @@ const Index: React.FC = () => {
                                   {...register("careerStartYear", {
                                     required:
                                       "Rok rozpoczęcia pracy jest wymagany",
+                                    validate: (value) => {
+                                      const year = parseInt(value);
+                                      const currentYear = new Date().getFullYear();
+                                      const age = parseInt(watchedAge);
+                                      const birthYear = currentYear - age;
+                                      const ageAtCareerStart = year - birthYear;
+
+                                      if (year > currentYear) {
+                                        return "Rok rozpoczęcia kariery nie może być w przyszłości";
+                                      }
+                                      if (ageAtCareerStart < 15) {
+                                        return `Nie mogłeś zacząć kariery przed ukończeniem 15 lat (urodziłeś się w ${birthYear})`;
+                                      }
+                                      if (ageAtCareerStart > age) {
+                                        return "Rok rozpoczęcia kariery nie może być po twoim obecnym wieku";
+                                      }
+                                      return true;
+                                    },
                                   })}
                                   className="w-full bg-gradient-to-br from-white to-gray-50 border-2 border-gray-300 text-base text-gray-800 font-medium px-4 py-[19px] rounded-xl appearance-none cursor-pointer 
                                   hover:border-[#00993F] hover:shadow-[0_0_0_3px_rgba(0,153,63,0.1)] 
@@ -568,6 +650,28 @@ const Index: React.FC = () => {
                                   {...register("retirementYear", {
                                     required:
                                       "Rok przejścia na emeryturę jest wymagany",
+                                    validate: (value) => {
+                                      const year = parseInt(value);
+                                      const currentYear = new Date().getFullYear();
+                                      const age = parseInt(watchedAge);
+                                      const birthYear = currentYear - age;
+                                      const careerStart = parseInt(watchedCareerStart);
+                                      const ageAtRetirement = year - birthYear;
+
+                                      if (year <= currentYear) {
+                                        return "Rok przejścia na emeryturę musi być w przyszłości";
+                                      }
+                                      if (careerStart && year <= careerStart) {
+                                        return "Rok przejścia na emeryturę musi być po rozpoczęciu kariery";
+                                      }
+                                      if (ageAtRetirement < 18) {
+                                        return "Nie możesz przejść na emeryturę przed ukończeniem 18 lat";
+                                      }
+                                      if (ageAtRetirement > 100) {
+                                        return "Rok przejścia na emeryturę jest zbyt odległy (miałbyś ponad 100 lat)";
+                                      }
+                                      return true;
+                                    },
                                   })}
                                   className="w-full bg-gradient-to-br from-white to-gray-50 border-2 border-gray-300 text-base text-gray-800 font-medium px-4 py-[19px] rounded-xl appearance-none cursor-pointer 
                                   hover:border-[#00993F] hover:shadow-[0_0_0_3px_rgba(0,153,63,0.1)] 
