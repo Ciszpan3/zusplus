@@ -699,9 +699,9 @@ const Results: React.FC = () => {
                   Kalkulator Emerytury
                 </h2>
                 <p className="text-gray-600">
-                  Sprawdź ile realnie czcza jak twoja emerytura może urosną
+                  Sprawdź na własne oczy jak twoja emerytura może urosnąć
                   <br />
-                  Wykrze zmieniaj się na bieżąco
+                  Wykres zmienia się na bieżąco
                 </p>
               </div>
 
