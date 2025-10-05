@@ -3,7 +3,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MFAEnrollment } from '@/components/MFAEnrollment';
 import { supabase } from '@/integrations/supabase/client';
 import { DashboardAIChat } from '@/components/DashboardAIChat';
 import { downloadReport } from '@/services/api';
@@ -14,53 +13,43 @@ const Admin = () => {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [needsMFASetup, setNeedsMFASetup] = useState(false);
-  const [checkingMFA, setCheckingMFA] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
+    checkAuthorization();
+  }, [user, loading]);
+
+  const checkAuthorization = async () => {
+    if (loading) return;
+    
+    if (!user) {
+      console.log('No user, redirecting to auth');
       navigate('/auth');
       return;
     }
 
-    if (user && !needsMFASetup && checkingMFA) {
-      checkMFAStatus();
-    }
-  }, [user, loading]);
-
-  const checkMFAStatus = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
+      const aal = (session as any)?.aal;
       
-      if (!session) {
+      console.log('Checking authorization, AAL:', aal);
+      
+      // User must have AAL2 (MFA verified) to access admin panel
+      if (aal !== 'aal2') {
+        console.log('User not fully authenticated, redirecting to auth');
         navigate('/auth');
         return;
       }
       
-      const aal = (session as any)?.aal;
-
-      if (aal !== 'aal2') {
-        // Check if user has enrolled MFA
-        const { data: factors } = await supabase.auth.mfa.listFactors();
-        if (!factors?.totp || factors.totp.length === 0) {
-          setNeedsMFASetup(true);
-        } else {
-          // Has MFA but not verified - redirect to login
-          navigate('/auth');
-        }
-      }
+      setIsAuthorized(true);
     } catch (error) {
-      console.error('Error checking MFA status:', error);
+      console.error('Authorization check error:', error);
       navigate('/auth');
     } finally {
-      setCheckingMFA(false);
+      setCheckingAuth(false);
     }
-  };
-
-  const handleMFAComplete = () => {
-    setNeedsMFASetup(false);
-    window.location.reload();
   };
 
   const handleDownloadReport = async () => {
@@ -92,26 +81,18 @@ const Admin = () => {
     }
   };
 
-  if (loading || checkingMFA) {
+  if (loading || checkingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+          <p className="mt-4 text-muted-foreground">Ładowanie...</p>
         </div>
       </div>
     );
   }
 
-  if (needsMFASetup) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
-        <MFAEnrollment onComplete={handleMFAComplete} />
-      </div>
-    );
-  }
-
-  if (!user) {
+  if (!isAuthorized) {
     return null;
   }
 
@@ -119,9 +100,9 @@ const Admin = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Admin Panel</h1>
+          <h1 className="text-2xl font-bold">Panel Administratora</h1>
           <Button onClick={signOut} variant="outline">
-            Sign Out
+            Wyloguj się
           </Button>
         </div>
       </header>
@@ -129,8 +110,8 @@ const Admin = () => {
       <main className="container mx-auto px-4 py-8">
         <Card>
           <CardHeader>
-            <CardTitle>Panel Administratora</CardTitle>
-            <CardDescription>Zalogowany jako: {user.email}</CardDescription>
+            <CardTitle>Witaj w Panelu Administratora</CardTitle>
+            <CardDescription>Zalogowany jako: {user?.email}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -148,7 +129,7 @@ const Admin = () => {
         </Card>
       </main>
       
-      <DashboardAIChat userEmail={user.email || ''} />
+      <DashboardAIChat userEmail={user?.email || ''} />
     </div>
   );
 };

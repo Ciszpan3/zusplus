@@ -1,14 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   signIn: (email: string, password: string) => Promise<{ error: any; needsMFA?: boolean }>;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
 }
@@ -19,54 +17,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-
-        // Handle invalid session (user deleted)
-        if (event === 'SIGNED_IN' && session) {
-          try {
-            const { error } = await supabase.auth.getUser();
-            if (error?.message?.includes('user_not_found')) {
-              // Clear invalid session
-              await supabase.auth.signOut();
-              localStorage.clear();
-              toast.error('Session expired. Please sign in again.');
-            }
-          } catch (e) {
-            console.error('Session validation error:', e);
-          }
-        }
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
-      if (error || !session) {
-        setSession(null);
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-
-      // Validate the session
-      const { error: userError } = await supabase.auth.getUser();
-      if (userError?.message?.includes('user_not_found')) {
-        // Clear invalid session
-        await supabase.auth.signOut();
-        localStorage.clear();
-        setSession(null);
-        setUser(null);
-      } else {
-        setSession(session);
-        setUser(session?.user ?? null);
-      }
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
       setLoading(false);
     });
 
@@ -85,52 +51,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return { error };
       }
 
-      // Check if MFA is required
+      // Check AAL level to determine if MFA is needed
       const { data: { session } } = await supabase.auth.getSession();
-      const currentAAL = (session as any)?.aal;
+      const aal = (session as any)?.aal;
       
-      if (currentAAL === 'aal1') {
-        // User needs MFA verification
+      console.log('Sign in successful, AAL level:', aal);
+      
+      // aal1 means user needs to verify MFA
+      if (aal === 'aal1') {
         return { error: null, needsMFA: true };
       }
       
-      toast.success('Successfully signed in!');
-      
+      toast.success('Zalogowano pomyślnie!');
       return { error: null, needsMFA: false };
     } catch (err: any) {
-      toast.error(err.message || 'Failed to sign in');
+      console.error('Sign in error:', err);
+      toast.error(err.message || 'Błąd logowania');
       return { error: err };
     }
   };
 
-  const signUp = async (email: string, password: string) => {
-    const redirectUrl = `${window.location.origin}/admin`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl
-      }
-    });
-    
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Check your email to confirm your account!');
-    }
-    
-    return { error };
-  };
-
   const signOut = async () => {
-    await supabase.auth.signOut();
-    toast.success('Signed out successfully');
-    navigate('/auth');
+    try {
+      await supabase.auth.signOut();
+      toast.success('Wylogowano pomyślnie');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      toast.error('Błąd wylogowania');
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, signIn, signUp, signOut, loading }}>
+    <AuthContext.Provider value={{ user, session, signIn, signOut, loading }}>
       {children}
     </AuthContext.Provider>
   );
