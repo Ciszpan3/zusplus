@@ -17,6 +17,7 @@ interface FormData {
   ofeBalance: string;
   sickLeaveDays: string;
   postalCode: string;
+  expectedPensionAmount: string;
   optionalDataEnabled: boolean;
 }
 
@@ -45,6 +46,7 @@ const Index: React.FC = () => {
       ofeBalance: "0",
       sickLeaveDays: "0",
       postalCode: "",
+      expectedPensionAmount: "",
       optionalDataEnabled: true,
     },
     mode: "onSubmit",
@@ -120,6 +122,9 @@ const Index: React.FC = () => {
         }
         if (data.sickLeaveDays && parseInt(data.sickLeaveDays) > 0) {
           requestBody.ilosc_dni_zwolnien = parseInt(data.sickLeaveDays);
+        }
+        if (data.expectedPensionAmount && parseFloat(data.expectedPensionAmount) > 0) {
+          requestBody.oczekiwana_kwota_emerytury = parseFloat(data.expectedPensionAmount);
         }
       }
 
@@ -855,6 +860,71 @@ const Index: React.FC = () => {
                                   </div>
                                 </div>
                               </div>
+
+                              {/* Expected Pension Amount Section */}
+                              <FormSection
+                                icon="https://api.builder.io/api/v1/image/assets/4fa82c39fade496f8994c11eefe8d01e/5f70b7e2df99e5163513911aa4307cd9ad5ecc66?placeholderIfAbsent=true"
+                                title="Oczekiwana kwota emerytury"
+                                description="Ile chciałbyś otrzymywać jako emeryturę miesięcznie?"
+                                iconAlt="Expected pension icon"
+                              >
+                                <div className="bg-[rgba(0,0,0,0)] w-[461px] max-w-full pb-7">
+                                  <label className="bg-[rgba(0,0,0,0)] flex flex-col text-sm text-gray-500 font-normal leading-none pt-px pb-2 max-md:max-w-full max-md:pr-5">
+                                    <div>Kwota miesięczna (opcjonalne)</div>
+                                  </label>
+                                  <div className="bg-[rgba(0,0,0,0)] w-full text-base whitespace-nowrap mt-2 max-md:max-w-full">
+                                    <div className="bg-white border-gray-400 border flex gap-5 justify-between p-4 rounded-lg border-solid max-md:max-w-full">
+                                      <input
+                                        {...register("expectedPensionAmount", {
+                                          min: {
+                                            value: 0,
+                                            message: "Kwota nie może być ujemna",
+                                          },
+                                        })}
+                                        type="number"
+                                        min="0"
+                                        inputMode="numeric"
+                                        onKeyDown={blockInvalid}
+                                        onInput={(e) => {
+                                          e.currentTarget.value =
+                                            e.currentTarget.value.replace(
+                                              /[^0-9]/g,
+                                              ""
+                                            );
+                                        }}
+                                        onBlur={(e) => {
+                                          const n = parseInt(
+                                            e.currentTarget.value || "0",
+                                            10
+                                          );
+                                          const clamped = Math.max(
+                                            0,
+                                            isNaN(n) ? 0 : n
+                                          );
+                                          setValue(
+                                            "expectedPensionAmount",
+                                            String(clamped),
+                                            {
+                                              shouldValidate: true,
+                                              shouldDirty: true,
+                                            }
+                                          );
+                                        }}
+                                        className="text-gray-600 font-normal bg-transparent border-none outline-none flex-1"
+                                        placeholder="0"
+                                      />
+                                      <div className="text-gray-500 font-medium">
+                                        PLN
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {errors.expectedPensionAmount && (
+                                    <span className="text-red-500 text-sm mt-1">
+                                      {errors.expectedPensionAmount.message}
+                                    </span>
+                                  )}
+                                </div>
+                              </FormSection>
 
                               {/* Postal Code Section */}
                               <div className="bg-[rgba(0,0,0,0)] flex gap-[13px] text-lg text-[rgba(0,65,110,1)] font-semibold leading-loose flex-wrap mt-[15px] pr-20 py-0.5 max-md:max-w-full max-md:pr-5">
