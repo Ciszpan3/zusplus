@@ -59,6 +59,9 @@ export const DashboardAIChat = ({ userEmail, retirementData }: DashboardAIChatPr
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
 
+    console.log('Sending message to AI:', userMessage);
+    console.log('Retirement data:', retirementData);
+
     try {
       const dashboardContext = {
         userEmail,
@@ -85,12 +88,17 @@ export const DashboardAIChat = ({ userEmail, retirementData }: DashboardAIChatPr
         timestamp: new Date().toISOString(),
       };
 
+      console.log('Dashboard context:', dashboardContext);
+      console.log('Calling edge function...');
+
       const { data, error } = await supabase.functions.invoke('dashboard-ai-chat', {
         body: {
           message: userMessage,
           dashboardContext
         }
       });
+
+      console.log('Edge function response:', { data, error });
 
       if (error) throw error;
 
