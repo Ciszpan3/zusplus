@@ -168,9 +168,7 @@ const Results: React.FC = () => {
     ? parseFloat(formData.monthlyIncome)
     : 8500;
   const DEFAULT_CAREER_BREAKS = 0;
-  const DEFAULT_SICK_LEAVE_DAYS = formData?.sickLeaveDays
-    ? parseInt(formData.sickLeaveDays)
-    : 19;
+  const DEFAULT_SICK_LEAVE_DAYS = 19;
   const DEFAULT_VALORIZATION = 1;
   const DEFAULT_INFLATION = 0;
 
