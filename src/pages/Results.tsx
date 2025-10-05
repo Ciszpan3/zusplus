@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import {
   User,
@@ -12,7 +12,9 @@ import {
   Briefcase,
   Umbrella,
   Info,
+  Download,
 } from "lucide-react";
+import html2pdf from "html2pdf.js";
 import { Slider } from "@/components/ui/slider";
 import {
   Accordion,
@@ -31,11 +33,28 @@ const Results: React.FC = () => {
   const prognosisData = location.state?.prognosisData as
     | PrognosiResponse
     | undefined;
+  
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
+
+  // Function to download page as PDF
+  const handleDownloadPDF = () => {
+    if (!contentRef.current) return;
+
+    const options = {
+      margin: 10,
+      filename: 'raport-emerytury.pdf',
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+    };
+
+    html2pdf().set(options).from(contentRef.current).save();
+  };
 
   // Default values for reset
   const DEFAULT_AGE = 27;
@@ -340,7 +359,20 @@ const Results: React.FC = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <Header />
+      <div className="sticky top-0 z-50 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <Header />
+          <button
+            onClick={handleDownloadPDF}
+            className="flex items-center gap-2 bg-[hsl(var(--blue-primary))] text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity font-semibold"
+          >
+            <Download className="w-5 h-5" />
+            Pobierz raport
+          </button>
+        </div>
+      </div>
+      
+      <div ref={contentRef}>
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-[hsl(var(--green-primary))] to-[hsl(var(--blue-primary))] py-12 px-6">
@@ -1052,7 +1084,7 @@ const Results: React.FC = () => {
           </div>
         </div>
       </section>
-
+      </div>
 
       <Footer />
 
