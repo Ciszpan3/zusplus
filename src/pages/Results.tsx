@@ -12,9 +12,9 @@ import {
   Briefcase,
   Umbrella,
   Info,
-  Download,
 } from "lucide-react";
-import html2pdf from "html2pdf.js";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import { Slider } from "@/components/ui/slider";
 import {
   Accordion,
@@ -41,19 +41,47 @@ const Results: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
-  // Function to download page as PDF
-  const handleDownloadPDF = () => {
+  // Function to download page as PDF using screenshots
+  const handleDownloadPDF = async () => {
     if (!contentRef.current) return;
 
-    const options = {
-      margin: 10,
-      filename: 'raport-emerytury.pdf',
-      image: { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
-    };
+    const element = contentRef.current;
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      windowHeight: element.scrollHeight,
+    });
 
-    html2pdf().set(options).from(contentRef.current).save();
+    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+    const imgX = (pdfWidth - imgWidth * ratio) / 2;
+    const imgY = 0;
+
+    let heightLeft = imgHeight * ratio;
+    let position = 0;
+
+    pdf.addImage(imgData, 'JPEG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+    heightLeft -= pdfHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight * ratio;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', imgX, position, imgWidth * ratio, imgHeight * ratio);
+      heightLeft -= pdfHeight;
+    }
+
+    pdf.save('raport-emerytury.pdf');
   };
 
   // Default values for reset
@@ -359,18 +387,7 @@ const Results: React.FC = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="sticky top-0 z-50 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Header />
-          <button
-            onClick={handleDownloadPDF}
-            className="flex items-center gap-2 bg-[hsl(var(--blue-primary))] text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity font-semibold"
-          >
-            <Download className="w-5 h-5" />
-            Pobierz raport
-          </button>
-        </div>
-      </div>
+      <Header onDownloadPDF={handleDownloadPDF} />
       
       <div ref={contentRef}>
 
