@@ -915,7 +915,7 @@ const Index: React.FC = () => {
                         <button
                           type="submit"
                           disabled={isLoading}
-                          className={`justify-center items-center border self-center z-10 flex w-[608px] max-w-full flex-col text-xl text-white font-bold text-center -mt-2 px-[70px] py-4 rounded-xl border-0 border-solid max-md:px-5 transition-all ${
+                          className={`justify-center items-center border self-center z-10 flex w-[608px] max-w-full flex-col text-xl text-white font-bold text-center mt-3 px-[70px] py-4 rounded-xl border-0 border-solid max-md:px-5 transition-all ${
                             isLoading
                               ? "bg-gray-400 cursor-not-allowed opacity-60"
                               : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 cursor-pointer"
